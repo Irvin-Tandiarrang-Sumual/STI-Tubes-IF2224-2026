@@ -10,6 +10,9 @@ struct Token {
     CodeLocation codeLocation;
 
     explicit Token(TokenType type) : type(type) {}
+
+    Token(TokenType type, const CodeLocation &loc) 
+    : type(type), codeLocation(loc) {}
     
     // for integer value
     Token(TokenType type, int value, const CodeLocation &codeLocation)
