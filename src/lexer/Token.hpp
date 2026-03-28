@@ -2,6 +2,8 @@
 #include <ostream>
 #include <string>
 #include <variant>
+#include <map>
+
 #include "../reader/CodeLocation.hpp"
 
 struct Token {
@@ -26,6 +28,9 @@ struct Token {
     Token(TokenType type, const std::string &text, const CodeLocation &codeLocation)
         : type(type), value(text), codeLocation(codeLocation) {}
 };
+
+// return string based on token type
+std::string tokenTypeToString(TokenType type);
 
 enum TokenType {
     intcon,
