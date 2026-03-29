@@ -9,6 +9,7 @@ Reader::Reader(const std::filesystem::path& path) {
     ss << inputFile.rdbuf();
 
     input_ = ss.str();
+    inputFile.close();
 
     advance();
     
