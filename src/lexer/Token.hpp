@@ -6,33 +6,9 @@
 
 #include "../reader/CodeLocation.hpp"
 
-struct Token {
-    TokenType type;
-    std::variant<int, double, std::string> value;
-    CodeLocation codeLocation;
-
-    explicit Token(TokenType type) : type(type) {}
-
-    Token(TokenType type, const CodeLocation &loc) 
-    : type(type), codeLocation(loc) {}
-    
-    // for integer value
-    Token(TokenType type, int value, const CodeLocation &codeLocation)
-        : type(type), value(value), codeLocation(codeLocation) {}
-
-    // for double value
-    Token(TokenType type, double value, const CodeLocation &codeLocation)
-        : type(type), value(value), codeLocation(codeLocation) {}
-
-    // for string value
-    Token(TokenType type, const std::string &text, const CodeLocation &codeLocation)
-        : type(type), value(text), codeLocation(codeLocation) {}
-};
-
-// return string based on token type
-std::string tokenTypeToString(TokenType type);
-
 enum TokenType {
+    eof, // additional ??
+    invalid_token, // additional ??
     intcon,
     realcon,
     charcon,
@@ -86,3 +62,29 @@ enum TokenType {
     thensy,
     comment,
 };
+
+struct Token {
+    TokenType type;
+    std::variant<int, double, std::string> value;
+    CodeLocation codeLocation;
+
+    explicit Token(TokenType type) : type(type) {}
+
+    Token(TokenType type, const CodeLocation &loc) 
+    : type(type), codeLocation(loc) {}
+    
+    // for integer value
+    Token(TokenType type, int value, const CodeLocation &codeLocation)
+        : type(type), value(value), codeLocation(codeLocation) {}
+
+    // for double value
+    Token(TokenType type, double value, const CodeLocation &codeLocation)
+        : type(type), value(value), codeLocation(codeLocation) {}
+
+    // for string value
+    Token(TokenType type, const std::string &text, const CodeLocation &codeLocation)
+        : type(type), value(text), codeLocation(codeLocation) {}
+};
+
+// return string based on token type
+std::string tokenTypeToString(TokenType type);
