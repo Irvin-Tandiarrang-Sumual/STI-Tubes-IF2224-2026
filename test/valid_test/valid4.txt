@@ -1,0 +1,49 @@
+program hardfour;
+
+type arraysafe: array[2..8] of integer;
+var variable, constant, programmatic, notify, order, android, i: integer;
+var rr: real;
+var ch: char;
+var txt: string;
+function merge(u, v: integer): integer;
+begin
+end;
+procedure emit(w: integer);
+begin
+end;
+begin
+variable:=1;
+constant:=10;
+programmatic:=5;
+notify:=0;
+order:=1;
+android:=variable+constant-programmatic*4 div 2 mod 3;
+rr:=0.0/1.0;
+ch:='z';
+txt:='a+b=c ; <> <= >= == := [ ] ( )';
+if(((variable<constant)) and not(android>100) or (variable<=constant)) then
+variable:=11
+else
+variable:=12;
+if variable<>constant then
+notify:=13
+else
+notify:=14;
+if variable==notify then
+order:=15;
+while notify<12 do
+notify:=notify+1;
+for i:=8 downto 2 do
+variable:=variable*i;
+for i:=2 to 4 do
+constant:=constant+i;
+repeat
+variable:=variable+1;
+until variable>=20;
+case variable of
+5: constant:=50;
+6: constant:=60;
+end;
+merge(variable, constant);
+emit(notify);
+end.

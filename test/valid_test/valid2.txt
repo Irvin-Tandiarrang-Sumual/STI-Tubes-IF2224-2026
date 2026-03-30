@@ -1,0 +1,46 @@
+program hardtwo;
+
+type matrix: array[0..5] of integer;
+var programmatic, arrays, while1, types, variable, constant, record2: integer;
+var blank: char;
+var text: string;
+function add(a, b: integer): integer;
+begin
+end;
+procedure print(v: integer);
+begin
+end;
+begin
+programmatic:=62;
+arrays:=0;
+record2:=5;
+while1:=2147483647;
+types:=programmatic+(arrays*record2);
+variable:=((programmatic+arrays)*(record2+1));
+constant:=(programmatic);
+blank:=' ';
+text:='( * ) should not become a comment here';
+if (programmatic>=arrays) or not(record2<10) and (types<=while1) then
+programmatic:=7
+else
+programmatic:=8;
+if programmatic==arrays then
+arrays:=1
+else
+arrays:=2;
+while arrays<3 do
+arrays:=arrays+1;
+for record2:=9 downto 4 do
+programmatic:=programmatic*record2;
+for record2:=0 to 2 do
+arrays:=arrays+record2;
+repeat
+programmatic:=programmatic+1;
+until programmatic>25;
+case arrays of
+3: programmatic:=30;
+4: programmatic:=40;
+end;
+add(programmatic, arrays);
+print(arrays);
+end.

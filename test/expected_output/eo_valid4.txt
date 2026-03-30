@@ -1,0 +1,258 @@
+programsy
+ident (hardfour)
+semicolon
+
+typesy
+ident (arraysafe)
+colon
+arraysy
+lbrack
+intcon (2)
+period
+period
+intcon (8)
+rbrack
+ofsy
+ident (integer)
+semicolon
+varsy
+ident (variable)
+comma
+ident (constant)
+comma
+ident (programmatic)
+comma
+ident (notify)
+comma
+ident (order)
+comma
+ident (android)
+comma
+ident (i)
+colon
+ident (integer)
+semicolon
+varsy
+ident (rr)
+colon
+ident (real)
+semicolon
+varsy
+ident (ch)
+colon
+ident (char)
+semicolon
+varsy
+ident (txt)
+colon
+ident (string)
+semicolon
+functionsy
+ident (merge)
+lparent
+ident (u)
+comma
+ident (v)
+colon
+ident (integer)
+rparent
+colon
+ident (integer)
+semicolon
+beginsy
+endsy
+semicolon
+proceduresy
+ident (emit)
+lparent
+ident (w)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+beginsy
+ident (variable)
+becomes
+intcon (1)
+semicolon
+ident (constant)
+becomes
+intcon (10)
+semicolon
+ident (programmatic)
+becomes
+intcon (5)
+semicolon
+ident (notify)
+becomes
+intcon (0)
+semicolon
+ident (order)
+becomes
+intcon (1)
+semicolon
+ident (android)
+becomes
+ident (variable)
+plus
+ident (constant)
+minus
+ident (programmatic)
+times
+intcon (4)
+idiv
+intcon (2)
+imod
+intcon (3)
+semicolon
+ident (rr)
+becomes
+realcon (0.0)
+rdiv
+realcon (1.0)
+semicolon
+ident (ch)
+becomes
+charcon (z)
+semicolon
+ident (txt)
+becomes
+string (a+b=c ; <> <= >= == := [ ] ( ))
+semicolon
+ifsy
+lparent
+lparent
+lparent
+ident (variable)
+lss
+ident (constant)
+rparent
+rparent
+andsy
+notsy
+lparent
+ident (android)
+gtr
+intcon (100)
+rparent
+orsy
+lparent
+ident (variable)
+leq
+ident (constant)
+rparent
+rparent
+thensy
+ident (variable)
+becomes
+intcon (11)
+elsesy
+ident (variable)
+becomes
+intcon (12)
+semicolon
+ifsy
+ident (variable)
+neq
+ident (constant)
+thensy
+ident (notify)
+becomes
+intcon (13)
+elsesy
+ident (notify)
+becomes
+intcon (14)
+semicolon
+ifsy
+ident (variable)
+eql
+ident (notify)
+thensy
+ident (order)
+becomes
+intcon (15)
+semicolon
+whilesy
+ident (notify)
+lss
+intcon (12)
+dosy
+ident (notify)
+becomes
+ident (notify)
+plus
+intcon (1)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (8)
+downtosy
+intcon (2)
+dosy
+ident (variable)
+becomes
+ident (variable)
+times
+ident (i)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (2)
+tosy
+intcon (4)
+dosy
+ident (constant)
+becomes
+ident (constant)
+plus
+ident (i)
+semicolon
+repeatsy
+ident (variable)
+becomes
+ident (variable)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (variable)
+geq
+intcon (20)
+semicolon
+casesy
+ident (variable)
+ofsy
+intcon (5)
+colon
+ident (constant)
+becomes
+intcon (50)
+semicolon
+intcon (6)
+colon
+ident (constant)
+becomes
+intcon (60)
+semicolon
+endsy
+semicolon
+ident (merge)
+lparent
+ident (variable)
+comma
+ident (constant)
+rparent
+semicolon
+ident (emit)
+lparent
+ident (notify)
+rparent
+semicolon
+endsy
+period

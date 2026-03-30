@@ -1,0 +1,226 @@
+programsy
+ident (hardthree)
+semicolon
+
+varsy
+ident (divx)
+comma
+ident (modx)
+comma
+ident (divider)
+comma
+ident (model)
+comma
+ident (beginner)
+comma
+ident (endif)
+comma
+ident (fork)
+comma
+ident (i)
+colon
+ident (integer)
+semicolon
+varsy
+ident (c)
+colon
+ident (char)
+semicolon
+varsy
+ident (s)
+colon
+ident (string)
+semicolon
+functionsy
+ident (calc)
+lparent
+ident (x)
+comma
+ident (y)
+colon
+ident (integer)
+rparent
+colon
+ident (integer)
+semicolon
+beginsy
+endsy
+semicolon
+proceduresy
+ident (echo)
+lparent
+ident (z)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+beginsy
+ident (divx)
+becomes
+intcon (5)
+semicolon
+ident (modx)
+becomes
+intcon (48)
+semicolon
+ident (divider)
+becomes
+intcon (0)
+semicolon
+ident (model)
+becomes
+ident (divx)
+plus
+ident (modx)
+minus
+ident (divider)
+times
+intcon (2)
+idiv
+intcon (1)
+imod
+intcon (1)
+semicolon
+ident (beginner)
+becomes
+lparent
+lparent
+ident (divx)
+plus
+ident (modx)
+rparent
+times
+lparent
+ident (divider)
+plus
+intcon (1)
+rparent
+rparent
+semicolon
+ident (endif)
+becomes
+intcon (0)
+semicolon
+ident (fork)
+becomes
+intcon (1)
+semicolon
+ident (c)
+becomes
+charcon (3)
+semicolon
+ident (s)
+becomes
+string (begin end if else case of while do for to downto repeat until then)
+semicolon
+ifsy
+lparent
+ident (divx)
+lss
+ident (modx)
+rparent
+andsy
+notsy
+lparent
+ident (model)
+leq
+intcon (10)
+rparent
+orsy
+lparent
+ident (beginner)
+eql
+ident (fork)
+rparent
+thensy
+ident (divx)
+becomes
+intcon (1)
+elsesy
+ident (divx)
+becomes
+intcon (0)
+semicolon
+whilesy
+ident (divider)
+lss
+intcon (10)
+dosy
+ident (divider)
+becomes
+ident (divider)
+plus
+intcon (1)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (5)
+downtosy
+intcon (1)
+dosy
+ident (divx)
+becomes
+ident (divx)
+times
+ident (i)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (1)
+tosy
+intcon (3)
+dosy
+ident (modx)
+becomes
+ident (modx)
+plus
+ident (i)
+semicolon
+repeatsy
+ident (divx)
+becomes
+ident (divx)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (divx)
+gtr
+intcon (10)
+semicolon
+casesy
+ident (divx)
+ofsy
+intcon (1)
+colon
+ident (modx)
+becomes
+intcon (10)
+semicolon
+intcon (2)
+colon
+ident (modx)
+becomes
+intcon (20)
+semicolon
+endsy
+semicolon
+ident (calc)
+lparent
+ident (divx)
+comma
+ident (modx)
+rparent
+semicolon
+ident (echo)
+lparent
+ident (divx)
+rparent
+semicolon
+endsy
+period

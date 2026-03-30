@@ -1,0 +1,248 @@
+programsy
+ident (hardtwo)
+semicolon
+
+typesy
+ident (matrix)
+colon
+arraysy
+lbrack
+intcon (0)
+period
+period
+intcon (5)
+rbrack
+ofsy
+ident (integer)
+semicolon
+varsy
+ident (programmatic)
+comma
+ident (arrays)
+comma
+ident (while1)
+comma
+ident (types)
+comma
+ident (variable)
+comma
+ident (constant)
+comma
+ident (record2)
+colon
+ident (integer)
+semicolon
+varsy
+ident (blank)
+colon
+ident (char)
+semicolon
+varsy
+ident (text)
+colon
+ident (string)
+semicolon
+functionsy
+ident (add)
+lparent
+ident (a)
+comma
+ident (b)
+colon
+ident (integer)
+rparent
+colon
+ident (integer)
+semicolon
+beginsy
+endsy
+semicolon
+proceduresy
+ident (print)
+lparent
+ident (v)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+beginsy
+ident (programmatic)
+becomes
+intcon (62)
+semicolon
+ident (arrays)
+becomes
+intcon (0)
+semicolon
+ident (record2)
+becomes
+intcon (5)
+semicolon
+ident (while1)
+becomes
+intcon (2147483647)
+semicolon
+ident (types)
+becomes
+ident (programmatic)
+plus
+lparent
+ident (arrays)
+times
+ident (record2)
+rparent
+semicolon
+ident (variable)
+becomes
+lparent
+lparent
+ident (programmatic)
+plus
+ident (arrays)
+rparent
+times
+lparent
+ident (record2)
+plus
+intcon (1)
+rparent
+rparent
+semicolon
+ident (constant)
+becomes
+lparent
+ident (programmatic)
+rparent
+semicolon
+ident (blank)
+becomes
+charcon ( )
+semicolon
+ident (text)
+becomes
+string (( * ) should not become a comment here)
+semicolon
+ifsy
+lparent
+ident (programmatic)
+geq
+ident (arrays)
+rparent
+orsy
+notsy
+lparent
+ident (record2)
+lss
+intcon (10)
+rparent
+andsy
+lparent
+ident (types)
+leq
+ident (while1)
+rparent
+thensy
+ident (programmatic)
+becomes
+intcon (7)
+elsesy
+ident (programmatic)
+becomes
+intcon (8)
+semicolon
+ifsy
+ident (programmatic)
+eql
+ident (arrays)
+thensy
+ident (arrays)
+becomes
+intcon (1)
+elsesy
+ident (arrays)
+becomes
+intcon (2)
+semicolon
+whilesy
+ident (arrays)
+lss
+intcon (3)
+dosy
+ident (arrays)
+becomes
+ident (arrays)
+plus
+intcon (1)
+semicolon
+forsy
+ident (record2)
+becomes
+intcon (9)
+downtosy
+intcon (4)
+dosy
+ident (programmatic)
+becomes
+ident (programmatic)
+times
+ident (record2)
+semicolon
+forsy
+ident (record2)
+becomes
+intcon (0)
+tosy
+intcon (2)
+dosy
+ident (arrays)
+becomes
+ident (arrays)
+plus
+ident (record2)
+semicolon
+repeatsy
+ident (programmatic)
+becomes
+ident (programmatic)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (programmatic)
+gtr
+intcon (25)
+semicolon
+casesy
+ident (arrays)
+ofsy
+intcon (3)
+colon
+ident (programmatic)
+becomes
+intcon (30)
+semicolon
+intcon (4)
+colon
+ident (programmatic)
+becomes
+intcon (40)
+semicolon
+endsy
+semicolon
+ident (add)
+lparent
+ident (programmatic)
+comma
+ident (arrays)
+rparent
+semicolon
+ident (print)
+lparent
+ident (arrays)
+rparent
+semicolon
+endsy
+period
