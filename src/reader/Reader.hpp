@@ -14,6 +14,7 @@ class Reader {
         bool isEOF() const;
         char getCurrentCharacter() const;
         void advance();
+        char peekNextChar(); // lihat 1 char setelahnya (ga pindah tempat)
 
         std::size_t getIndex() const;
         CodeLocation getLocation() const;

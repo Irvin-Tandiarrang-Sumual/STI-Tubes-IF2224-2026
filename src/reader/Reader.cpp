@@ -1,10 +1,13 @@
 #include "Reader.hpp"
 
 Reader::Reader(const std::filesystem::path& path) {
+    std::cout << "I'm at reader constructor\n";
+    std::cout << path << "\n";
     std::ifstream inputFile(path);
     if (!inputFile.is_open()) {
         throw std::runtime_error("Can't open file path");
     }
+    std::cout << "I successfully open the file\n";
     std::ostringstream ss;
     ss << inputFile.rdbuf();
 
@@ -12,7 +15,6 @@ Reader::Reader(const std::filesystem::path& path) {
     inputFile.close();
 
     advance();
-    
 }
 
 bool Reader::isEOF() const {
@@ -41,6 +43,15 @@ void Reader::advance() {
 
     currentCharacter = current;
     return;
+}
+
+// perlu fix si column
+char Reader::peekNextChar() {
+    if (index_ + 1 >= input_.size()) { // perlu throw error?
+        return '\0';
+    }
+    size_t peekIndex = index_ + 1;
+    return input_[peekIndex];
 }
 
 std::size_t Reader::getIndex() const {
