@@ -18,7 +18,7 @@ Reader::Reader(const std::filesystem::path& path) {
 }
 
 bool Reader::isEOF() const {
-    return index_ >= input_.size();
+    return currentCharacter == '\0' && index_ >= input_.size();
 }
 
 char Reader::getCurrentCharacter() const {
