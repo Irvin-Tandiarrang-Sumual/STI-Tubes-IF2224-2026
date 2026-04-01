@@ -361,22 +361,40 @@ void Lexer::processNumber() {
 
     // read int or double value
     const CodeLocation codeLoc = reader.getLocation();
-    bool haveDot = false;
 
-    while(!reader.isEOF() && (isdigit(reader.getCurrentCharacter()) || (reader.getCurrentCharacter() == '.' && !haveDot))) {
+    while(!reader.isEOF() && isdigit(reader.getCurrentCharacter())) {
         numberStream << reader.getCurrentCharacter();
-        if (reader.getCurrentCharacter() == '.') {
-            haveDot = true;
-        }
+        reader.advance();
+    }
+    
+    // cek character skrg apa
+    if (reader.getCurrentCharacter() == '.') {
         reader.advance();
 
-    }
+        // skrg baca yg setelah .
+        numberStream << '.';
 
-    if (haveDot) { // double
-        double value;
-        numberStream >> value;
-        currentToken = Token(TokenType::realcon, value, codeLoc);
+        if (!reader.isEOF() && isdigit(reader.getCurrentCharacter())) {
+            while (!reader.isEOF() && isdigit(reader.getCurrentCharacter())) {
+                numberStream << reader.getCurrentCharacter();
+                reader.advance();
+            }
+            double value;
+            numberStream >> value;
+            currentToken = Token(TokenType::realcon, value, codeLoc);
+            return;
+        } else {
+            // kepisah
+            int value;
+            numberStream >> value;
+            currentToken = Token(TokenType::intcon, value, codeLoc);
+
+            addTokens(); //masukin intcon dl
+
+            currentToken = Token(TokenType::period, ".", reader.getLocation());
+        }
     } else {
+        // lgsg form aja int
         int value;
         numberStream >> value;
         currentToken = Token(TokenType::intcon, value, codeLoc);
