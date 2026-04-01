@@ -130,21 +130,23 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::eql, "==", codeLoc);
-                break;
+                reader.advance();
             } else {
                 return;
             }
+            break;
         }
         case '<': {
             // maju 1
             reader.advance();
             if (reader.getCurrentCharacter() == '>') {
                 currentToken = Token(TokenType::neq, "<>", codeLoc);
+                reader.advance();
             } else if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::leq, "<=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::lss, "<", codeLoc);
-                return; // ga perlu majuin lagi
             }
             break;
         }
@@ -153,9 +155,9 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::geq, ">=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::gtr, ">", codeLoc);
-                return;
             }
             break;
         }
@@ -221,9 +223,9 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::becomes, ":=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::colon, ":", codeLoc);
-                return;
             }
             break;
         }
