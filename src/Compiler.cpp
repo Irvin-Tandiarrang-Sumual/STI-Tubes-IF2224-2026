@@ -7,7 +7,7 @@ Compiler::~Compiler() {}
 
 // sekaligus ngelakuin write kali yak :/
 void Compiler::lexer() {
-    std::cout << "Processing Lexer\n";
+    std::cout << "Processing Lexer...\n";
     Lexer lexing(inputPath);
 
     std::cout << "I'm here after lexing (inputPath)\n";
@@ -22,9 +22,19 @@ void Compiler::lexer() {
     }
     std::cout << "\n\n";
     
+    std::string baseName = inputPath.stem().string(); 
+    std::string resultFileName = baseName + "-result.txt";
+    std::filesystem::path outputDir = "../test/output";
+    std::filesystem::path fullPath = outputDir / resultFileName;
 
-    std::cout << "Finish Tokenize\n";
-    std::cout << "Going to write the result into result-tc-1.txt\n";
-    Writer write("result-tc-1.txt", tokens);
+    if (!std::filesystem::exists(outputDir)) {
+        std::filesystem::create_directories(outputDir);
+    }
+
+    std::cout << "Finish Tokenize for: " << inputPath.filename().string() << "\n";
+    
+    Writer write(fullPath.string(), tokens); 
     write.writeToFile();
+    
+    std::cout << "File saved at: " << fullPath.string() << "\n";
 }

@@ -8,8 +8,8 @@
 
 class Writer {
     private:
-        const std::string& filename;
-        const std::vector<Token>& tokens;
+        const std::string filename;
+        const std::vector<Token> tokens;
 
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);

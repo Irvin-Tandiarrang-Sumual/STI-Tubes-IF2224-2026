@@ -1,4 +1,5 @@
 #include "Writer.hpp"
+#include <filesystem>
 
 Writer :: Writer (const std::string& filename, const std::vector<Token>& tokens)
     : filename(filename), tokens(tokens) {}
@@ -6,8 +7,11 @@ Writer :: Writer (const std::string& filename, const std::vector<Token>& tokens)
 Writer :: ~Writer() {}
 
 void Writer::writeToFile() const {
-    std::ofstream fOut(filename);
-    if (!fOut.is_open()) return;
+    std::ofstream fOut(filename, std::ios::out);
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: Failed to open file: " << filename << "\n";
+        return;
+    }
 
     for (const auto& token : tokens) {
         std::string typeStr = tokenTypeToString(token.type);
@@ -28,4 +32,8 @@ void Writer::writeToFile() const {
         }
     }
     fOut.close();
+
+    if (std::filesystem::exists(filename)) {
+        std::cout << "SUCC: Saved file in " << filename << "\n";
+    }
 }
