@@ -2,6 +2,8 @@
 
 std::string tokenTypeToString(TokenType type) {
     static const std::map<TokenType, std::string> typeMap = {
+        {TokenType::eof, "eof"},
+        {TokenType::invalid_token, "INVALID TOKEN"},
         {TokenType::intcon, "intcon"},
         {TokenType::realcon, "realcon"},
         {TokenType::charcon, "charcon"},
@@ -57,5 +59,5 @@ std::string tokenTypeToString(TokenType type) {
     };
 
     auto typeStr = typeMap.find(type);
-    return (typeStr != typeMap.end()) ? typeStr->second : "??";
+    return (typeStr != typeMap.end()) ? typeStr->second : "UNKNOWN";
 }
