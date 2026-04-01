@@ -11,7 +11,7 @@ Reader::Reader(const std::filesystem::path& path) {
     std::ostringstream ss;
     ss << inputFile.rdbuf();
 
-    input_ = ss.str();
+    input_ = ss.str(); 
     inputFile.close();
 
     advance();
@@ -43,15 +43,6 @@ void Reader::advance() {
 
     currentCharacter = current;
     return;
-}
-
-// perlu fix si column
-char Reader::peekNextChar() {
-    if (index_ + 1 >= input_.size()) { // perlu throw error?
-        return '\0';
-    }
-    size_t peekIndex = index_ + 1;
-    return input_[peekIndex];
 }
 
 std::size_t Reader::getIndex() const {
