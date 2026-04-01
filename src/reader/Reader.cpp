@@ -18,7 +18,7 @@ Reader::Reader(const std::filesystem::path& path) {
 }
 
 bool Reader::isEOF() const {
-    return index_ >= input_.size();
+    return currentCharacter == '\0' && index_ >= input_.size();
 }
 
 char Reader::getCurrentCharacter() const {
@@ -38,8 +38,9 @@ void Reader::advance() {
     if (current == '\n') {
         location_.line += 1;
         location_.col = 0;
-    } 
-    location_.col += 1;
+    } else {
+        location_.col += 1;
+    }
 
     currentCharacter = current;
     return;

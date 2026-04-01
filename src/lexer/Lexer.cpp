@@ -11,8 +11,20 @@ Lexer::Lexer(std::filesystem::path p)
     
 Lexer::~Lexer() {}
 // nnt perlu di-adjust lg error messagenya
+
 void Lexer::addErrors() {
-    errors_.push_back("Line " + std::to_string(getCodeLocation().line) + " Column" + std::to_string(getCodeLocation().col) + " : there's error here\n");
+    struct AnyGet {
+        std::string operator()(int value) { return std::to_string(value); }
+        std::string operator()(double value) { return std::to_string(value); }
+        std::string operator()(const std::string& value) { return value; }
+    };
+    std::string invalidTokenValue = std::visit(AnyGet{}, currentToken.value);
+
+    errors_.push_back(
+        "Line " + std::to_string(getCodeLocation().line) +
+        " Column " + std::to_string(getCodeLocation().col) +
+        " " + invalidTokenValue + " is not valid\n"
+    );
 }
 
 std::vector<std::string> Lexer::getErrors() {
@@ -32,10 +44,9 @@ bool Lexer::isEOF() const {
 }
 
 void Lexer::tokenize() {
-    while (!isEOF()) {
+    while (currentToken.type != TokenType::eof) {
         addTokens();
         advance();
-        /* code */
     }
 }
 
@@ -87,9 +98,7 @@ void Lexer::processToken() {
     }
 
     char currentChar = reader.getCurrentCharacter();
-    currentToken = Token(invalid_token, "Invalid Token", codeLoc);
-
-
+    currentToken = Token(invalid_token, std::string(1, currentChar), codeLoc);
     // process number
     if (isdigit(currentChar)) {
         processNumber();
@@ -130,21 +139,21 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::eql, "==", codeLoc);
-                break;
-            } else {
-                return;
+                reader.advance();
             }
+            break;
         }
         case '<': {
             // maju 1
             reader.advance();
             if (reader.getCurrentCharacter() == '>') {
                 currentToken = Token(TokenType::neq, "<>", codeLoc);
+                reader.advance();
             } else if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::leq, "<=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::lss, "<", codeLoc);
-                return; // ga perlu majuin lagi
             }
             break;
         }
@@ -153,9 +162,9 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::geq, ">=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::gtr, ">", codeLoc);
-                return;
             }
             break;
         }
@@ -221,9 +230,9 @@ void Lexer::processToken() {
             reader.advance();
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::becomes, ":=", codeLoc);
+                reader.advance();
             } else {
                 currentToken = Token(TokenType::colon, ":", codeLoc);
-                return;
             }
             break;
         }
