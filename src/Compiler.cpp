@@ -16,15 +16,15 @@ void Compiler::lexer() {
     std::vector<Token> tokens = lexing.getTokens();
 
     // tulis error
-    std::cout << "\n\n";
+    std::cout << "\n";
     for (size_t i = 0; i < lexing.getErrors().size(); i++) {
         std::cout << lexing.getErrors().at(i);
     }
-    std::cout << "\n\n";
+    std::cout << "\n";
     
     std::string baseName = inputPath.stem().string(); 
     std::string resultFileName = baseName + "-result.txt";
-    std::filesystem::path outputDir = "../test/output";
+    std::filesystem::path outputDir = "../test/milestone-1/output";
     std::filesystem::path fullPath = outputDir / resultFileName;
 
     if (!std::filesystem::exists(outputDir)) {
