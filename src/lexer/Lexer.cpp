@@ -11,8 +11,20 @@ Lexer::Lexer(std::filesystem::path p)
     
 Lexer::~Lexer() {}
 // nnt perlu di-adjust lg error messagenya
+
 void Lexer::addErrors() {
-    errors_.push_back("Line " + std::to_string(getCodeLocation().line) + " Column " + std::to_string(getCodeLocation().col) + " " + std::get<std::string>(currentToken.value) + " is not valid\n");
+    struct AnyGet {
+        std::string operator()(int value) { return std::to_string(value); }
+        std::string operator()(double value) { return std::to_string(value); }
+        std::string operator()(const std::string& value) { return value; }
+    };
+    std::string invalidTokenValue = std::visit(AnyGet{}, currentToken.value);
+
+    errors_.push_back(
+        "Line " + std::to_string(getCodeLocation().line) +
+        " Column " + std::to_string(getCodeLocation().col) +
+        " " + invalidTokenValue + " is not valid\n"
+    );
 }
 
 std::vector<std::string> Lexer::getErrors() {
@@ -86,7 +98,7 @@ void Lexer::processToken() {
     }
 
     char currentChar = reader.getCurrentCharacter();
-    currentToken = Token(invalid_token, "Invalid Token", codeLoc);
+    currentToken = Token(invalid_token, std::string(1, currentChar), codeLoc);
     // process number
     if (isdigit(currentChar)) {
         processNumber();
@@ -227,7 +239,6 @@ void Lexer::processToken() {
         default:
             // ga perlu ngubah apa" lg, sisa tambahin error message(?)
             addErrors();
-            currentToken = Token(TokenType::invalid_token, reader.getCurrentCharacter(), codeLoc);
             reader.advance();
             break;
         }
