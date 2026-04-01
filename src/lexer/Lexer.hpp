@@ -12,18 +12,24 @@ class Lexer
     private:
         /* data */
         std::filesystem::path path;
-
+        std::vector<Token> tokens_;
+        std::vector<std::string> errors_;
         Reader reader = Reader(path);
-
         Token currentToken = Token(TokenType::invalid_token);
 
-        Token processToken();
-        Token processStringOrCharacter();
-        Token processKeywordOrIdentifier();
-        Token processNumber();
+        // private method
+        void addErrors();
+        void addTokens();
+
+        void processToken();
+        void processStringOrCharacter();
+        void processKeywordOrIdentifier();
+        void processNumber();
 
         void skippingWhiteSpaces();
         void skippingComments();
+
+
     public:
         explicit Lexer(const std::filesystem::path p);
         ~Lexer();
@@ -33,7 +39,11 @@ class Lexer
         void advance(); // go to next token
 
         // do lexical analysis for 1 whole
-        std::vector<Token> tokenize();
+        void tokenize();
+
+        // getter
+        std::vector<std::string> getErrors();
+        std::vector<Token> getTokens();
         
 
 

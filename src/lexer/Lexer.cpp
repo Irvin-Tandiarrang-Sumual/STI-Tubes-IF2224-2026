@@ -4,27 +4,39 @@ Lexer::Lexer(std::filesystem::path p)
     : path(p) {
         std::cout << "I'm trying to construct lexer\n";
     
-
-
         advance(); // reading first token
         std::cout << "I'm successfuly reading the first token\n";
     }
 
+    
 Lexer::~Lexer() {}
+// nnt perlu di-adjust lg error messagenya
+void Lexer::addErrors() {
+    errors_.push_back("Line " + std::to_string(getCodeLocation().line) + " Column" + std::to_string(getCodeLocation().col) + " : there's error here\n");
+}
+
+std::vector<std::string> Lexer::getErrors() {
+    return errors_;
+}
+
+void Lexer::addTokens() {
+    tokens_.push_back(currentToken);
+}
+
+std::vector<Token> Lexer::getTokens() {
+    return tokens_;
+}
 
 bool Lexer::isEOF() const {
     return reader.isEOF();
 }
 
-std::vector<Token> Lexer::tokenize() {
-    std::vector<Token> tokens;
+void Lexer::tokenize() {
     while (!isEOF()) {
-        tokens.push_back(currentToken);
+        addTokens();
         advance();
         /* code */
     }
-    return tokens;
-    
 }
 
 CodeLocation Lexer::getCodeLocation() const {
@@ -38,29 +50,120 @@ void Lexer::skippingWhiteSpaces() {
 }
 
 void Lexer::skippingComments() {
-    switch (reader.getCurrentCharacter()) {
-        case '{': {
-            int commentDepth = 1;
-            // inside comment
+    int commentDepth = 1;
+    // inside comment
+    reader.advance();
+    while (!reader.isEOF() && commentDepth > 0) {
+        if (reader.getCurrentCharacter() == '{') {
+            commentDepth++;
+        } else if(reader.getCurrentCharacter() == '}') {
+            commentDepth--;
+        }
+        // advance terus
+        reader.advance();
+    }
+    // bakal udh character tepat setelah '}' ??? :/
+}
+
+void Lexer::advance() {
+    while (true) {
+        skippingWhiteSpaces();
+        // comment yg dimulai dari ( dilakukan terpisah sajah
+        if (reader.getCurrentCharacter() == '{') {
+            skippingComments();
+        } else {
+            break;
+        }
+    }
+    processToken();
+}
+
+void Lexer::processToken() {
+    CodeLocation codeLoc = reader.getLocation();
+
+    if (reader.isEOF()) {
+        currentToken = Token(eof, "EOF", codeLoc);
+        return;
+    }
+
+    char currentChar = reader.getCurrentCharacter();
+    currentToken = Token(invalid_token, "Invalid Token", codeLoc);
+
+
+    // process number
+    if (isdigit(currentChar)) {
+        processNumber();
+        return;
+    }
+
+    // keyword or identifier processing
+    if (isalpha(currentChar)) {
+        processKeywordOrIdentifier();
+        return;
+    }
+
+    // process string
+    if (currentChar == '\'') {
+        processStringOrCharacter();
+        return;
+    }
+
+    switch (currentChar) {
+        case '+':
+            currentToken = Token(TokenType::plus, "+", codeLoc);
             reader.advance();
-            while (!reader.isEOF() && commentDepth > 0) {
-                if (reader.getCurrentCharacter() == '{') {
-                    commentDepth++;
-                } else if(reader.getCurrentCharacter() == '}') {
-                    commentDepth--;
-                }
-                // advance terus
-                reader.advance();
+            break;
+        case '-':
+            currentToken = Token(TokenType::minus, "-", codeLoc);
+            reader.advance();
+            break;
+        case '*':
+            currentToken = Token(TokenType::times, "*", codeLoc);
+            reader.advance();
+            break;
+        case '/':
+            currentToken = Token(TokenType::rdiv, "/", codeLoc);
+            reader.advance();
+            break;
+        case '=': {
+            // maju 1
+            reader.advance();
+            if (reader.getCurrentCharacter() == '=') {
+                currentToken = Token(TokenType::eql, "==", codeLoc);
+                break;
+            } else {
+                return;
             }
-            // bakal udh character tepat setelah '}' ??? :/
+        }
+        case '<': {
+            // maju 1
+            reader.advance();
+            if (reader.getCurrentCharacter() == '>') {
+                currentToken = Token(TokenType::neq, "<>", codeLoc);
+            } else if (reader.getCurrentCharacter() == '=') {
+                currentToken = Token(TokenType::leq, "<=", codeLoc);
+            } else {
+                currentToken = Token(TokenType::lss, "<", codeLoc);
+                return; // ga perlu majuin lagi
+            }
+            break;
+        }
+        case '>': {
+            // maju 1
+            reader.advance();
+            if (reader.getCurrentCharacter() == '=') {
+                currentToken = Token(TokenType::geq, ">=", codeLoc);
+            } else {
+                currentToken = Token(TokenType::gtr, ">", codeLoc);
+                return;
+            }
             break;
         }
         case '(': {
+            // kasus perlu skip kalo ternyata comment
             // inside comment probably
-            char nextChar = reader.peekNextChar();
-            if (nextChar == '*') {
-                reader.advance(); // baca si *
-
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
                 // process comment
                 int commentDepth = 1;
 
@@ -83,174 +186,85 @@ void Lexer::skippingComments() {
                     }
                     reader.advance();
                 }
-                // udah karakter setelah si komen 
-            }
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-void Lexer::advance() {
-    skippingWhiteSpaces();
-    skippingComments();
-
-    currentToken = processToken();
-
-}
-
-Token Lexer::processToken() {
-    char currentChar = reader.getCurrentCharacter();
-    if (reader.isEOF()) {
-        return Token(eof, "EOF", reader.getLocation());
-    }
-
-    // process number
-    if (isdigit(currentChar)) {
-        return processNumber();
-    }
-
-    // keyword or identifier processing
-    if (isalpha(currentChar)) {
-        return processKeywordOrIdentifier();
-    }
-
-    // process string
-    if (currentChar == '\'') {
-        return processStringOrCharacter();
-    }
-    CodeLocation codeLoc = reader.getLocation();
-
-    switch (currentChar) {
-        case '+':
-            reader.advance(); // newly added
-            return Token(TokenType::plus, "+", codeLoc);
-        case '-':
-            reader.advance(); // newly added
-            return Token(TokenType::minus, "-", codeLoc);
-        case '*':
-            reader.advance(); // newly added
-            return Token(TokenType::times, "*", codeLoc);
-        case '/':
-            reader.advance(); // newly added
-            return Token(TokenType::rdiv, "/", codeLoc);
-        case '=': {
-            char nextChar = reader.peekNextChar();
-            if (nextChar == '=') {
-                // formed full ==
-                reader.advance();
-                reader.advance(); // newly added
-                return Token(TokenType::eql, "==", codeLoc);
+                advance(); // token berikutnya lgsg
+                return;
             } else {
-                reader.advance();
-                return Token(TokenType::invalid_token, "=", codeLoc);
+                currentToken = Token(TokenType::lparent, "(", codeLoc);
+                return;
             }
         }
-        case '<': {
-            char nextChar = reader.peekNextChar();
-            if (nextChar == '>') {
-                reader.advance();
-                reader.advance(); // newly added
-                return Token(TokenType::neq, "<>", codeLoc);
-            } else if (nextChar == '=') {
-                reader.advance();
-                reader.advance(); // newly added
-                return Token(TokenType::leq, "<=", codeLoc);
-            } else {
-                reader.advance(); // newly added
-
-                return Token(TokenType::lss, "<", codeLoc);
-            }
-        }
-        case '>': {
-            char nextChar = reader.peekNextChar();
-            if (nextChar == '=') {
-                reader.advance();
-                reader.advance(); // newly added
-
-                return Token(TokenType::geq, ">=", codeLoc);
-            } else {
-                reader.advance(); // newly added
-
-                return Token(TokenType::gtr, ">", codeLoc);
-            }
-        }
-        case '(':
-            reader.advance(); // newly added
-
-            return Token(TokenType::lparent, "(", codeLoc);
         case ')':
-            reader.advance(); // newly added
-
-            return Token(TokenType::rparent, ")", codeLoc);
+            currentToken = Token(TokenType::rparent, ")", codeLoc);
+            reader.advance();
+            break;
         case '[':
-            reader.advance(); // newly added
-
-            return Token(TokenType::lbrack, "[", codeLoc);
+            currentToken = Token(TokenType::lbrack, "[", codeLoc);
+            reader.advance();
+            break;
         case ']':
-            reader.advance(); // newly added
-
-            return Token(TokenType::rbrack, "]", codeLoc);
+            currentToken = Token(TokenType::rbrack, "]", codeLoc);
+            reader.advance();
+            break;
         case ',':
-            reader.advance(); // newly added
-
-            return Token(TokenType::comma, ",", codeLoc);
+            currentToken = Token(TokenType::comma, ",", codeLoc);
+            reader.advance();
+            break;
         case ';':
-            reader.advance(); // newly added
-
-            return Token(TokenType::semicolon, ";", codeLoc);
+            currentToken = Token(TokenType::semicolon, ";", codeLoc);
+            reader.advance();
+            break;
         case '.':
-            reader.advance(); // newly added
-
-            return Token(TokenType::period, ".", codeLoc);
+            currentToken = Token(TokenType::period, ".", codeLoc);
+            reader.advance();
+            break;
         case ':': {
-            char nextChar = reader.peekNextChar();
-            std::cout << "DEBUG ':' nextChar = [" << nextChar << "]\n";
-            if (nextChar == '=') {
-                reader.advance();
-                reader.advance(); // newly added
-
-                return Token(TokenType::becomes, ":=", codeLoc);
+            reader.advance();
+            if (reader.getCurrentCharacter() == '=') {
+                currentToken = Token(TokenType::becomes, ":=", codeLoc);
             } else {
-                reader.advance(); // newly added
-
-                return Token(TokenType::colon, ":", codeLoc);
+                currentToken = Token(TokenType::colon, ":", codeLoc);
+                return;
             }
+            break;
         }
         default:
-            return Token(TokenType::invalid_token, std::string (1, currentChar), codeLoc);
+            // ga perlu ngubah apa" lg, sisa tambahin error message(?)
+            addErrors();
+            reader.advance();
+            break;
         }
 }
 
-Token Lexer::processStringOrCharacter() {
+void Lexer::processStringOrCharacter() {
     std::stringstream stringOrCharStream;
     const CodeLocation codeLoc = reader.getLocation();
-    reader.advance();
-    // make sure udh isinya atau ketemu si ' lagi
-    while(!reader.isEOF()) {
 
+    stringOrCharStream << '\'';
+    reader.advance(); // biar masuk lgsg ke isinya si
+
+    while(!reader.isEOF()) {
+        stringOrCharStream << reader.getCurrentCharacter();
         if (reader.getCurrentCharacter() == '\'') {
             // cek next characternya masih atau engga
-            if (reader.peekNextChar() == '\'') {
-               stringOrCharStream << '\'';
-               reader.advance();
-               reader.advance();
-               continue;
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '\'') {
+                stringOrCharStream << '\'';
+                reader.advance(); // msh ragu
+                continue;
             } else {
-                reader.advance();
                 break;
             }
         }
 
-        stringOrCharStream << reader.getCurrentCharacter();
         reader.advance();
     }
+    // prep token
     std::string content = stringOrCharStream.str();
-    return Token(content.length() == 1?TokenType::charcon : TokenType::string, content, codeLoc);
+    int isiStringDoang = content.length() - 2;
+    currentToken = Token(isiStringDoang == 1?TokenType::charcon : TokenType::string, content, codeLoc);
 }
 
-Token Lexer::processKeywordOrIdentifier() {
+void Lexer::processKeywordOrIdentifier() {
     std::stringstream keywordOrIdentifierStream;
     std::stringstream lowerStream; // lower version
     const CodeLocation codeLoc = reader.getLocation();
@@ -258,20 +272,22 @@ Token Lexer::processKeywordOrIdentifier() {
     // ga ada keyword yg jadi prefix keyword lain jd make ini hrsnya aman
     TokenType potentialTokenType = TokenType::ident;
 
-    do {
-        char c = reader.getCurrentCharacter();
-        if (isalpha(reader.getCurrentCharacter())){
-            lowerStream << std::tolower(c);
+    while (!reader.isEOF() && isalnum(reader.getCurrentCharacter())) {
+        if (isalpha(reader.getCurrentCharacter())) {
+            lowerStream << static_cast<char>(
+                std::tolower(static_cast<unsigned char>(reader.getCurrentCharacter()))
+            );
         } else {
-            lowerStream << c;
+            lowerStream << reader.getCurrentCharacter(); // kasus num
         }
-        keywordOrIdentifierStream << c;
-
+        keywordOrIdentifierStream << reader.getCurrentCharacter();
         reader.advance();
-    } while (isalnum(reader.getCurrentCharacter()));
+    }
+    
 
     // looking
     std::string value = lowerStream.str();
+
     if (value == "not") {
         potentialTokenType = TokenType::notsy;
     } else if (value == "div") {
@@ -327,31 +343,33 @@ Token Lexer::processKeywordOrIdentifier() {
     } else if (value == "then") {
         potentialTokenType = TokenType::thensy;
     }
-    return Token(potentialTokenType, keywordOrIdentifierStream.str(), codeLoc);
+    currentToken = Token(potentialTokenType, keywordOrIdentifierStream.str(), codeLoc);
 }
 
-Token Lexer::processNumber() {
+void Lexer::processNumber() {
+    // masalah saat ini, 3. masih bakal dibaca sebagai (di python gitu" si valid ttp)
     std::stringstream numberStream;
 
     // read int or double value
     const CodeLocation codeLoc = reader.getLocation();
     bool haveDot = false;
-    do {
-        char c = reader.getCurrentCharacter();
-        if (c == '.') {
+
+    while(!reader.isEOF() && (isdigit(reader.getCurrentCharacter()) || (reader.getCurrentCharacter() == '.' && !haveDot))) {
+        numberStream << reader.getCurrentCharacter();
+        if (reader.getCurrentCharacter() == '.') {
             haveDot = true;
         }
-        numberStream << c;
         reader.advance();
-    } while (isdigit(reader.getCurrentCharacter()) || (reader.getCurrentCharacter() == '.' && !haveDot));
 
-    if (haveDot) {
+    }
+
+    if (haveDot) { // double
         double value;
         numberStream >> value;
-        return Token(TokenType::realcon, value, codeLoc);
+        currentToken = Token(TokenType::realcon, value, codeLoc);
     } else {
         int value;
         numberStream >> value;
-        return Token(TokenType::intcon, value, codeLoc);
+        currentToken = Token(TokenType::intcon, value, codeLoc);
     }
 }
