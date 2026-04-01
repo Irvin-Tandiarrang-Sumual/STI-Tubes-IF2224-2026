@@ -11,8 +11,9 @@ void Compiler::lexer() {
     Lexer lexing(inputPath);
 
     std::cout << "I'm here after lexing (inputPath)\n";
+    lexing.tokenize();
 
-    std::vector<Token> tokens = lexing.tokenize();
+    std::vector<Token> tokens = lexing.getTokens();
 
     std::cout << "Finish Tokenize\n";
     std::cout << "Going to write the result into result-tc-1.txt\n";
