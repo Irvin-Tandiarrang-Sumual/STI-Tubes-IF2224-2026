@@ -32,8 +32,11 @@ bool Lexer::isEOF() const {
 }
 
 void Lexer::tokenize() {
-    while (!isEOF()) {
+    while (true) {
         addTokens();
+        if (currentToken.type == TokenType::eof) {
+            break;
+        }
         advance();
         /* code */
     }
@@ -88,8 +91,6 @@ void Lexer::processToken() {
 
     char currentChar = reader.getCurrentCharacter();
     currentToken = Token(invalid_token, "Invalid Token", codeLoc);
-
-
     // process number
     if (isdigit(currentChar)) {
         processNumber();
@@ -131,8 +132,6 @@ void Lexer::processToken() {
             if (reader.getCurrentCharacter() == '=') {
                 currentToken = Token(TokenType::eql, "==", codeLoc);
                 reader.advance();
-            } else {
-                return;
             }
             break;
         }
