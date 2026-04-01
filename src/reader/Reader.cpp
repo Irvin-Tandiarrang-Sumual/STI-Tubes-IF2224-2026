@@ -38,8 +38,9 @@ void Reader::advance() {
     if (current == '\n') {
         location_.line += 1;
         location_.col = 0;
-    } 
-    location_.col += 1;
+    } else {
+        location_.col += 1;
+    }
 
     currentCharacter = current;
     return;
