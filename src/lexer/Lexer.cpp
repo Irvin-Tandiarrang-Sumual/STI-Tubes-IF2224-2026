@@ -12,7 +12,7 @@ Lexer::Lexer(std::filesystem::path p)
 Lexer::~Lexer() {}
 // nnt perlu di-adjust lg error messagenya
 void Lexer::addErrors() {
-    errors_.push_back("Line " + std::to_string(getCodeLocation().line) + " Column" + std::to_string(getCodeLocation().col) + " : there's error here\n");
+    errors_.push_back("Line " + std::to_string(getCodeLocation().line) + " Column " + std::to_string(getCodeLocation().col) + " " + std::get<std::string>(currentToken.value) + " is not valid\n");
 }
 
 std::vector<std::string> Lexer::getErrors() {
@@ -32,13 +32,9 @@ bool Lexer::isEOF() const {
 }
 
 void Lexer::tokenize() {
-    while (true) {
+    while (currentToken.type != TokenType::eof) {
         addTokens();
-        if (currentToken.type == TokenType::eof) {
-            break;
-        }
         advance();
-        /* code */
     }
 }
 
@@ -231,6 +227,7 @@ void Lexer::processToken() {
         default:
             // ga perlu ngubah apa" lg, sisa tambahin error message(?)
             addErrors();
+            currentToken = Token(TokenType::invalid_token, reader.getCurrentCharacter(), codeLoc);
             reader.advance();
             break;
         }
