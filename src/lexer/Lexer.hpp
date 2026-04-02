@@ -27,8 +27,8 @@ private:
     void processCommentFromParen(const CodeLocation &loc);
     void processUnknownCharacter();
     void processMalformedIdentifier();
-    void processMalformedRealStartingWithDot();
-    void processSingleEqualsError();
+    void processMalformedRealStartingWithDot(const CodeLocation &loc);
+    void processSingleEqualsError(const CodeLocation &loc);
 
     std::string readWhileIdentifierBody();
     std::string readUntilDelimiter();
