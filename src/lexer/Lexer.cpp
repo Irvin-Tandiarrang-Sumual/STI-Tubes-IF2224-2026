@@ -127,12 +127,8 @@ void Lexer::processToken() {
     }
 
     if (ch == '.') {
+        addToken(Token(period, ".", loc));
         reader.advance();
-        if (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
-            processMalformedRealStartingWithDot(loc);
-        } else {
-            addToken(Token(period, ".", loc));
-        }
         return;
     }
 
@@ -308,6 +304,8 @@ void Lexer::processNumber() {
         if (!reader.isEOF() && reader.getCurrentCharacter() == '.') {
             addToken(Token(intcon, lexeme, loc));
             addToken(Token(period, ".", CodeLocation{loc.line, loc.col + static_cast<unsigned int>(lexeme.size())}));
+            addToken(Token(period, ".", CodeLocation{loc.line, loc.col + static_cast<unsigned int>(lexeme.size()) + 1}));
+            reader.advance();
             return;
         }
 
@@ -466,19 +464,6 @@ void Lexer::processMalformedIdentifier() {
     addToken(Token(invalid_token, lexeme, loc));
     addError(loc, "Identifier tidak boleh mengandung underscore (_)", lexeme);
     reader.advance();
-}
-
-void Lexer::processMalformedRealStartingWithDot(const CodeLocation &loc) {
-    std::string lexeme = ".";
-    while (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
-        lexeme.push_back(reader.getCurrentCharacter());
-        reader.advance();
-    }
-    while (!reader.isEOF() && !isDelimiter(reader.getCurrentCharacter())) {
-        lexeme.push_back(reader.getCurrentCharacter());
-        reader.advance();
-    }
-    addError(loc, "Format real tidak valid", lexeme);
 }
 
 void Lexer::processSingleEqualsError(const CodeLocation &loc) {
