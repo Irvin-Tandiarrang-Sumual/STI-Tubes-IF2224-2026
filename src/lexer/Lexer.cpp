@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <map>
 #include <sstream>
-#include <vector>
 
 Lexer::Lexer(const std::filesystem::path &p) : path(p), reader(p) {}
 Lexer::~Lexer() = default;
@@ -129,7 +129,7 @@ void Lexer::processToken() {
     if (ch == '.') {
         reader.advance();
         if (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
-            processMalformedRealStartingWithDot();
+            processMalformedRealStartingWithDot(loc);
         } else {
             addToken(Token(period, ".", loc));
         }
@@ -217,7 +217,7 @@ void Lexer::processToken() {
                 addToken(Token(eql, "==", loc));
                 reader.advance();
             } else {
-                addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", "=");
+                processSingleEqualsError(loc);
             }
             return;
         default:
@@ -263,10 +263,10 @@ void Lexer::processNumber() {
     }
 
     if (!reader.isEOF() && reader.getCurrentCharacter() == '.') {
-        lexeme.push_back('.');
         reader.advance();
 
         if (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
+            lexeme.push_back('.');
             while (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
                 lexeme.push_back(reader.getCurrentCharacter());
                 reader.advance();
@@ -283,14 +283,17 @@ void Lexer::processNumber() {
         }
 
         if (!reader.isEOF() && reader.getCurrentCharacter() == '.') {
-            lexeme.push_back('.');
-            reader.advance();
+            addToken(Token(intcon, lexeme, loc));
+            addToken(Token(period, ".", CodeLocation{loc.line, loc.col + static_cast<unsigned int>(lexeme.size())}));
+            return;
         }
+
+        std::string badLexeme = lexeme + ".";
         while (!reader.isEOF() && !isDelimiter(reader.getCurrentCharacter())) {
-            lexeme.push_back(reader.getCurrentCharacter());
+            badLexeme.push_back(reader.getCurrentCharacter());
             reader.advance();
         }
-        addError(loc, "Format real tidak valid", lexeme);
+        addError(loc, "Format real tidak valid", badLexeme);
         return;
     }
 
@@ -339,125 +342,92 @@ void Lexer::processStringOrCharacter() {
 
 void Lexer::processCommentFromBrace(const CodeLocation &loc) {
     std::string lexeme;
-    std::vector<char> stack;
+    int braceDepth = 0;
+    int parenStarDepth = 0;
 
-    lexeme.push_back('{');
-    stack.push_back('{');
-    reader.advance();
-
-    while (!reader.isEOF() && !stack.empty()) {
+    while (!reader.isEOF()) {
         const char ch = reader.getCurrentCharacter();
+        lexeme.push_back(ch);
+        reader.advance();
 
         if (ch == '{') {
-            lexeme.push_back('{');
-            stack.push_back('{');
-            reader.advance();
-            continue;
-        }
-
-        if (ch == '(') {
-            lexeme.push_back('(');
-            reader.advance();
-            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
-                lexeme.push_back('*');
-                stack.push_back('(');
-                reader.advance();
-            }
+            ++braceDepth;
             continue;
         }
 
         if (ch == '}') {
-            lexeme.push_back('}');
-            if (!stack.empty() && stack.back() == '{') {
-                stack.pop_back();
+            if (braceDepth > 0) {
+                --braceDepth;
+                if (braceDepth == 0 && parenStarDepth == 0) {
+                    addToken(Token(comment, lexeme, loc));
+                    return;
+                }
             }
-            reader.advance();
             continue;
         }
 
-        if (ch == '*') {
+        if (ch == '(' && !reader.isEOF() && reader.getCurrentCharacter() == '*') {
             lexeme.push_back('*');
             reader.advance();
-            if (!reader.isEOF() && reader.getCurrentCharacter() == ')' && !stack.empty() && stack.back() == '(') {
-                lexeme.push_back(')');
-                stack.pop_back();
-                reader.advance();
-            }
+            ++parenStarDepth;
             continue;
         }
 
-        lexeme.push_back(ch);
-        reader.advance();
+        if (ch == '*' && !reader.isEOF() && reader.getCurrentCharacter() == ')' && parenStarDepth > 0) {
+            lexeme.push_back(')');
+            reader.advance();
+            --parenStarDepth;
+            continue;
+        }
     }
 
-    if (!stack.empty()) {
-        addError(loc, "Comment tidak ditutup", lexeme);
-        return;
-    }
-
-    addToken(Token(comment, lexeme, loc));
+    addError(loc, "Comment tidak ditutup", lexeme);
 }
 
 void Lexer::processCommentFromParen(const CodeLocation &loc) {
-    std::string lexeme;
-    std::vector<char> stack;
+    std::string lexeme = "(*";
+    int braceDepth = 0;
+    int parenStarDepth = 1;
 
-    lexeme.push_back('(');
-    lexeme.push_back('*');
-    stack.push_back('(');
     reader.advance();
 
-    while (!reader.isEOF() && !stack.empty()) {
+    while (!reader.isEOF()) {
         const char ch = reader.getCurrentCharacter();
+        lexeme.push_back(ch);
+        reader.advance();
 
         if (ch == '{') {
-            lexeme.push_back('{');
-            stack.push_back('{');
-            reader.advance();
-            continue;
-        }
-
-        if (ch == '(') {
-            lexeme.push_back('(');
-            reader.advance();
-            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
-                lexeme.push_back('*');
-                stack.push_back('(');
-                reader.advance();
-            }
+            ++braceDepth;
             continue;
         }
 
         if (ch == '}') {
-            lexeme.push_back('}');
-            if (!stack.empty() && stack.back() == '{') {
-                stack.pop_back();
+            if (braceDepth > 0) {
+                --braceDepth;
             }
-            reader.advance();
             continue;
         }
 
-        if (ch == '*') {
+        if (ch == '(' && !reader.isEOF() && reader.getCurrentCharacter() == '*') {
             lexeme.push_back('*');
             reader.advance();
-            if (!reader.isEOF() && reader.getCurrentCharacter() == ')' && !stack.empty() && stack.back() == '(') {
-                lexeme.push_back(')');
-                stack.pop_back();
-                reader.advance();
-            }
+            ++parenStarDepth;
             continue;
         }
 
-        lexeme.push_back(ch);
-        reader.advance();
+        if (ch == '*' && !reader.isEOF() && reader.getCurrentCharacter() == ')' && braceDepth == 0 && parenStarDepth > 0) {
+            lexeme.push_back(')');
+            reader.advance();
+            --parenStarDepth;
+            if (parenStarDepth == 0) {
+                addToken(Token(comment, lexeme, loc));
+                return;
+            }
+            continue;
+        }
     }
 
-    if (!stack.empty()) {
-        addError(loc, "Comment tidak ditutup", lexeme);
-        return;
-    }
-
-    addToken(Token(comment, lexeme, loc));
+    addError(loc, "Comment tidak ditutup", lexeme);
 }
 
 void Lexer::processUnknownCharacter() {
@@ -473,8 +443,7 @@ void Lexer::processMalformedIdentifier() {
     addError(loc, "Identifier harus diawali huruf", lexeme);
 }
 
-void Lexer::processMalformedRealStartingWithDot() {
-    const CodeLocation loc = reader.getLocation();
+void Lexer::processMalformedRealStartingWithDot(const CodeLocation &loc) {
     std::string lexeme = ".";
     while (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
         lexeme.push_back(reader.getCurrentCharacter());
@@ -487,9 +456,6 @@ void Lexer::processMalformedRealStartingWithDot() {
     addError(loc, "Format real tidak valid", lexeme);
 }
 
-void Lexer::processSingleEqualsError() {
-    const CodeLocation loc = reader.getLocation();
-    std::string lexeme(1, '=');
-    reader.advance();
-    addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", lexeme);
+void Lexer::processSingleEqualsError(const CodeLocation &loc) {
+    addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", "=");
 }
