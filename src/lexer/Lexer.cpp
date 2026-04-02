@@ -262,7 +262,23 @@ void Lexer::processNumber() {
         reader.advance();
     }
 
-    if (!reader.isEOF() && reader.getCurrentCharacter() == '.') {
+    // ngebaikin kasus "33N"
+    if (isalpha(reader.getCurrentCharacter())){
+            std::stringstream invalidStream;
+            invalidStream << lexeme;
+
+            while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
+                invalidStream << reader.getCurrentCharacter();
+                reader.advance();
+            }
+
+            addToken(Token(invalid_token, invalidStream.str(), loc));
+            addError(loc, "Format angka tidak valid", invalidStream.str());
+            return;
+        }
+    
+    // cek character skrg apa
+    if (reader.getCurrentCharacter() == '.') {
         reader.advance();
 
         if (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
@@ -271,13 +287,20 @@ void Lexer::processNumber() {
                 lexeme.push_back(reader.getCurrentCharacter());
                 reader.advance();
             }
+            // ngebaikin kasus "33N"
+            if (isalpha(reader.getCurrentCharacter())){
+                    std::stringstream invalidStream;
+                    invalidStream << lexeme;
 
-            if (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
-                lexeme += readUntilDelimiter();
-                addError(loc, "Format real tidak valid", lexeme);
-                return;
-            }
+                    while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
+                        invalidStream << reader.getCurrentCharacter();
+                        reader.advance();
+                    }
 
+                    addToken(Token(invalid_token, invalidStream.str(), loc));
+                    addError(loc, "Format real tidak valid", invalidStream.str());
+                    return;
+                }
             addToken(Token(realcon, lexeme, loc));
             return;
         }
