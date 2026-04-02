@@ -26,8 +26,6 @@ private:
     void processCommentFromBrace(const CodeLocation &loc);
     void processCommentFromParen(const CodeLocation &loc);
     void processUnknownCharacter();
-    void processMalformedIdentifier();
-    void processMalformedRealStartingWithDot(const CodeLocation &loc);
     void processSingleEqualsError(const CodeLocation &loc);
 
     std::string readWhileIdentifierBody();

@@ -121,11 +121,6 @@ void Lexer::processToken() {
         return;
     }
 
-    if (ch == '_') {
-        processMalformedIdentifier();
-        return;
-    }
-
     if (ch == '.') {
         addToken(Token(period, ".", loc));
         reader.advance();
@@ -314,6 +309,7 @@ void Lexer::processNumber() {
             badLexeme.push_back(reader.getCurrentCharacter());
             reader.advance();
         }
+        addToken(Token(invalid_token, badLexeme, loc));
         addError(loc, "Format real tidak valid", badLexeme);
         return;
     }
@@ -453,16 +449,21 @@ void Lexer::processCommentFromParen(const CodeLocation &loc) {
 
 void Lexer::processUnknownCharacter() {
     const CodeLocation loc = reader.getLocation();
-    std::string lexeme(1, reader.getCurrentCharacter());
-    addToken(Token(invalid_token, lexeme, loc));
-    reader.advance();
-}
+    const char ch = reader.getCurrentCharacter();
+    std::string lexeme(1, ch);
+    std::string errorMsg = "Simbol tidak dikenali";
 
-void Lexer::processMalformedIdentifier() {
-    const CodeLocation loc = reader.getLocation();
-    std::string lexeme(1, reader.getCurrentCharacter());
+    switch (ch) {
+        case '"': errorMsg = "Gunakan petik tunggal (') untuk string atau char"; break;
+        case '%': errorMsg = "Operator '%' tidak valid. Gunakan 'mod' untuk modulo"; break;
+        case '&': errorMsg = "Simbol '&' tidak valid. Gunakan 'and'"; break;
+        case '|': errorMsg = "Simbol '|' tidak valid. Gunakan 'or'"; break;
+        case '!': errorMsg = "Simbol '!' tidak valid. Gunakan '<>' atau 'not'"; break;
+        case '_': errorMsg = "Karakter '_' tidak diizinkan pada identifier"; break;
+    }
+
     addToken(Token(invalid_token, lexeme, loc));
-    addError(loc, "Identifier tidak boleh mengandung underscore (_)", lexeme);
+    addError(loc, errorMsg, lexeme);
     reader.advance();
 }
 
