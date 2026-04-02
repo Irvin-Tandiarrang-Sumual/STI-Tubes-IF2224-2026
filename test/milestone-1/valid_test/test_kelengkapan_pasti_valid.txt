@@ -1,0 +1,257 @@
+{test intcon}
+1
+123
+5432
+
+{test realcon}
+1.3
+10123123.12353243243
+
+{test charcon}
+'a'
+'A'
+'Z'
+'z'
+''''
+
+{test string}
+'aku Ganteng'
+'bAAca buku 'wow' dong'
+'hu'' ''hu'
+
+{test NOT}
+NOT
+nOt
+NoT
+not
+
+{test plus}
++
+++
++++
+
+{test minus}
+-
+--
+---
+
+{test times}
+*
+**
+***
+
+{test idiv}
+div
+DiV
+dIv
+DIV
+
+{test rdiv}
+/
+//
+///
+
+{test imod}
+MOD
+moD
+mod
+mOd
+
+{test andsy}
+anD
+AnD
+AND
+and
+
+{test orsy}
+or
+OR
+Or
+oR
+
+{test eql}
+==
+== ==
+== == ==
+========
+
+{test neq}
+<>
+<> <> <>
+<><><>
+
+{test gtr}
+>
+> >
+>>>
+
+{test geq}
+>=
+>=>=>=
+>= >=
+
+{test lss}
+<
+<<
+<<< < <<
+
+{test leq}
+<=
+<=<=<=<=
+<= <=
+
+{test lparent}
+(
+( (
+((((((
+
+{test rparent}
+)
+) )
+))))))
+
+{test lbrack}
+[
+[[[[
+[ [ [
+
+{test comma}
+,
+,,
+,,,,
+
+{test semicolon}
+;
+;; ;; ;;
+;;;;;
+
+{test period}
+.
+......
+.. ....
+
+{test colon}
+:
+::
+: :: :
+::::::
+
+{test becomes}
+:=
+:= :=
+:=:=:=:=:=
+
+{test constsy}
+const
+const CONST
+CoNsT coNST
+
+{test typesy}
+type
+type TYPe
+tYpE type type
+
+{test varsy}
+vAr
+VAr vAR
+
+{type functionsy}
+funCtiOn
+FunCTioN fUNCTion
+
+{type proceduresy}
+prOceDurE prOcedure
+procedure
+
+{type arraysy}
+array
+
+{type recordsy}
+record
+
+{type programsy}
+program
+
+{type ident}
+aAkUGa4nt3n9BGT
+GAAAdaMAkananLAPAR
+fORE
+fore
+beginning
+
+{type beginsy}
+begin
+BEEGin
+
+{type ifsy}
+iF
+If
+IF IF if
+
+{type casesy}
+case
+CAsE case
+
+{type repeatsy}
+rePEat
+repeat
+
+{type whilesy}
+wHiLe
+while while
+
+{type forsy}
+for
+FoR FOR
+
+{type endsy}
+end
+END eND
+
+{type elsesy}
+else
+ElSe else
+
+{type untilsy}
+uNtiL
+until UNTIL
+
+{type ofsy}
+of OF
+of Of
+
+{type dosy} 
+do
+DO Do
+
+{type tosy}
+to
+To TO
+
+{type downtosy}
+DoWnto
+downto
+DOWNTO
+
+{type thensy}
+then
+theN THEN
+
+{type comment}
+(*INI KOMMENT*)
+(* {KOMENT KITA PENUTUPNYAH ARUS SAMA} *)
+{layer 1 {  layer 2{ layer3 (  *layer4*  )  }  }  }
+{
+    yang buat comment multiline ini ganteng banget
+    (*
+      apalagi yang lagi nulis di layer ke-2 ini
+
+        {
+
+            well lbh lg yg di layer ke-3 siii
+        }
+    
+    *)
+
+
+}
