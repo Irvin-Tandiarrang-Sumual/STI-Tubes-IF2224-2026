@@ -462,8 +462,10 @@ void Lexer::processUnknownCharacter() {
 
 void Lexer::processMalformedIdentifier() {
     const CodeLocation loc = reader.getLocation();
-    std::string lexeme = readWhileIdentifierBody();
-    addError(loc, "Identifier harus diawali huruf", lexeme);
+    std::string lexeme(1, reader.getCurrentCharacter());
+    addToken(Token(invalid_token, lexeme, loc));
+    addError(loc, "Identifier tidak boleh mengandung underscore (_)", lexeme);
+    reader.advance();
 }
 
 void Lexer::processMalformedRealStartingWithDot(const CodeLocation &loc) {
@@ -480,5 +482,6 @@ void Lexer::processMalformedRealStartingWithDot(const CodeLocation &loc) {
 }
 
 void Lexer::processSingleEqualsError(const CodeLocation &loc) {
+    addToken(Token(invalid_token, "=", loc));
     addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", "=");
 }
