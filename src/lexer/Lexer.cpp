@@ -366,6 +366,21 @@ void Lexer::processNumber() {
         numberStream << reader.getCurrentCharacter();
         reader.advance();
     }
+
+    // ngebaikin kasus "33N"
+    if (isalpha(reader.getCurrentCharacter())){
+            std::stringstream invalidStream;
+            invalidStream << numberStream.str();
+
+            while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
+                invalidStream << reader.getCurrentCharacter();
+                reader.advance();
+            }
+
+            currentToken = Token(TokenType::invalid_token, invalidStream.str(), codeLoc);
+            addErrors();
+            return;
+        }
     
     // cek character skrg apa
     if (reader.getCurrentCharacter() == '.') {
@@ -379,6 +394,20 @@ void Lexer::processNumber() {
                 numberStream << reader.getCurrentCharacter();
                 reader.advance();
             }
+            // ngebaikin kasus "33N"
+            if (isalpha(reader.getCurrentCharacter())){
+                    std::stringstream invalidStream;
+                    invalidStream << numberStream.str();
+
+                    while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
+                        invalidStream << reader.getCurrentCharacter();
+                        reader.advance();
+                    }
+
+                    currentToken = Token(TokenType::invalid_token, invalidStream.str(), codeLoc);
+                    addErrors();
+                    return;
+                }
             double value;
             numberStream >> value;
             currentToken = Token(TokenType::realcon, value, codeLoc);
