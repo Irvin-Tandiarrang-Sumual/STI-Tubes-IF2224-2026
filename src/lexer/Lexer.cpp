@@ -296,6 +296,7 @@ void Lexer::processNumber() {
 
     if (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
         lexeme += readUntilDelimiter();
+        addToken(Token(invalid_token, lexeme, loc));
         addError(loc, "Format angka tidak valid", lexeme);
         return;
     }
@@ -305,33 +306,35 @@ void Lexer::processNumber() {
 
 void Lexer::processStringOrCharacter() {
     const CodeLocation loc = reader.getLocation();
-    std::string lexeme;
-    int logicalLength = 0;
+    std::string rawLexeme;
+    std::string decodedValue;
 
-    lexeme.push_back('\'');
+    rawLexeme.push_back('\'');
     reader.advance();
 
     while (!reader.isEOF()) {
         const char ch = reader.getCurrentCharacter();
-        lexeme.push_back(ch);
-        reader.advance();
-
         if (ch == '\'') {
+            rawLexeme.push_back('\'');
+            reader.advance();
+
             if (!reader.isEOF() && reader.getCurrentCharacter() == '\'') {
-                lexeme.push_back('\'');
+                rawLexeme.push_back('\'');
                 reader.advance();
-                ++logicalLength;
+                decodedValue.push_back('\'');
                 continue;
             }
 
-            addToken(Token(logicalLength == 1 ? charcon : string, lexeme, loc));
+            addToken(Token(decodedValue.size() == 1 ? charcon : string, decodedValue, loc));
             return;
         }
 
-        ++logicalLength;
+        rawLexeme.push_back(ch);
+        decodedValue.push_back(ch);
+        reader.advance();
     }
 
-    addError(loc, "Literal string/char tidak ditutup", lexeme);
+    addError(loc, "Literal string/char tidak ditutup", rawLexeme);
 }
 
 void Lexer::processCommentFromBrace(const CodeLocation &loc) {
