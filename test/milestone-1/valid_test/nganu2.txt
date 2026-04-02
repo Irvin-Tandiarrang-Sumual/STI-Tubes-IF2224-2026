@@ -3,16 +3,16 @@
 program TestComprehensive;
 
 const 
-  MAX_INT = 100;
-  PI = 3.14;
-  EMPTY_CHAR = '';
-  QUOTED_STR = '''hello''';
+  MAX_INT := 100;
+  PI := 3.14;
+  EMPTY_CHAR := '';
+  QUOTED_STR := '''hello''';
 
 type 
-  Integer = integer;
-  Real = real;
-  MyChar = char;
-  MyString = string;
+  Integer := integer;
+  Real := real;
+  MyChar := char;
+  MyString := string;
 
 var 
   a, b, c: integer;

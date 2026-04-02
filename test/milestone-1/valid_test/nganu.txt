@@ -7,17 +7,17 @@ program TestComprehensive;
 
 { SECTION 2: CONSTANT DECLARATIONS }
 const 
-  MAX_INT = 100;
-  PI = 3.14;
-  EMPTY_CHAR = '';
-  QUOTED_STR = '''hello''';
+  MAX_INT := 100;
+  PI := 3.14;
+  EMPTY_CHAR := '';
+  QUOTED_STR := '''hello''';
 
 { SECTION 3: TYPE DECLARATIONS }
 type 
-  Integer = integer;
-  Real = real;
-  MyChar = char;
-  MyString = string;
+  Integer := integer;
+  Real := real;
+  MyChar := char;
+  MyString := string;
 
 { SECTION 4: VARIABLE DECLARATIONS }
 var 
