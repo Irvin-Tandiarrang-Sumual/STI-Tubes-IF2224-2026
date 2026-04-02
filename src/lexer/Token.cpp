@@ -1,9 +1,11 @@
 #include "Token.hpp"
 
+#include <sstream>
+
 std::string tokenTypeToString(TokenType type) {
     static const std::map<TokenType, std::string> typeMap = {
         {TokenType::eof, "eof"},
-        {TokenType::invalid_token, "INVALID TOKEN"},
+        {TokenType::invalid_token, "UNKNOWN"},
         {TokenType::intcon, "intcon"},
         {TokenType::realcon, "realcon"},
         {TokenType::charcon, "charcon"},
@@ -58,6 +60,25 @@ std::string tokenTypeToString(TokenType type) {
         {TokenType::comment, "comment"}
     };
 
-    auto typeStr = typeMap.find(type);
-    return (typeStr != typeMap.end()) ? typeStr->second : "UNKNOWN";
+    auto it = typeMap.find(type);
+    return (it != typeMap.end()) ? it->second : "UNKNOWN";
+}
+
+std::string tokenValueToString(const Token &token) {
+    return std::visit([](const auto &arg) -> std::string {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::string>) {
+            return arg;
+        } else {
+            std::ostringstream oss;
+            oss << arg;
+            return oss.str();
+        }
+    }, token.value);
+}
+
+bool tokenNeedsValue(TokenType type) {
+    return type == TokenType::intcon || type == TokenType::realcon || type == TokenType::charcon ||
+           type == TokenType::string || type == TokenType::ident || type == TokenType::comment ||
+           type == TokenType::invalid_token;
 }

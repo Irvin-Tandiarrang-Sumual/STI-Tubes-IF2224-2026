@@ -1,0 +1,11 @@
+program literaltest;
+var
+  c: char;
+begin
+  c := 'a';
+  writeln('hello world');
+  writeln('it''s valid');
+  writeln('a,b;c:=d');
+  writeln('x+y*z/2');
+  writeln('[]()<>');
+end.

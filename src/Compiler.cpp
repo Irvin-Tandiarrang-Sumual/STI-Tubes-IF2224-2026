@@ -1,40 +1,35 @@
 #include "Compiler.hpp"
 
-Compiler::Compiler(const std::filesystem::path Path)
-    : inputPath(Path) {}
+#include <iostream>
 
-Compiler::~Compiler() {}
+Compiler::Compiler(const std::filesystem::path &path) : inputPath(path) {}
+Compiler::~Compiler() = default;
 
 // sekaligus ngelakuin write kali yak :/
 void Compiler::lexer() {
-    std::cout << "Processing Lexer...\n";
+    std::cout << "Processing lexer...\n";
     Lexer lexing(inputPath);
-
-    std::cout << "I'm here after lexing (inputPath)\n";
     lexing.tokenize();
 
-    std::vector<Token> tokens = lexing.getTokens();
+    const auto &tokens = lexing.getTokens();
+    const auto &errors = lexing.getErrors();
 
-    // tulis error
-    std::cout << "\n";
-    for (size_t i = 0; i < lexing.getErrors().size(); i++) {
-        std::cout << lexing.getErrors().at(i);
+    if (!errors.empty()) {
+        std::cout << "\n=== Lexical Errors ===\n";
+        for (const auto &error : errors) {
+            std::cout << error;
+        }
+        std::cout << "======================\n\n";
     }
-    std::cout << "\n";
-    
-    std::string baseName = inputPath.stem().string(); 
-    std::string resultFileName = baseName + "-result.txt";
-    std::filesystem::path outputDir = "../test/milestone-1/output";
-    std::filesystem::path fullPath = outputDir / resultFileName;
+
+    const std::string baseName = inputPath.stem().string();
+    const std::filesystem::path outputDir = "../test/milestone-1/output";
+    const std::filesystem::path fullPath = outputDir / (baseName + "-result.txt");
 
     if (!std::filesystem::exists(outputDir)) {
         std::filesystem::create_directories(outputDir);
     }
 
-    std::cout << "Finish Tokenize for: " << inputPath.filename().string() << "\n";
-    
-    Writer write(fullPath.string(), tokens); 
-    write.writeToFile();
-    
-    std::cout << "File saved at: " << fullPath.string() << "\n";
+    Writer writer(fullPath.string(), tokens);
+    writer.writeToFile();
 }

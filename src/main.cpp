@@ -1,33 +1,48 @@
 #include "Compiler.hpp"
+
+#include <filesystem>
 #include <iostream>
 #include <string>
-#include <filesystem>
+#include <vector>
 
-int main () {
-    std::cout << "=== ARION TOKENIZER (for now) ===\n\n";
+int main() {
+    std::cout << "=== ARION LEXER ===\n\n";
 
     std::string filename;
-    std::cout << "Masukkan nama file input (contoh: valid1.txt): ";
-    std::cin >> filename;
+    std::cout << "Masukkan path/nama file input: ";
+    std::getline(std::cin, filename);
 
-    std::filesystem::path inputDir = "../test/milestone-1/valid_test";
-    std::filesystem::path inputPath = inputDir / filename;
+    if (filename.empty()) {
+        std::cerr << "ERROR: nama file tidak boleh kosong.\n";
+        return 1;
+    }
 
-    if (!std::filesystem::exists(inputPath)) {
-        std::cerr << "ERROR: File '" << filename << " not found in " << inputDir << "\n";
+    std::vector<std::filesystem::path> candidates = {
+        std::filesystem::path(filename),
+        std::filesystem::path("../test/milestone-1") / filename,
+        std::filesystem::path("../test/milestone-1/valid_test") / filename,
+        std::filesystem::path("../test/milestone-1/invalid_test") / filename
+    };
+
+    std::filesystem::path inputPath;
+    for (const auto &candidate : candidates) {
+        if (std::filesystem::exists(candidate)) {
+            inputPath = candidate;
+            break;
+        }
+    }
+
+    if (inputPath.empty()) {
+        std::cerr << "ERROR: file tidak ditemukan.\n";
         return 1;
     }
 
     try {
-        std::cout << "\nOpening: " << inputPath.string() << "...\n";
-        
+        std::cout << "Membuka file: " << inputPath.string() << "\n";
         Compiler compiler(inputPath);
-        std::cout << "Compiler initialization success.\n";
-        
         compiler.lexer();
-        
-        std::cout << "Done! Output file in ../test/milestone-1/output\n";
-    } catch (const std::exception& e) {
+        std::cout << "Selesai.\n";
+    } catch (const std::exception &e) {
         std::cerr << "RUNTIME ERROR: " << e.what() << "\n";
         return 1;
     }

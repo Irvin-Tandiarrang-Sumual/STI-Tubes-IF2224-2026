@@ -1,28 +1,30 @@
 #pragma once
 
 #include <cstddef>
-#include <string>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
+#include <string>
+
 #include "CodeLocation.hpp"
 
 class Reader {
-    public:
-        explicit Reader(const std::filesystem::path& path);
+public:
+    explicit Reader(const std::filesystem::path &path);
 
-        bool isEOF() const;
-        char getCurrentCharacter() const;
-        void advance();
+    bool isEOF() const;
+    char getCurrentCharacter() const;
+    char peek(std::size_t offset = 1) const;
+    void advance();
 
-        std::size_t getIndex() const;
-        CodeLocation getLocation() const;
+    std::size_t getIndex() const;
+    CodeLocation getLocation() const;
+    void reset();
 
-        void reset();
-
-    private:
-        char currentCharacter = '\0';
-        std::string input_; // using string or ifstream(???)
-        std::size_t index_ = 0;
-        CodeLocation location_ = {1ull, 0ull};
+private:
+    std::string input_;
+    std::size_t index_ = 0;
+    unsigned int line_ = 1;
+    unsigned int col_ = 1;
 };

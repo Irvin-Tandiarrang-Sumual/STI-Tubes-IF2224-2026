@@ -1,20 +1,17 @@
 #pragma once
-#include <iostream>
+
 #include <filesystem>
+
 #include "lexer/Lexer.hpp"
 #include "writer/Writer.hpp"
-#include <vector>
-class Compiler
-{
-    public:
-        explicit Compiler(const std::filesystem::path path);
-        ~Compiler();
 
-        void lexer();
+class Compiler {
+public:
+    explicit Compiler(const std::filesystem::path &path);
+    ~Compiler();
 
-        // parser etc method
+    void lexer();
 
-        std::filesystem::path inputPath;
-
+private:
+    std::filesystem::path inputPath;
 };
-

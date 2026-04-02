@@ -1,32 +1,27 @@
 #include "Reader.hpp"
 
-Reader::Reader(const std::filesystem::path& path) {
-    std::cout << "I'm at reader constructor\n";
-    std::cout << path << "\n";
-    std::ifstream inputFile(path);
+Reader::Reader(const std::filesystem::path &path) {
+    std::ifstream inputFile(path, std::ios::binary);
     if (!inputFile.is_open()) {
-        throw std::runtime_error("Can't open file path");
+        throw std::runtime_error("Tidak bisa membuka file input: " + path.string());
     }
-    std::cout << "I successfully open the file\n";
+
     std::ostringstream ss;
     ss << inputFile.rdbuf();
-
-    input_ = ss.str(); 
-    inputFile.close();
-
-    advance();
+    input_ = ss.str();
 }
 
 bool Reader::isEOF() const {
-    return currentCharacter == '\0' && index_ >= input_.size();
+    return index_ >= input_.size();
 }
 
 char Reader::getCurrentCharacter() const {
-    if (isEOF()) {
-        return '\0';
-    }
+    return isEOF() ? '\0' : input_[index_];
+}
 
-    return currentCharacter;
+char Reader::peek(std::size_t offset) const {
+    const std::size_t target = index_ + offset;
+    return (target < input_.size()) ? input_[target] : '\0';
 }
 
 void Reader::advance() {
@@ -34,16 +29,14 @@ void Reader::advance() {
         return;
     }
 
-    const char current = input_[index_++];
-    if (current == '\n') {
-        location_.line += 1;
-        location_.col = 0;
+    if (input_[index_] == '\n') {
+        ++line_;
+        col_ = 1;
     } else {
-        location_.col += 1;
+        ++col_;
     }
 
-    currentCharacter = current;
-    return;
+    ++index_;
 }
 
 std::size_t Reader::getIndex() const {
@@ -51,10 +44,11 @@ std::size_t Reader::getIndex() const {
 }
 
 CodeLocation Reader::getLocation() const {
-    return location_;
+    return CodeLocation{line_, col_};
 }
 
 void Reader::reset() {
     index_ = 0;
-    location_ = {1ull, 0ull};
+    line_ = 1;
+    col_ = 1;
 }

@@ -1,55 +1,48 @@
 #pragma once
+
 #include <filesystem>
-
-#include "Token.hpp"
-#include "../reader/Reader.hpp"
-#include "../reader/CodeLocation.hpp"
-
+#include <string>
 #include <vector>
 
-class Lexer
-{
-    private:
-        /* data */
-        std::filesystem::path path;
-        std::vector<Token> tokens_;
-        std::vector<std::string> errors_;
-        Reader reader = Reader(path);
-        Token currentToken = Token(TokenType::invalid_token);
+#include "../reader/Reader.hpp"
+#include "Token.hpp"
 
-        // private method
-        void addErrors();
-        void addTokens();
+class Lexer {
+private:
+    std::filesystem::path path;
+    std::vector<Token> tokens_;
+    std::vector<std::string> errors_;
+    Reader reader;
 
-        void processToken();
-        void processStringOrCharacter();
-        void processKeywordOrIdentifier();
-        void processNumber();
+    void addToken(const Token &token);
+    void addError(const CodeLocation &loc, const std::string &message, const std::string &lexeme = "");
 
-        void skippingWhiteSpaces();
-        void skippingComments();
+    void skipWhitespace();
+    void processToken();
 
+    void processIdentifierOrKeyword();
+    void processNumber();
+    void processStringOrCharacter();
+    void processComment();
+    void processUnknownCharacter();
+    void processMalformedIdentifier();
+    void processMalformedRealStartingWithDot();
+    void processSingleEqualsError();
 
-    public:
-        explicit Lexer(const std::filesystem::path p);
-        ~Lexer();
+    std::string readWhileIdentifierBody();
+    std::string readUntilDelimiter();
+    static bool isIdentifierBody(char ch);
+    static bool isDelimiter(char ch);
+    static std::string lowercase(const std::string &text);
 
-        bool isEOF() const;
-        CodeLocation getCodeLocation() const;
-        void advance(); // go to next token
+public:
+    explicit Lexer(const std::filesystem::path &p);
+    ~Lexer();
 
-        // do lexical analysis for 1 whole
-        void tokenize();
+    bool isEOF() const;
+    CodeLocation getCodeLocation() const;
+    void tokenize();
 
-        // getter
-        std::vector<std::string> getErrors();
-        std::vector<Token> getTokens();
-        
-
-
-
-
-        
-
-
+    const std::vector<std::string> &getErrors() const;
+    const std::vector<Token> &getTokens() const;
 };

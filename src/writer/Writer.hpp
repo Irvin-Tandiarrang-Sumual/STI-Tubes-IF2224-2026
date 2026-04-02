@@ -18,4 +18,3 @@ class Writer {
         void writeToFile() const;
 
 };
-

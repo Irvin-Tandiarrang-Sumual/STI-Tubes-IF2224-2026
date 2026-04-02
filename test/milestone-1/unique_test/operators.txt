@@ -1,0 +1,21 @@
+program operatortest;
+var
+  a, b, c: integer;
+begin
+  a := 10;
+  b := 3;
+  c := 2;
+
+  if a == b then a := a + b;
+  if a <> b then a := a - b;
+  if a < b then a := a * b;
+  if a <= b then a := a div b;
+  if a > b then a := a / b;
+  if a >= b then a := a mod b;
+
+  if not a == b and a >= c or b <= a then
+    c := a + b * c;
+
+  a := (a + b) * c;
+  b := a / c;
+end.

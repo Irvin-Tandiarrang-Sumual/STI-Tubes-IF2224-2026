@@ -12,7 +12,7 @@ procedure show(x: integer);
 begin
 end;
 begin
-beginner:=5;
+beginner:=.5;
 endif:=48;
 fork:=0;
 android:=beginner+endif-fork*2 div 1 mod 1;
@@ -42,4 +42,10 @@ case beginner of
 end;
 mix(beginner, endif);
 show(beginner);
+
+(*hai aku comment
+
+multiline*)
+
+{haloo*)}
 end.

@@ -65,8 +65,9 @@ enum TokenType {
 
 struct Token {
     TokenType type;
-    std::variant<int, double, std::string> value;
+    std::variant<int, double, std::string> value = std::string();
     CodeLocation codeLocation;
+    Token() = default;
 
     explicit Token(TokenType type) : type(type) {}
 
@@ -88,3 +89,5 @@ struct Token {
 
 // return string based on token type
 std::string tokenTypeToString(TokenType type);
+std::string tokenValueToString(const Token &token);
+bool tokenNeedsValue(TokenType type);
