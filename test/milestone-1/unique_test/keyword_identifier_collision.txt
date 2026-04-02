@@ -1,0 +1,13 @@
+program keywordtest;
+var
+  programx, beginx, endloop, ifelse, ford, downtox, thensoon, constanta: integer;
+begin
+  programx := 1;
+  beginx := 2;
+  endloop := 3;
+  ifelse := 4;
+  ford := 5;
+  downtox := 6;
+  thensoon := 7;
+  constanta := 8;
+end.

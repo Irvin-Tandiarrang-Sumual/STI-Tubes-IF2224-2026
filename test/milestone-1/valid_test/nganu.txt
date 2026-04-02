@@ -1,0 +1,234 @@
+{ =============================================================================== }
+{ COMPREHENSIVE TEST CASE - All Token Types and Edge Cases }
+{ =============================================================================== }
+
+{ SECTION 1: PROGRAM STRUCTURE AND BASIC KEYWORDS }
+program TestComprehensive;
+
+{ SECTION 2: CONSTANT DECLARATIONS }
+const 
+  MAX_INT := 100;
+  PI := 3.14;
+  EMPTY_CHAR := '';
+  QUOTED_STR := '''hello''';
+
+{ SECTION 3: TYPE DECLARATIONS }
+type 
+  Integer := integer;
+  Real := real;
+  MyChar := char;
+  MyString := string;
+
+{ SECTION 4: VARIABLE DECLARATIONS }
+var 
+  a, b, c: integer;
+  x, y, z: real;
+  ch: char;
+  str: string;
+  arr: array [1..10] of integer;
+  rec: record
+    name: string;
+    age: integer;
+  end;
+
+{ SECTION 5: FUNCTION DECLARATION }
+function Add(num1, num2: integer): integer;
+begin
+  Add := num1 + num2;
+end;
+
+{ SECTION 6: PROCEDURE DECLARATION }
+procedure PrintMessage(msg: string);
+begin
+  writeln(msg);
+end;
+
+{ =============================================================================== }
+{ MAIN PROGRAM BEGIN }
+{ =============================================================================== }
+begin
+
+  { SECTION 7: INTEGER CONSTANTS }
+  a := 1;
+  b := 42;
+  c := 999999;
+
+  { SECTION 8: REAL CONSTANTS }
+  x := 3.14;
+  y := 0.5;
+  z := 123.456;
+
+  { SECTION 9: CHARACTER CONSTANTS }
+  ch := '''a''';
+  ch := '''z''';
+  ch := '''0''';
+  ch := '''';
+
+  { SECTION 10: STRING CONSTANTS }
+  str := '''IRK''';
+  str := '''TBFO''';
+  str := '''Result = ''';
+  str := '''he''''llo''';
+
+  { SECTION 11: ARITHMETIC OPERATORS }
+  a := 5 + 10;
+  a := 20 - 5;
+  a := 3 * 4;
+  x := 15 / 3;
+  a := 17 div 5;
+  a := 17 mod 5;
+
+  { SECTION 12: LOGICAL OPERATORS }
+  if (a > 5) AND (b < 100) then
+    writeln('''true''');
+  end;
+
+  if NOT (c == 0) then
+    writeln('''not zero''');
+  end;
+
+  if (x > 0) OR (y < 0) then
+    writeln('''condition''');
+  end;
+
+  { SECTION 13: COMPARISON OPERATORS }
+  if a == b then writeln('''equal'''); end;
+  if a <> b then writeln('''not equal'''); end;
+  if a > b then writeln('''greater'''); end;
+  if a >= b then writeln('''greater or equal'''); end;
+  if a < b then writeln('''less'''); end;
+  if a <= b then writeln('''less or equal'''); end;
+
+  { SECTION 14: ASSIGNMENT OPERATOR }
+  a := 100;
+  ch := '''x''';
+
+  { SECTION 15: ARRAY INDEXING AND DELIMITERS }
+  arr[1] := 10;
+  arr[2] := 20;
+
+  { SECTION 16: NESTED COMMENTS - BRACE STYLE }
+  { outer comment { inner comment } still in outer }
+
+  { SECTION 17: NESTED COMMENTS - PARENTHESIS STYLE }
+  (* outer comment (* inner comment *) still in outer *)
+
+  { SECTION 18: MIXED COMMENTS }
+  { brace comment }
+  (* paren comment *)
+
+  { SECTION 19: DEEPLY NESTED COMMENTS }
+  { nested { deeply { nested } } comments }
+
+  { SECTION 20: CONTROL FLOW WITH CASE INSENSITIVITY }
+  If a > 0 then
+    Begin
+      x := Add(a, b);
+    End;
+  END;
+
+  { SECTION 21: WHILE LOOP }
+  WHILE a > 0 DO
+    a := a - 1;
+  END;
+
+  { SECTION 22: FOR LOOP }
+  FOR i := 1 TO 10 DO
+    writeln(i);
+  END;
+
+  { SECTION 23: REPEAT-UNTIL LOOP }
+  REPEAT
+    b := b + 1;
+  UNTIL b >= 100;
+
+  { SECTION 24: CASE STATEMENT }
+  CASE c OF
+    1: writeln('''one''');
+    2: writeln('''two''');
+  END;
+
+  { SECTION 25: ALL VALID OPERATORS IN SEQUENCE }
+  { Arithmetic }
+  + - * / div mod
+  { Logical }
+  and or not
+  { Comparison }
+  == <> > >= < <=
+  { Assignment }
+  :=
+  { Delimiters }
+  ( ) [ ] , ; . :
+
+  { SECTION 26: ALL LITERAL TYPES COMBINED }
+  { Integer literals }
+  1 2 3 100 999999
+  { Real literals }
+  0.5 3.14 123.456
+  { Character literals }
+  '''a''' '''z''' '''0''' ''''
+  { String literals }
+  '''string''' '''another string''' '''he''''llo'''
+
+  { SECTION 27: IDENTIFIER VARIATIONS }
+  myVar MyVar MYVAR myvar
+  identIniSangatPanjang24tetapiTetapValid
+  i x PI result
+
+  { SECTION 28: EDGE CASES - CHARACTER ESCAPING }
+  { Empty character }
+  ch := '''';
+  { String with escaped quotes }
+  str := '''he''''llo''';
+
+  { SECTION 29: EDGE CASES - CASE INSENSITIVITY }
+  program TestProgram;
+  VAR testVar: INTEGER;
+  BEGIN
+    testVar := 42;
+  END.
+
+  { SECTION 30: SPEC EXAMPLE - HELLO PROGRAM }
+  program Hello;
+  var
+    a, b: integer;
+  begin
+    a := 5;
+    b := a + 10;
+    writeln('''Result = ''', b);
+  end.
+
+  { SECTION 31: END OF PROGRAM }
+end.
+
+{ =============================================================================== }
+{ EDGE CASES AND ERROR CONDITIONS }
+{ =============================================================================== }
+
+{ EDGE CASE 1: Malformed number with letters }
+55NN
+
+{ EDGE CASE 2: Malformed real with multiple dots }
+123.456.789
+
+{ EDGE CASE 3: Real starting with dot }
+.123
+
+{ EDGE CASE 4: Identifier starting with underscore }
+_invalid
+
+{ EDGE CASE 5: Unclosed string literal }
+'unclosed string
+
+{ EDGE CASE 6: Unclosed brace comment }
+{ unclosed brace comment
+
+{ EDGE CASE 7: Unclosed paren comment }
+(* unclosed paren comment
+
+{ EDGE CASE 8: Unknown/special characters }
+= @ # $ % ^ & ! ? ~
+
+{ =============================================================================== }
+{ END OF COMPREHENSIVE TEST CASE }
+{ =============================================================================== }

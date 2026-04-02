@@ -1,0 +1,116 @@
+{ comprehensive test covering all token types and edge cases }
+
+program TestComprehensive;
+
+const 
+  MAX_INT := 100;
+  PI := 3.14;
+  EMPTY_CHAR := '';
+  QUOTED_STR := '''hello''';
+
+type 
+  Integer := integer;
+  Real := real;
+  MyChar := char;
+  MyString := string;
+
+var 
+  a, b, c: integer;
+  x, y, z: real;
+  ch: char;
+  str: string;
+  arr: array [1..10] of integer;
+  rec: record
+    name: string;
+    age: integer;
+  end;
+
+function Add(num1, num2: integer): integer;
+begin
+  Add := num1 + num2;
+end;
+
+procedure PrintMessage(msg: string);
+begin
+  writeln(msg);
+end;
+
+begin
+  { intcon examples }
+  a := 1;
+  b := 42;
+  c := 999999;
+
+  { realcon examples }
+  x := 3.14;
+  y := 0.5;
+  z := 123.456;
+
+  { charcon example - single quote }
+  ch := '''';
+
+  { string examples }
+  str := '''IRK''';
+  str := '''TBFO''';
+  str := '''Result = ''';
+
+  { operators: arithmetic }
+  a := 5 + 10;
+  a := 20 - 5;
+  a := 3 * 4;
+  x := 15 / 3;
+  a := 17 div 5;
+  a := 17 mod 5;
+
+  { operators: logical }
+  if (a > 5) AND (b < 100) then
+    writeln('''true''');
+  end;
+
+  if NOT (c == 0) then
+    writeln('''not zero''');
+  end;
+
+  if (x > 0) OR (y < 0) then
+    writeln('''condition''');
+  end;
+
+  { operators: comparison }
+  if a == b then writeln('''equal'''); end;
+  if a <> b then writeln('''not equal'''); end;
+  if a > b then writeln('''greater'''); end;
+  if a >= b then writeln('''greater or equal'''); end;
+  if a < b then writeln('''less'''); end;
+  if a <= b then writeln('''less or equal'''); end;
+
+  { assignment }
+  a := 100;
+  ch := '''x''';
+
+  { delimiters }
+  arr[1] := 10;
+  arr[2] := 20;
+
+  { nested comments }
+  { outer comment { inner comment } still in outer }
+  (* outer comment (* inner comment *) still in outer *)
+
+  { mixed comments }
+  { brace comment }
+  (* paren comment *)
+
+  { edge case: empty char }
+  ch := '''';
+
+  { edge case: string with escaped quotes }
+  str := '''he''''llo''';
+
+  { case insensitive keywords }
+  If a > 0 then
+    Begin
+      x := Add(a, b);
+    End;
+  END;
+
+  { end of program }
+end.

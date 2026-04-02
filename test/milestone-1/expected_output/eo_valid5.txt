@@ -1,0 +1,282 @@
+programsy
+ident (hardfive)
+semicolon
+
+constsy
+ident (seed)
+colon
+ident (integer)
+semicolon
+typesy
+ident (list)
+colon
+arraysy
+lbrack
+intcon (4)
+period
+period
+intcon (9)
+rbrack
+ofsy
+ident (integer)
+semicolon
+varsy
+ident (beginflag)
+comma
+ident (endmark)
+comma
+ident (forked)
+comma
+ident (downfall)
+comma
+ident (divider)
+comma
+ident (model)
+comma
+ident (i)
+colon
+ident (integer)
+semicolon
+varsy
+ident (realval)
+colon
+ident (real)
+semicolon
+varsy
+ident (mark)
+colon
+ident (char)
+semicolon
+varsy
+ident (caption)
+colon
+ident (string)
+semicolon
+functionsy
+ident (sum)
+lparent
+ident (k)
+comma
+ident (l)
+colon
+ident (integer)
+rparent
+colon
+ident (integer)
+semicolon
+beginsy
+endsy
+semicolon
+proceduresy
+ident (outp)
+lparent
+ident (m)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+beginsy
+ident (beginflag)
+becomes
+intcon (4)
+semicolon
+ident (endmark)
+becomes
+intcon (44)
+semicolon
+ident (forked)
+becomes
+intcon (0)
+semicolon
+ident (downfall)
+becomes
+intcon (1)
+semicolon
+ident (divider)
+becomes
+ident (beginflag)
+plus
+ident (endmark)
+minus
+ident (forked)
+times
+intcon (6)
+idiv
+intcon (2)
+imod
+intcon (5)
+semicolon
+ident (model)
+becomes
+lparent
+lparent
+ident (beginflag)
+plus
+ident (endmark)
+rparent
+times
+lparent
+ident (forked)
+plus
+intcon (1)
+rparent
+rparent
+semicolon
+ident (realval)
+becomes
+realcon (2.0)
+rdiv
+realcon (4.0)
+semicolon
+ident (mark)
+becomes
+charcon (q)
+semicolon
+ident (caption)
+becomes
+string (program begin end {x} (*y*) if then else)
+semicolon
+ifsy
+lparent
+lparent
+ident (beginflag)
+lss
+ident (endmark)
+rparent
+andsy
+notsy
+lparent
+ident (forked)
+geq
+intcon (100)
+rparent
+orsy
+lparent
+ident (beginflag)
+leq
+ident (endmark)
+rparent
+rparent
+thensy
+ident (beginflag)
+becomes
+intcon (31)
+elsesy
+ident (beginflag)
+becomes
+intcon (32)
+semicolon
+ifsy
+ident (beginflag)
+gtr
+ident (forked)
+thensy
+ident (forked)
+becomes
+intcon (33)
+elsesy
+ident (forked)
+becomes
+intcon (34)
+semicolon
+ifsy
+ident (beginflag)
+eql
+ident (endmark)
+thensy
+ident (endmark)
+becomes
+intcon (35)
+semicolon
+ifsy
+ident (beginflag)
+neq
+ident (endmark)
+thensy
+ident (endmark)
+becomes
+intcon (36)
+semicolon
+whilesy
+ident (forked)
+lss
+intcon (7)
+dosy
+ident (forked)
+becomes
+ident (forked)
+plus
+intcon (1)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (6)
+downtosy
+intcon (2)
+dosy
+ident (beginflag)
+becomes
+ident (beginflag)
+times
+ident (i)
+semicolon
+forsy
+ident (i)
+becomes
+intcon (4)
+tosy
+intcon (8)
+dosy
+ident (endmark)
+becomes
+ident (endmark)
+plus
+ident (i)
+semicolon
+repeatsy
+ident (beginflag)
+becomes
+ident (beginflag)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (beginflag)
+geq
+intcon (40)
+semicolon
+casesy
+ident (forked)
+ofsy
+intcon (9)
+colon
+ident (endmark)
+becomes
+intcon (90)
+semicolon
+intcon (10)
+colon
+ident (endmark)
+becomes
+intcon (100)
+semicolon
+endsy
+semicolon
+ident (sum)
+lparent
+ident (beginflag)
+comma
+ident (endmark)
+rparent
+semicolon
+ident (outp)
+lparent
+ident (forked)
+rparent
+semicolon
+endsy
+period

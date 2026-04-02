@@ -1,0 +1,37 @@
+program hardthree;
+
+var divx, modx, divider, model, beginner, endif, fork, i: integer;
+var c: char;
+var s: string;
+function calc(x, y: integer): integer;
+begin
+end;
+procedure echo(z: integer);
+begin
+end;
+begin
+divx:=5;
+modx:=48;
+divider:=0;
+model:=divx+modx-divider*2 div 1 mod 1;
+beginner:=((divx+modx)*(divider+1));
+endif:=0;
+fork:=1;
+c:='3';
+s:='begin end if else case of while do for to downto repeat until then';
+if(divx<modx) and not(model<=10) or (beginner==fork) then
+divx:=1
+else
+divx:=0;
+(* comment touching tokens *)
+while divider<10 do divider:=divider+1;
+for i:=5 downto 1 do divx:=divx*i;
+for i:=1 to 3 do modx:=modx+i;
+repeat divx:=divx+1; until divx>10;
+case divx of
+1: modx:=10;
+2: modx:=20;
+end;
+calc(divx, modx);
+echo(divx);
+end.

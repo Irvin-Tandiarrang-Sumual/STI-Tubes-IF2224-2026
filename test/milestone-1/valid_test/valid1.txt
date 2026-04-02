@@ -1,0 +1,51 @@
+program hardone;
+
+const limit: integer;
+type arrtype: array[1..10] of integer;
+var beginner, endif, fork, android, notify, order, i: integer;
+var ch: char;
+var s: string;
+function mix(a, b: integer): integer;
+begin
+end;
+procedure show(x: integer);
+begin
+end;
+begin
+beginner:=.5;
+endif:=48;
+fork:=0;
+android:=beginner+endif-fork*2 div 1 mod 1;
+ch:='x';
+s:='{ not a comment } and (* also not a comment *)';
+(* dense valid comment between real code *)
+if(((beginner<endif) and not(android<=10)) or (beginner==fork)) then
+beginner:=1
+else
+beginner:=0;
+if beginner<>endif then
+beginner:=beginner
+else
+beginner:=endif;
+while fork<10 do
+fork:=fork+1;
+for i:=5 downto 1 do
+beginner:=beginner*i;
+for i:=1 to 3 do
+endif:=endif+i;
+repeat
+beginner:=beginner+1;
+until beginner>10;
+case beginner of
+1: endif:=10;
+2: endif:=20;
+end;
+mix(beginner, endif);
+show(beginner);
+
+(*hai aku comment
+
+multiline*)
+
+{haloo*)}
+end.

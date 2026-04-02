@@ -1,0 +1,10 @@
+PrOgRaM MiXeDcAsEtEsT;
+VaR
+  Number1, xValue, ReAl123: integer;
+BeGiN
+  Number1 := 12;
+  IF Number1 == 12 ThEn
+    xValue := Number1 + 3;
+  eLsE
+    ReAl123 := 0;
+EnD.

@@ -1,0 +1,54 @@
+program hardfive;
+
+const seed: integer;
+type list: array[4..9] of integer;
+var beginflag, endmark, forked, downfall, divider, model, i: integer;
+var realval: real;
+var mark: char;
+var caption: string;
+function sum(k, l: integer): integer;
+begin
+end;
+procedure outp(m: integer);
+begin
+end;
+begin
+beginflag:=4;
+endmark:=44;
+forked:=0;
+downfall:=1;
+divider:=beginflag+endmark-forked*6 div 2 mod 5;
+model:=((beginflag+endmark)*(forked+1));
+realval:=2.0/4.0;
+mark:='q';
+caption:='program begin end {x} (*y*) if then else';
+if((beginflag<endmark) and not(forked>=100) or (beginflag<=endmark)) then
+beginflag:=31
+else
+beginflag:=32;
+if beginflag>forked then
+forked:=33
+else
+forked:=34;
+if beginflag==endmark then
+endmark:=35;
+if beginflag<>endmark then
+endmark:=36;
+while forked<7 do
+forked:=forked+1;
+(* comment before first for *)
+for i:=6 downto 2 do
+beginflag:=beginflag*i;
+(* comment before second for *)
+for i:=4 to 8 do
+endmark:=endmark+i;
+repeat
+beginflag:=beginflag+1;
+until beginflag>=40;
+case forked of
+9: endmark:=90;
+10: endmark:=100;
+end;
+sum(beginflag, endmark);
+outp(forked);
+end.

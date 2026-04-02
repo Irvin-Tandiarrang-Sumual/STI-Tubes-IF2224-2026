@@ -1,0 +1,13 @@
+program commenttest;
+var
+  x: integer;
+begin
+  x := 1;
+  { outer comment { inner comment } still outer }
+  x := x + 1;
+  (* outer star comment (* inner star comment *) still outer *)
+  x := x + 2;
+  { mix 1 }
+  (* mix 2 *)
+  x := x + 3;
+end.
