@@ -3,7 +3,7 @@
 std::string tokenTypeToString(TokenType type) {
     static const std::map<TokenType, std::string> typeMap = {
         {TokenType::eof, "eof"},
-        {TokenType::invalid_token, "INVALID TOKEN"},
+        {TokenType::invalid_token, "UNKNOWN"},
         {TokenType::intcon, "intcon"},
         {TokenType::realcon, "realcon"},
         {TokenType::charcon, "charcon"},

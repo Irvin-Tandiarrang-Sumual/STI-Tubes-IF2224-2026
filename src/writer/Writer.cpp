@@ -18,7 +18,7 @@ void Writer::writeToFile() const {
 
         if (token.type == TokenType::intcon || token.type == TokenType::realcon
             || token.type == TokenType::charcon || token.type == TokenType::string
-            || token.type == TokenType::ident || token.type == TokenType::comment) {
+            || token.type == TokenType::ident || token.type == TokenType::comment || token.type == TokenType::invalid_token) {
             fOut << typeStr << " (";
 
             std::visit([&fOut](auto&& arg) {
