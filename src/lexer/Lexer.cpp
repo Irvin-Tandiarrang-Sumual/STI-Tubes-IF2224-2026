@@ -116,8 +116,8 @@ void Lexer::processToken() {
         return;
     }
 
-    if (ch == '{' || (ch == '(' && reader.peek() == '*')) {
-        processComment();
+    if (ch == '{') {
+        processCommentFromBrace(loc);
         return;
     }
 
@@ -126,63 +126,98 @@ void Lexer::processToken() {
         return;
     }
 
-    if (ch == '.' && std::isdigit(static_cast<unsigned char>(reader.peek()))) {
-        processMalformedRealStartingWithDot();
+    if (ch == '.') {
+        reader.advance();
+        if (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
+            processMalformedRealStartingWithDot();
+        } else {
+            addToken(Token(period, ".", loc));
+        }
         return;
     }
 
     switch (ch) {
-        case '+': addToken(Token(plus, "+", loc)); reader.advance(); return;
-        case '-': addToken(Token(minus, "-", loc)); reader.advance(); return;
-        case '*': addToken(Token(times, "*", loc)); reader.advance(); return;
-        case '/': addToken(Token(rdiv, "/", loc)); reader.advance(); return;
-        case '(': addToken(Token(lparent, "(", loc)); reader.advance(); return;
-        case ')': addToken(Token(rparent, ")", loc)); reader.advance(); return;
-        case '[': addToken(Token(lbrack, "[", loc)); reader.advance(); return;
-        case ']': addToken(Token(rbrack, "]", loc)); reader.advance(); return;
-        case ',': addToken(Token(comma, ",", loc)); reader.advance(); return;
-        case ';': addToken(Token(semicolon, ";", loc)); reader.advance(); return;
+        case '+':
+            addToken(Token(plus, "+", loc));
+            reader.advance();
+            return;
+        case '-':
+            addToken(Token(minus, "-", loc));
+            reader.advance();
+            return;
+        case '*':
+            addToken(Token(times, "*", loc));
+            reader.advance();
+            return;
+        case '/':
+            addToken(Token(rdiv, "/", loc));
+            reader.advance();
+            return;
+        case '(':
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
+                processCommentFromParen(loc);
+            } else {
+                addToken(Token(lparent, "(", loc));
+            }
+            return;
+        case ')':
+            addToken(Token(rparent, ")", loc));
+            reader.advance();
+            return;
+        case '[':
+            addToken(Token(lbrack, "[", loc));
+            reader.advance();
+            return;
+        case ']':
+            addToken(Token(rbrack, "]", loc));
+            reader.advance();
+            return;
+        case ',':
+            addToken(Token(comma, ",", loc));
+            reader.advance();
+            return;
+        case ';':
+            addToken(Token(semicolon, ";", loc));
+            reader.advance();
+            return;
         case ':':
-            if (reader.peek() == '=') {
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '=') {
                 addToken(Token(becomes, ":=", loc));
-                reader.advance();
                 reader.advance();
             } else {
                 addToken(Token(colon, ":", loc));
-                reader.advance();
             }
             return;
-        case '.':
-            addToken(Token(period, ".", loc));
-            reader.advance();
-            return;
         case '<':
-            if (reader.peek() == '=') {
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '=') {
                 addToken(Token(leq, "<=", loc));
-                reader.advance(); reader.advance();
-            } else if (reader.peek() == '>') {
+                reader.advance();
+            } else if (!reader.isEOF() && reader.getCurrentCharacter() == '>') {
                 addToken(Token(neq, "<>", loc));
-                reader.advance(); reader.advance();
+                reader.advance();
             } else {
                 addToken(Token(lss, "<", loc));
-                reader.advance();
             }
             return;
         case '>':
-            if (reader.peek() == '=') {
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '=') {
                 addToken(Token(geq, ">=", loc));
-                reader.advance(); reader.advance();
+                reader.advance();
             } else {
                 addToken(Token(gtr, ">", loc));
-                reader.advance();
             }
             return;
         case '=':
-            if (reader.peek() == '=') {
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '=') {
                 addToken(Token(eql, "==", loc));
-                reader.advance(); reader.advance();
+                reader.advance();
             } else {
-                processSingleEqualsError();
+                addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", "=");
             }
             return;
         default:
@@ -279,44 +314,33 @@ void Lexer::processStringOrCharacter() {
     while (!reader.isEOF()) {
         const char ch = reader.getCurrentCharacter();
         lexeme.push_back(ch);
+        reader.advance();
 
         if (ch == '\'') {
-            if (reader.peek() == '\'') {
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '\'') {
                 lexeme.push_back('\'');
-                reader.advance();
                 reader.advance();
                 ++logicalLength;
                 continue;
             }
 
-            reader.advance();
             addToken(Token(logicalLength == 1 ? charcon : string, lexeme, loc));
             return;
         }
 
         ++logicalLength;
-        reader.advance();
     }
 
     addError(loc, "Literal string/char tidak ditutup", lexeme);
 }
 
-void Lexer::processComment() {
-    const CodeLocation loc = reader.getLocation();
+void Lexer::processCommentFromBrace(const CodeLocation &loc) {
     std::string lexeme;
     std::vector<char> stack;
 
-    if (reader.getCurrentCharacter() == '{') {
-        lexeme.push_back('{');
-        stack.push_back('{');
-        reader.advance();
-    } else {
-        lexeme.push_back('(');
-        lexeme.push_back('*');
-        stack.push_back('(');
-        reader.advance();
-        reader.advance();
-    }
+    lexeme.push_back('{');
+    stack.push_back('{');
+    reader.advance();
 
     while (!reader.isEOF() && !stack.empty()) {
         const char ch = reader.getCurrentCharacter();
@@ -328,28 +352,96 @@ void Lexer::processComment() {
             continue;
         }
 
-        if (ch == '(' && reader.peek() == '*') {
+        if (ch == '(') {
             lexeme.push_back('(');
-            lexeme.push_back('*');
-            stack.push_back('(');
             reader.advance();
-            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
+                lexeme.push_back('*');
+                stack.push_back('(');
+                reader.advance();
+            }
             continue;
         }
 
-        if (ch == '}' && !stack.empty() && stack.back() == '{') {
+        if (ch == '}') {
             lexeme.push_back('}');
-            stack.pop_back();
+            if (!stack.empty() && stack.back() == '{') {
+                stack.pop_back();
+            }
             reader.advance();
             continue;
         }
 
-        if (ch == '*' && reader.peek() == ')' && !stack.empty() && stack.back() == '(') {
+        if (ch == '*') {
             lexeme.push_back('*');
-            lexeme.push_back(')');
-            stack.pop_back();
             reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == ')' && !stack.empty() && stack.back() == '(') {
+                lexeme.push_back(')');
+                stack.pop_back();
+                reader.advance();
+            }
+            continue;
+        }
+
+        lexeme.push_back(ch);
+        reader.advance();
+    }
+
+    if (!stack.empty()) {
+        addError(loc, "Comment tidak ditutup", lexeme);
+        return;
+    }
+
+    addToken(Token(comment, lexeme, loc));
+}
+
+void Lexer::processCommentFromParen(const CodeLocation &loc) {
+    std::string lexeme;
+    std::vector<char> stack;
+
+    lexeme.push_back('(');
+    lexeme.push_back('*');
+    stack.push_back('(');
+    reader.advance();
+
+    while (!reader.isEOF() && !stack.empty()) {
+        const char ch = reader.getCurrentCharacter();
+
+        if (ch == '{') {
+            lexeme.push_back('{');
+            stack.push_back('{');
             reader.advance();
+            continue;
+        }
+
+        if (ch == '(') {
+            lexeme.push_back('(');
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == '*') {
+                lexeme.push_back('*');
+                stack.push_back('(');
+                reader.advance();
+            }
+            continue;
+        }
+
+        if (ch == '}') {
+            lexeme.push_back('}');
+            if (!stack.empty() && stack.back() == '{') {
+                stack.pop_back();
+            }
+            reader.advance();
+            continue;
+        }
+
+        if (ch == '*') {
+            lexeme.push_back('*');
+            reader.advance();
+            if (!reader.isEOF() && reader.getCurrentCharacter() == ')' && !stack.empty() && stack.back() == '(') {
+                lexeme.push_back(')');
+                stack.pop_back();
+                reader.advance();
+            }
             continue;
         }
 
@@ -380,9 +472,7 @@ void Lexer::processMalformedIdentifier() {
 
 void Lexer::processMalformedRealStartingWithDot() {
     const CodeLocation loc = reader.getLocation();
-    std::string lexeme;
-    lexeme.push_back('.');
-    reader.advance();
+    std::string lexeme = ".";
     while (!reader.isEOF() && std::isdigit(static_cast<unsigned char>(reader.getCurrentCharacter()))) {
         lexeme.push_back(reader.getCurrentCharacter());
         reader.advance();

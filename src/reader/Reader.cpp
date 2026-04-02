@@ -19,11 +19,6 @@ char Reader::getCurrentCharacter() const {
     return isEOF() ? '\0' : input_[index_];
 }
 
-char Reader::peek(std::size_t offset) const {
-    const std::size_t target = index_ + offset;
-    return (target < input_.size()) ? input_[target] : '\0';
-}
-
 void Reader::advance() {
     if (isEOF()) {
         return;

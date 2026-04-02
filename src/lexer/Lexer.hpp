@@ -23,7 +23,8 @@ private:
     void processIdentifierOrKeyword();
     void processNumber();
     void processStringOrCharacter();
-    void processComment();
+    void processCommentFromBrace(const CodeLocation &loc);
+    void processCommentFromParen(const CodeLocation &loc);
     void processUnknownCharacter();
     void processMalformedIdentifier();
     void processMalformedRealStartingWithDot();

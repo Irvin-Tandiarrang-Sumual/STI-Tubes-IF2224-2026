@@ -15,7 +15,6 @@ public:
 
     bool isEOF() const;
     char getCurrentCharacter() const;
-    char peek(std::size_t offset = 1) const;
     void advance();
 
     std::size_t getIndex() const;
