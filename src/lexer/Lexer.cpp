@@ -34,10 +34,6 @@ bool Lexer::isEOF() const {
     return reader.isEOF();
 }
 
-CodeLocation Lexer::getCodeLocation() const {
-    return reader.getLocation();
-}
-
 void Lexer::tokenize() {
     while (!reader.isEOF()) {
         skipWhitespace();
@@ -76,15 +72,6 @@ std::string Lexer::lowercase(const std::string &text) {
         return static_cast<char>(std::tolower(c));
     });
     return lowered;
-}
-
-std::string Lexer::readWhileIdentifierBody() {
-    std::string lexeme;
-    while (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
-        lexeme.push_back(reader.getCurrentCharacter());
-        reader.advance();
-    }
-    return lexeme;
 }
 
 std::string Lexer::readUntilDelimiter() {

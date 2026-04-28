@@ -28,7 +28,6 @@ private:
     void processUnknownCharacter();
     void processSingleEqualsError(const CodeLocation &loc);
 
-    std::string readWhileIdentifierBody();
     std::string readUntilDelimiter();
     static bool isIdentifierBody(char ch);
     static bool isDelimiter(char ch);
@@ -39,7 +38,6 @@ public:
     ~Lexer();
 
     bool isEOF() const;
-    CodeLocation getCodeLocation() const;
     void tokenize();
 
     const std::vector<std::string> &getErrors() const;
