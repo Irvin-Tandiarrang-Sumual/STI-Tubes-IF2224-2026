@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "../lexer/Token.hpp"
-#include "../crt/CRTNodes.hpp"
+#include "../cst/CSTNodes.hpp"
 #include <memory>
 
 class Parser {
@@ -13,7 +13,7 @@ class Parser {
         ~Parser();
         
         // return root node aja
-        std::unique_ptr<CRTNodes> parse();
+        std::unique_ptr<CSTNodes> parse();
 
         // lihat 1 ke depan
         const Token& peek() const;
