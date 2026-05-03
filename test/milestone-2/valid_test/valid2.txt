@@ -1,0 +1,7 @@
+program tc2;
+type
+  ar == array[1..5] of integer;
+  en == (A, B);
+  rec == record a: integer; end;
+begin
+end.

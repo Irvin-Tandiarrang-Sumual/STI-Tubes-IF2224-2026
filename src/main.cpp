@@ -19,9 +19,9 @@ int main() {
 
     std::vector<std::filesystem::path> candidates = {
         std::filesystem::path(filename),
-        std::filesystem::path("../test/milestone-1") / filename,
-        std::filesystem::path("../test/milestone-1/valid_test") / filename,
-        std::filesystem::path("../test/milestone-1/invalid_test") / filename
+        std::filesystem::path("../test/milestone-2") / filename,
+        std::filesystem::path("../test/milestone-2/valid_test") / filename,
+        std::filesystem::path("../test/milestone-2/invalid_test") / filename
     };
 
     std::filesystem::path inputPath;
