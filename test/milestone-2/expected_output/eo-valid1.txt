@@ -1,0 +1,42 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident (tc1)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <const-declaration>
+│   │   ├── constsy
+│   │   ├── ident (pi)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── realcon (3.14)
+│   │   ├── semicolon
+│   │   ├── ident (angka)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon (100)
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident (x)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident (integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon (10)
+│   │   └── semicolon
+│   └── endsy
+└── period

@@ -1,0 +1,45 @@
+<declaration-part>
+└── <type-declaration>
+    ├── typesy
+    ├── ident (ar)
+    ├── eql
+    ├── <type>
+    │   └── <array-type>
+    │       ├── arraysy
+    │       ├── lbrack
+    │       ├── <range>
+    │       │   ├── <constant>
+    │       │   │   └── intcon (1)
+    │       │   ├── period
+    │       │   ├── period
+    │       │   └── <constant>
+    │       │       └── intcon (5)
+    │       ├── rbrack
+    │       ├── ofsy
+    │       └── <type>
+    │           └── ident (integer)
+    ├── semicolon
+    ├── ident (en)
+    ├── eql
+    ├── <type>
+    │   └── <enumerated>
+    │       ├── lparent
+    │       ├── ident (A)
+    │       ├── comma
+    │       ├── ident (B)
+    │       └── rparent
+    ├── semicolon
+    ├── ident (rec)
+    ├── eql
+    ├── <type>
+    │   └── <record-type>
+    │       ├── recordsy
+    │       ├── <field-list>
+    │       │   └── <field-part>
+    │       │       ├── <identifier-list>
+    │       │       │   └── ident (a)
+    │       │       ├── colon
+    │       │       └── <type>
+    │       │           └── ident (integer)
+    │       └── endsy
+    └── semicolon

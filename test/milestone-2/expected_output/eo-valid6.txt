@@ -1,0 +1,309 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident (tc6)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <const-declaration>
+│   │   ├── constsy
+│   │   ├── ident (neg)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   ├── minus
+│   │   │   └── intcon (10)
+│   │   ├── semicolon
+│   │   ├── ident (pos)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   ├── plus
+│   │   │   └── realcon (5.5)
+│   │   └── semicolon
+│   ├── <var-declaration>
+│   │   ├── varsy
+│   │   ├── <identifier-list>
+│   │   │   └── ident (arr)
+│   │   ├── colon
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── <range>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon (1)
+│   │   │       │   ├── period
+│   │   │       │   ├── period
+│   │   │       │   └── <constant>
+│   │   │       │       └── intcon (10)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident (integer)
+│   │   ├── semicolon
+│   │   ├── <identifier-list>
+│   │   │   └── ident (rec)
+│   │   ├── colon
+│   │   ├── <type>
+│   │   │   └── <record-type>
+│   │   │       ├── recordsy
+│   │   │       ├── <field-list>
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident (x)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident (integer)
+│   │   │       │   ├── semicolon
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident (y)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident (real)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   └── semicolon
+│   └── <subprogram-declaration>
+│       └── <function-declaration>
+│           ├── functionsy
+│           ├── ident (hitung)
+│           ├── <formal-parameter-list>
+│           │   ├── lparent
+│           │   ├── <parameter-group>
+│           │   │   ├── <identifier-list>
+│           │   │   │   ├── ident (a)
+│           │   │   │   ├── comma
+│           │   │   │   └── ident (b)
+│           │   │   ├── colon
+│           │   │   └── ident (integer)
+│           │   ├── semicolon
+│           │   ├── <parameter-group>
+│           │   │   ├── <identifier-list>
+│           │   │   │   └── ident (c)
+│           │   │   ├── colon
+│           │   │   └── ident (real)
+│           │   └── rparent
+│           ├── colon
+│           ├── ident (integer)
+│           ├── semicolon
+│           ├── <block>
+│           │   └── <compound-statement>
+│           │       ├── beginsy
+│           │       ├── <statement-list>
+│           │       └── endsy
+│           └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── <variable>
+│   │   │       │       │   └── ident (arr)
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   ├── intcon (1)
+│   │   │       │       │   ├── comma
+│   │   │       │       │   └── <index-list>
+│   │   │       │       │       └── intcon (2)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── minus
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon (5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── <variable>
+│   │   │       │       │   └── ident (rec)
+│   │   │       │       ├── period
+│   │   │       │       └── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <procedure/function-call>
+│   │   │                           ├── ident (hitung)
+│   │   │                           ├── lparent
+│   │   │                           ├── <parameter-list>
+│   │   │                           │   ├── <expression>
+│   │   │                           │   │   └── <simple-expression>
+│   │   │                           │   │       └── <term>
+│   │   │                           │   │           └── <factor>
+│   │   │                           │   │               └── intcon (1)
+│   │   │                           │   ├── comma
+│   │   │                           │   ├── <expression>
+│   │   │                           │   │   └── <simple-expression>
+│   │   │                           │   │       └── <term>
+│   │   │                           │   │           └── <factor>
+│   │   │                           │   │               └── intcon (2)
+│   │   │                           │   ├── comma
+│   │   │                           │   └── <expression>
+│   │   │                           │       └── <simple-expression>
+│   │   │                           │           └── <term>
+│   │   │                           │               └── <factor>
+│   │   │                           │                   └── realcon (3.0)
+│   │   │                           └── rparent
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       ├── <term>
+│   │   │       │       │   ├── <factor>
+│   │   │       │       │   │   ├── notsy
+│   │   │       │       │   │   └── <factor>
+│   │   │       │       │   │       ├── lparent
+│   │   │       │       │   │       ├── <expression>
+│   │   │       │       │   │       │   ├── <simple-expression>
+│   │   │       │       │   │       │   │   └── <term>
+│   │   │       │       │   │       │   │       └── <factor>
+│   │   │       │       │   │       │   │           └── <component-variable>
+│   │   │       │       │   │       │   │               ├── <variable>
+│   │   │       │       │   │       │   │               │   └── ident (arr)
+│   │   │       │       │   │       │   │               ├── lbrack
+│   │   │       │       │   │       │   │               ├── <index-list>
+│   │   │       │       │   │       │   │               │   └── intcon (1)
+│   │   │       │       │   │       │   │               └── rbrack
+│   │   │       │       │   │       │   ├── <relational-operator>
+│   │   │       │       │   │       │   │   └── eql
+│   │   │       │       │   │       │   └── <simple-expression>
+│   │   │       │       │   │       │       └── <term>
+│   │   │       │       │   │       │           └── <factor>
+│   │   │       │       │   │       │               └── intcon (0)
+│   │   │       │       │   │       └── rparent
+│   │   │       │       │   ├── <multiplicative-operator>
+│   │   │       │       │   │   └── andsy
+│   │   │       │       │   └── <factor>
+│   │   │       │       │       ├── lparent
+│   │   │       │       │       ├── <expression>
+│   │   │       │       │       │   ├── <simple-expression>
+│   │   │       │       │       │   │   └── <term>
+│   │   │       │       │       │   │       └── <factor>
+│   │   │       │       │       │   │           └── <component-variable>
+│   │   │       │       │       │   │               ├── <variable>
+│   │   │       │       │       │   │               │   └── ident (rec)
+│   │   │       │       │       │   │               ├── period
+│   │   │       │       │       │   │               └── ident (x)
+│   │   │       │       │       │   ├── <relational-operator>
+│   │   │       │       │       │   │   └── gtr
+│   │   │       │       │       │   └── <simple-expression>
+│   │   │       │       │       │       └── <term>
+│   │   │       │       │       │           └── <factor>
+│   │   │       │       │       │               └── intcon (0)
+│   │   │       │       │       └── rparent
+│   │   │       ├── thensy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── <component-variable>
+│   │   │               │       ├── <variable>
+│   │   │               │       │   └── ident (arr)
+│   │   │               │       ├── lbrack
+│   │   │               │       ├── <index-list>
+│   │   │               │       │   └── intcon (2)
+│   │   │               │       └── rbrack
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       ├── <term>
+│   │   │                       │   └── <factor>
+│   │   │                       │       └── <component-variable>
+│   │   │                       │           ├── <variable>
+│   │   │                       │           │   └── ident (arr)
+│   │   │                       │           ├── lbrack
+│   │   │                       │           ├── <index-list>
+│   │   │                       │           │   └── intcon (2)
+│   │   │                       │           └── rbrack
+│   │   │                       ├── <additive-operator>
+│   │   │                       │   └── orsy
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon (1)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <case-statement>
+│   │   │       ├── casesy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── <component-variable>
+│   │   │       │                   ├── <variable>
+│   │   │       │                   │   └── ident (rec)
+│   │   │       │                   ├── period
+│   │   │       │                   └── ident (x)
+│   │   │       ├── ofsy
+│   │   │       ├── <case-block>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon (1)
+│   │   │       │   ├── comma
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon (2)
+│   │   │       │   ├── colon
+│   │   │       │   ├── <statement>
+│   │   │       │   │   └── <assignment-statement>
+│   │   │       │   │       ├── <variable>
+│   │   │       │   │       │   └── <component-variable>
+│   │   │       │   │       │       ├── <variable>
+│   │   │       │   │       │       │   └── ident (rec)
+│   │   │       │   │       │       ├── period
+│   │   │       │   │       │       └── ident (x)
+│   │   │       │   │       ├── becomes
+│   │   │       │   │       └── <expression>
+│   │   │       │   │           └── <simple-expression>
+│   │   │       │   │               └── <term>
+│   │   │       │   │                   └── <factor>
+│   │   │       │   │                       └── intcon (10)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   ├── semicolon
+│   │   └── <statement>
+│   │       └── <for-statement>
+│   │           ├── forsy
+│   │           ├── ident (i)
+│   │           ├── becomes
+│   │           ├── <expression>
+│   │           │   └── <simple-expression>
+│   │           │       └── <term>
+│   │           │           └── <factor>
+│   │           │               └── intcon (10)
+│   │           ├── downtosy
+│   │           ├── <expression>
+│   │           │   └── <simple-expression>
+│   │           │       └── <term>
+│   │           │           └── <factor>
+│   │           │               └── intcon (1)
+│   │           ├── dosy
+│   │           └── <statement>
+│   │               └── <assignment-statement>
+│   │                   ├── <variable>
+│   │                   │   └── <component-variable>
+│   │                   │       ├── <variable>
+│   │                   │       │   └── ident (rec)
+│   │                   │       ├── period
+│   │                   │       └── ident (x)
+│   │                   ├── becomes
+│   │                   └── <expression>
+│   │                       └── <simple-expression>
+│   │                           ├── <term>
+│   │                           │   └── <factor>
+│   │                           │       └── <component-variable>
+│   │                           │           ├── <variable>
+│   │                           │           │   └── ident (rec)
+│   │                           │           ├── period
+│   │                           │           └── ident (x)
+│   │                           ├── <additive-operator>
+│   │                           │   └── minus
+│   │                           └── <term>
+│   │                               └── <factor>
+│   │                                   └── intcon (1)
+│   └── endsy
+└── period
