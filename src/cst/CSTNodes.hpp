@@ -9,13 +9,15 @@ class CSTNodes {
         bool isTerminal_; // artinya token
         std::vector<std::unique_ptr<CSTNodes>> children_; // kalo isTerminal true empty
         std::variant<Token, NonTerminal> value_;
+        CodeLocation location_;
 
     public:
-        CSTNodes(Token token);
-        CSTNodes(NonTerminal nonTerminal);
+        CSTNodes(Token token, CodeLocation location);
+        CSTNodes(NonTerminal nonTerminal, CodeLocation location);
         void addChild(std::unique_ptr<CSTNodes> newChild);
         bool isTerminal() const;
         NonTerminal getNonTerminal() const;
         const Token& getToken() const;
+        const CodeLocation& getLocation() const;
         ~CSTNodes();
 };

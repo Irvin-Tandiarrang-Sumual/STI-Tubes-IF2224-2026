@@ -1,10 +1,10 @@
 #include "CSTNodes.hpp"
 
-CSTNodes::CSTNodes(Token token) 
-    : isTerminal_(true), value_(token) {}
+CSTNodes::CSTNodes(Token token, CodeLocation location) 
+    : isTerminal_(true), value_(token), location_(location) {}
 
-CSTNodes::CSTNodes(NonTerminal nonTerminal) 
-    : isTerminal_(false), value_(nonTerminal) {}
+CSTNodes::CSTNodes(NonTerminal nonTerminal, CodeLocation location)
+    : isTerminal_(false), value_(nonTerminal), location_(location) {}
 
 void CSTNodes::addChild(std::unique_ptr<CSTNodes> newChild) {
     if (!isTerminal_) {
@@ -23,4 +23,8 @@ NonTerminal CSTNodes::getNonTerminal() const {
 
 const Token& CSTNodes::getToken() const {
     return std::get<Token>(value_);
+}
+
+const CodeLocation& CSTNodes::getLocation() const {
+    return location_;
 }
