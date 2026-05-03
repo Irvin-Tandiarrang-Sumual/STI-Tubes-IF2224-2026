@@ -3,8 +3,8 @@
 CSTNodes::CSTNodes(Token token) 
     : isTerminal_(true), value_(token) {}
 
-CSTNodes::CSTNodes(Variable variable) 
-    : isTerminal_(false), value_(variable) {}
+CSTNodes::CSTNodes(NonTerminal nonTerminal) 
+    : isTerminal_(false), value_(nonTerminal) {}
 
 void CSTNodes::addChild(std::unique_ptr<CSTNodes> newChild) {
     if (!isTerminal_) {
@@ -17,8 +17,8 @@ bool CSTNodes::isTerminal() const {
     return isTerminal_;
 }
 
-Variable CSTNodes::getVariable() const {
-    return std::get<Variable>(value_);
+NonTerminal CSTNodes::getNonTerminal() const {
+    return std::get<NonTerminal>(value_);
 }
 
 const Token& CSTNodes::getToken() const {

@@ -2,20 +2,20 @@
 #include <vector>
 #include <variant>
 #include <memory>
-#include "../parser/Variable.hpp"
+#include "../parser/NonTerminal.hpp"
 
 class CSTNodes {
     private:
         bool isTerminal_; // artinya token
         std::vector<std::unique_ptr<CSTNodes>> children_; // kalo isTerminal true empty
-        std::variant<Token, Variable> value_;
+        std::variant<Token, NonTerminal> value_;
 
     public:
         CSTNodes(Token token);
-        CSTNodes(Variable variable);
+        CSTNodes(NonTerminal nonTerminal);
         void addChild(std::unique_ptr<CSTNodes> newChild);
         bool isTerminal() const;
-        Variable getVariable() const;
+        NonTerminal getNonTerminal() const;
         const Token& getToken() const;
         ~CSTNodes();
 };
