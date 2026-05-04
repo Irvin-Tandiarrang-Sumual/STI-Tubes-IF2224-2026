@@ -7,7 +7,6 @@
 #include "../reader/CodeLocation.hpp"
 
 enum TokenType {
-    eof, // additional ??
     invalid_token, // additional ??
     intcon,
     realcon,
