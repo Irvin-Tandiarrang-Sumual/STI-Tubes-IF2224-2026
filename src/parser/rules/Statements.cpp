@@ -3,7 +3,7 @@
 
 /**
  * Production Rule:
- * CCOMPOUND-STATEMENT-> beginsy + STATEMENT-LIST + endsy
+ * COMPOUND-STATEMENT-> beginsy + STATEMENT-LIST + endsy
  */
 CSTNodes* Parser::parseCompoundStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::COMPOUND_STATEMENT, peek().codeLocation);
