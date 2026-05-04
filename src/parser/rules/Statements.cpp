@@ -3,7 +3,7 @@
 
 /**
  * Production Rule:
- * Compound-statement -> beginsy + Statement-list + endsy
+ * CCOMPOUND-STATEMENT-> beginsy + STATEMENT-LIST + endsy
  */
 CSTNodes* Parser::parseCompoundStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::COMPOUND_STATEMENT, peek().codeLocation);
@@ -15,7 +15,7 @@ CSTNodes* Parser::parseCompoundStatement(){
 
 /**
  * Production Rule:
- * Statement-list -> Statement + (semicolon + Statement)*
+ * STATEMENT-LIST -> STATEMENT + (semicolon + STATEMENT)*
  */
 
 CSTNodes* Parser::parseStatementList(){
@@ -32,7 +32,7 @@ CSTNodes* Parser::parseStatementList(){
 
 /**
  * Production Rule:
- * Statement -> (Assignment-statement | If-statement | Case-statement | While-statement | Repeat-statement | For-statement | Procedure/Function-call)?
+ * STATEMENT-> (ASSIGNMENT-STATEMENT| IF-STATEMENT | CASE-STATEMENT | WHILE-STATEMENT | REPEAT-STATEMENT | FOR-STATEMENT | PROCEDURE/FUNCTION-CALL)?
  */
 
 CSTNodes* Parser::parseStatement(){
