@@ -1,0 +1,10 @@
+program tc4;
+procedure p(x: integer);
+begin
+end;
+function f: real;
+begin
+end;
+begin
+  p(10);
+end.

@@ -1,4 +1,4 @@
-# Arion Compiler - Part Lexer
+# Arion Compiler - Part Parser
 
 ## Strategi Algoritma
 merupakan nama kelompok kami yang jika disingkat menjadi STI
@@ -11,7 +11,7 @@ merupakan nama kelompok kami yang jika disingkat menjadi STI
 | 5  | Jennifer Khang | 13524110 |
 ## Deskripsi Program
 
-Program yang dibuat saat ini merupakan bagian dari compiler yang akan menjadi tujuan akhir dari tugas besar IF2224 (TBFO) bukan Stima, hehe, saat ini. Saat ini program baru sampai pada tahap lexer. Di mana lexer berfungsi untuk melakukan lexical analysis untuk mengubah input yang berisikan source code bahasa arion ke dalam token-token yang akan dimanfaatkan di tahap berikutnya :)
+Program yang dibuat saat ini merupakan bagian dari compiler yang akan menjadi tujuan akhir dari tugas besar IF2224 (TBFO) bukan Stima, hehe, saat ini. Saat ini program baru sampai pada tahap parser. Di mana parser bertujuan untuk memastikan urutan token membentuk struktur sintaks yang valid, mendeteksi dan melaporkan kesalahan sintaks, dan mempersiapkan representasi program untuk tahap berikutnya. Parser akan menghasilkan parse tree yang akan dipakai di tahap berikutnya! yippie :D
 
 ## Requirements
 
@@ -56,7 +56,7 @@ Masukkan path/nama file input: valid1.txt
 
 ### 4. Output
 
-Hasil tokenisasi dalam bentuk file `.txt` akan diberikan di `../test/milestone-1/output` dan error yang muncul akan diberikan di terminal.
+Hasil parsing (parse tree) dalam bentuk file `.txt` akan diberikan di `../test/milestone-2/output` dan parse tree yang sama akan di-print ke terminal
 
 ### 5. Membersihkan Compiled Files
 

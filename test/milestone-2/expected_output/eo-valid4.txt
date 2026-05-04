@@ -1,0 +1,54 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident (tc4)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <subprogram-declaration>
+│   │   └── <procedure-declaration>
+│   │       ├── proceduresy
+│   │       ├── ident (p)
+│   │       ├── <formal-parameter-list>
+│   │       │   ├── lparent
+│   │       │   ├── <parameter-group>
+│   │       │   │   ├── <identifier-list>
+│   │       │   │   │   └── ident (x)
+│   │       │   │   ├── colon
+│   │       │   │   └── ident (integer)
+│   │       │   └── rparent
+│   │       ├── semicolon
+│   │       ├── <block>
+│   │       │   └── <compound-statement>
+│   │       │       ├── beginsy
+│   │       │       ├── <statement-list>
+│   │       │       └── endsy
+│   │       └── semicolon
+│   └── <subprogram-declaration>
+│       └── <function-declaration>
+│           ├── functionsy
+│           ├── ident (f)
+│           ├── colon
+│           ├── ident (real)
+│           ├── semicolon
+│           ├── <block>
+│           │   └── <compound-statement>
+│           │       ├── beginsy
+│           │       ├── <statement-list>
+│           │       └── endsy
+│           └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   └── <statement>
+│   │       └── <procedure/function-call>
+│   │           ├── ident (p)
+│   │           ├── lparent
+│   │           ├── <parameter-list>
+│   │           │   └── <expression>
+│   │           │       └── <simple-expression>
+│   │           │           └── <term>
+│   │           │               └── <factor>
+│   │           │                   └── intcon (10)
+│   │           └── rparent
+│   └── endsy
+└── period

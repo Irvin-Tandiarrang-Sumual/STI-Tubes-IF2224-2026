@@ -34,10 +34,6 @@ bool Lexer::isEOF() const {
     return reader.isEOF();
 }
 
-CodeLocation Lexer::getCodeLocation() const {
-    return reader.getLocation();
-}
-
 void Lexer::tokenize() {
     while (!reader.isEOF()) {
         skipWhitespace();
@@ -76,15 +72,6 @@ std::string Lexer::lowercase(const std::string &text) {
         return static_cast<char>(std::tolower(c));
     });
     return lowered;
-}
-
-std::string Lexer::readWhileIdentifierBody() {
-    std::string lexeme;
-    while (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
-        lexeme.push_back(reader.getCurrentCharacter());
-        reader.advance();
-    }
-    return lexeme;
 }
 
 std::string Lexer::readUntilDelimiter() {
@@ -263,7 +250,7 @@ void Lexer::processNumber() {
                 reader.advance();
             }
 
-            addToken(Token(invalid_token, invalidStream.str(), loc));
+            addToken(Token(unknown, invalidStream.str(), loc));
             addError(loc, "Format angka tidak valid", invalidStream.str());
             return;
         }
@@ -288,7 +275,7 @@ void Lexer::processNumber() {
                         reader.advance();
                     }
 
-                    addToken(Token(invalid_token, invalidStream.str(), loc));
+                    addToken(Token(unknown, invalidStream.str(), loc));
                     addError(loc, "Format real tidak valid", invalidStream.str());
                     return;
                 }
@@ -309,14 +296,14 @@ void Lexer::processNumber() {
             badLexeme.push_back(reader.getCurrentCharacter());
             reader.advance();
         }
-        addToken(Token(invalid_token, badLexeme, loc));
+        addToken(Token(unknown, badLexeme, loc));
         addError(loc, "Format real tidak valid", badLexeme);
         return;
     }
 
     if (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
         lexeme += readUntilDelimiter();
-        addToken(Token(invalid_token, lexeme, loc));
+        addToken(Token(unknown, lexeme, loc));
         addError(loc, "Format angka tidak valid", lexeme);
         return;
     }
@@ -462,12 +449,12 @@ void Lexer::processUnknownCharacter() {
         case '_': errorMsg = "Karakter '_' tidak diizinkan pada identifier"; break;
     }
 
-    addToken(Token(invalid_token, lexeme, loc));
+    addToken(Token(unknown, lexeme, loc));
     addError(loc, errorMsg, lexeme);
     reader.advance();
 }
 
 void Lexer::processSingleEqualsError(const CodeLocation &loc) {
-    addToken(Token(invalid_token, "=", loc));
+    addToken(Token(unknown, "=", loc));
     addError(loc, "Operator '=' tidak valid. Gunakan '==' untuk equal", "=");
 }

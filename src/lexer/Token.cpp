@@ -4,8 +4,7 @@
 
 std::string tokenTypeToString(TokenType type) {
     static const std::map<TokenType, std::string> typeMap = {
-        {TokenType::eof, "eof"},
-        {TokenType::invalid_token, "UNKNOWN"},
+        {TokenType::unknown, "UNKNOWN"},
         {TokenType::intcon, "intcon"},
         {TokenType::realcon, "realcon"},
         {TokenType::charcon, "charcon"},
@@ -80,5 +79,5 @@ std::string tokenValueToString(const Token &token) {
 bool tokenNeedsValue(TokenType type) {
     return type == TokenType::intcon || type == TokenType::realcon || type == TokenType::charcon ||
            type == TokenType::string || type == TokenType::ident || type == TokenType::comment ||
-           type == TokenType::invalid_token;
+           type == TokenType::unknown;
 }

@@ -23,7 +23,7 @@ void Compiler::lexer() {
     }
 
     const std::string baseName = inputPath.stem().string();
-    const std::filesystem::path outputDir = "../test/milestone-1/output";
+    const std::filesystem::path outputDir = "../test/milestone-2/output";
     const std::filesystem::path fullPath = outputDir / (baseName + "-result.txt");
 
     if (!std::filesystem::exists(outputDir)) {

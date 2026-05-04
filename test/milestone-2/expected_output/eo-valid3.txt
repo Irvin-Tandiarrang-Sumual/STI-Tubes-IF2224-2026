@@ -1,0 +1,137 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident (tc3)
+│   └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   ├── <simple-expression>
+│   │   │       │   │   └── <term>
+│   │   │       │   │       └── <factor>
+│   │   │       │   │           └── ident (a)
+│   │   │       │   ├── <relational-operator>
+│   │   │       │   │   └── gtr
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon (0)
+│   │   │       ├── thensy
+│   │   │       ├── <statement>
+│   │   │       │   └── <assignment-statement>
+│   │   │       │       ├── <variable>
+│   │   │       │       │   └── ident (a)
+│   │   │       │       ├── becomes
+│   │   │       │       └── <expression>
+│   │   │       │           └── <simple-expression>
+│   │   │       │               └── <term>
+│   │   │       │                   └── <factor>
+│   │   │       │                       └── intcon (1)
+│   │   │       ├── elsesy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident (a)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon (0)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <while-statement>
+│   │   │       ├── whilesy
+│   │   │       ├── <expression>
+│   │   │       │   ├── <simple-expression>
+│   │   │       │   │   └── <term>
+│   │   │       │   │       └── <factor>
+│   │   │       │   │           └── ident (a)
+│   │   │       │   ├── <relational-operator>
+│   │   │       │   │   └── lss
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon (5)
+│   │   │       ├── dosy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident (a)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       ├── <term>
+│   │   │                       │   └── <factor>
+│   │   │                       │       └── ident (a)
+│   │   │                       ├── <additive-operator>
+│   │   │                       │   └── plus
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon (1)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <for-statement>
+│   │   │       ├── forsy
+│   │   │       ├── ident (i)
+│   │   │       ├── becomes
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon (1)
+│   │   │       ├── tosy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon (5)
+│   │   │       ├── dosy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident (a)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon (2)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   │       └── <repeat-statement>
+│   │           ├── repeatsy
+│   │           ├── <statement-list>
+│   │           │   └── <statement>
+│   │           │       └── <assignment-statement>
+│   │           │           ├── <variable>
+│   │           │           │   └── ident (a)
+│   │           │           ├── becomes
+│   │           │           └── <expression>
+│   │           │               └── <simple-expression>
+│   │           │                   ├── <term>
+│   │           │                   │   └── <factor>
+│   │           │                   │       └── ident (a)
+│   │           │                   ├── <additive-operator>
+│   │           │                   │   └── minus
+│   │           │                   └── <term>
+│   │           │                       └── <factor>
+│   │           │                           └── intcon (1)
+│   │           ├── untilsy
+│   │           └── <expression>
+│   │               ├── <simple-expression>
+│   │               │   └── <term>
+│   │               │       └── <factor>
+│   │               │           └── ident (a)
+│   │               ├── <relational-operator>
+│   │               │   └── eql
+│   │               └── <simple-expression>
+│   │                   └── <term>
+│   │                       └── <factor>
+│   │                           └── intcon (0)
+│   └── endsy
+└── period
