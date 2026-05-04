@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-Compiler::Compiler(const std::filesystem::path &path) : inputPath(path) {}
+Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
+    : inputPath(path), outputDir(outputDir) {}
 Compiler::~Compiler() = default;
 
 // sekaligus ngelakuin write kali yak :/
@@ -23,8 +24,7 @@ void Compiler::lexer() {
     }
 
     const std::string baseName = inputPath.stem().string();
-    const std::filesystem::path outputDir = "../test/milestone-2/output";
-    const std::filesystem::path fullPath = outputDir / (baseName + "-result.txt");
+    const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-result.txt");
 
     if (!std::filesystem::exists(outputDir)) {
         std::filesystem::create_directories(outputDir);

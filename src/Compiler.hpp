@@ -7,11 +7,12 @@
 
 class Compiler {
 public:
-    explicit Compiler(const std::filesystem::path &path);
+    explicit Compiler(const std::filesystem::path &path, const std::string &outputDir);
     ~Compiler();
 
     void lexer();
 
 private:
     std::filesystem::path inputPath;
+    std::string outputDir;
 };

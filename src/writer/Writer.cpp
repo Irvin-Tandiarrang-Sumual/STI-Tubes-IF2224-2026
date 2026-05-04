@@ -34,7 +34,7 @@ void Writer::writeToFile() const {
         }
 
         unsigned int endLine = startLine;
-        if (token.type == comment || token.type == string || token.type == charcon || token.type == invalid_token) {
+        if (token.type == comment || token.type == string || token.type == charcon || token.type == unknown) {
             const std::string raw = tokenValueToString(token);
             endLine += static_cast<unsigned int>(std::count(raw.begin(), raw.end(), '\n'));
         }
