@@ -125,7 +125,7 @@ class Parser {
         // operators
         CSTNodes* parseRelationalOperator();
 
-        CSTNodes* parseAdditionalOperator();
+        CSTNodes* parseAdditiveOperator();
 
         CSTNodes* parseMultiplicativeOperator();
 };
