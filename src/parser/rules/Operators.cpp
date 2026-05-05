@@ -1,8 +1,7 @@
 #include "../Parser.hpp"
 
 /*
-Production Rule :
-    RELATIONAL-OPERATOR → eql | neq | gtr | geq | lss | leq
+    RELATIONAL-OPERATOR : eql | neq | gtr | geq | lss | leq
 */
 CSTNodes* Parser::parseRelationalOperator() {
     CSTNodes* node = new CSTNodes(NonTerminal::RELATIONAL_OPERATOR, peek().codeLocation);
@@ -27,8 +26,7 @@ CSTNodes* Parser::parseRelationalOperator() {
 }
 
 /*
-Production Rule :
-    ADDITIVE-OPERATOR → plus | minus | orsy
+    ADDITIVE-OPERATOR : plus | minus | orsy
 */
 CSTNodes* Parser::parseAdditiveOperator() {
     CSTNodes* node = new CSTNodes(NonTerminal::ADDITIVE_OPERATOR, peek().codeLocation);
@@ -49,8 +47,7 @@ CSTNodes* Parser::parseAdditiveOperator() {
 }
 
 /*
-Production Rule :
-    MULTIPLICATIVE-OPERATOR → times | rdiv | idiv | imod | andsy
+    MULTIPLICATIVE-OPERATOR : times | rdiv | idiv | imod | andsy
 */
 CSTNodes* Parser::parseMultiplicativeOperator() {
     CSTNodes* node = new CSTNodes(NonTerminal::MULTIPLICATIVE_OPERATOR, peek().codeLocation);

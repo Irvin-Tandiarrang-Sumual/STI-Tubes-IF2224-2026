@@ -1,8 +1,7 @@
 #include "../Parser.hpp"
 
 /*
-Production Rule :
-    IF-STATEMENT → ifsy + EXPRESSION + thensy + STATEMENT + (elsesy + STATEMENT)?
+    IF-STATEMENT : ifsy + EXPRESSION + thensy + STATEMENT + (elsesy + STATEMENT)?
 */
 CSTNodes* Parser::parseIfStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::IF_STATEMENT, peek().codeLocation);
@@ -20,8 +19,7 @@ CSTNodes* Parser::parseIfStatement() {
 }
 
 /*
-Production Rule :
-    CASE-STATEMENT → casesy + EXPRESSION + ofsy + CASE-BLOCK + endsy
+    CASE-STATEMENT : casesy + EXPRESSION + ofsy + CASE-BLOCK + endsy
 */
 CSTNodes* Parser::parseCaseStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::CASE_STATEMENT, peek().codeLocation);
@@ -34,8 +32,7 @@ CSTNodes* Parser::parseCaseStatement() {
 }
 
 /*
-Production Rule :
-    CASE-BLOCK → CONSTANT + (comma + CONSTANT)* + colon + STATEMENT + (semicolon + CASE-BLOCK?)* 
+    CASE-BLOCK : CONSTANT + (comma + CONSTANT)* + colon + STATEMENT + (semicolon + CASE-BLOCK)?
 */
 CSTNodes* Parser::parseCaseBlock() {
     CSTNodes* node = new CSTNodes(NonTerminal::CASE_BLOCK, peek().codeLocation);
@@ -67,8 +64,7 @@ CSTNodes* Parser::parseCaseBlock() {
 }
 
 /*
-Production Rule :
-    WHILE-STATEMENT → whilesy + EXPRESSION + dosy + STATEMENT
+    WHILE-STATEMENT : whilesy + EXPRESSION + dosy + STATEMENT
 */
 CSTNodes* Parser::parseWhileStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::WHILE_STATEMENT, peek().codeLocation);
@@ -80,8 +76,7 @@ CSTNodes* Parser::parseWhileStatement() {
 }
 
 /*
-Production Rule :
-    REPEAT-STATEMENT → repeatsy + STATEMENT-LIST + untilsy + EXPRESSION
+    REPEAT-STATEMENT : repeatsy + STATEMENT-LIST + untilsy + EXPRESSION
 */
 CSTNodes* Parser::parseRepeatStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::REPEAT_STATEMENT, peek().codeLocation);
@@ -93,8 +88,7 @@ CSTNodes* Parser::parseRepeatStatement() {
 }
 
 /*
-Production Rule :
-    FOR-STATEMENT → forsy + ident + becomes + EXPRESSION + ( tosy | downtosy) + EXPRESSION + dosy + STATEMENT
+    FOR-STATEMENT : forsy + ident + becomes + EXPRESSION + (tosy | downtosy) + EXPRESSION + dosy + STATEMENT
 */
 CSTNodes* Parser::parseForStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::FOR_STATEMENT, peek().codeLocation);

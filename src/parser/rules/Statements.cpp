@@ -1,10 +1,9 @@
 #pragma once
 #include "../Parser.hpp"
 
-/**
- * Production Rule:
- * COMPOUND-STATEMENT-> beginsy + STATEMENT-LIST + endsy
- */
+/*
+    COMPOUND-STATEMENT : beginsy + STATEMENT-LIST + endsy
+*/
 CSTNodes* Parser::parseCompoundStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::COMPOUND_STATEMENT, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::beginsy)));
@@ -13,10 +12,9 @@ CSTNodes* Parser::parseCompoundStatement(){
     return node;
 }
 
-/**
- * Production Rule:
- * STATEMENT-LIST -> STATEMENT + (semicolon + STATEMENT)*
- */
+/*
+    STATEMENT-LIST : STATEMENT + (semicolon + STATEMENT)*
+*/
 
 CSTNodes* Parser::parseStatementList(){
     CSTNodes* node = new CSTNodes(NonTerminal::STATEMENT_LIST, peek().codeLocation);
@@ -30,10 +28,9 @@ CSTNodes* Parser::parseStatementList(){
     return node;
 }
 
-/**
- * Production Rule:
- * STATEMENT-> (ASSIGNMENT-STATEMENT| IF-STATEMENT | CASE-STATEMENT | WHILE-STATEMENT | REPEAT-STATEMENT | FOR-STATEMENT | PROCEDURE/FUNCTION-CALL)?
- */
+/*
+    STATEMENT : ASSIGNMENT-STATEMENT | IF-STATEMENT | CASE-STATEMENT | WHILE-STATEMENT | REPEAT-STATEMENT | FOR-STATEMENT | PROCEDURE-OR-FUNCTION-CALL
+*/
 
 CSTNodes* Parser::parseStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::STATEMENT, peek().codeLocation);
@@ -43,7 +40,7 @@ CSTNodes* Parser::parseStatement(){
                 peekNext().type == TokenType::period ||
                 peekNext().type == TokenType::lbrack) {
                 node->addChild(parseAssignmentStatement());
-            } else {
+            } else if (peekNext().type == TokenType::lparent) {
                 node->addChild(parseProcedureOrFunctionCall());
             }
             break;
