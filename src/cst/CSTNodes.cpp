@@ -28,3 +28,13 @@ const Token& CSTNodes::getToken() const {
 const CodeLocation& CSTNodes::getLocation() const {
     return location_;
 }
+
+const std::vector<CSTNodes*>& CSTNodes::getChildren() const {
+    return children_;
+}
+
+CSTNodes::~CSTNodes() {
+    for (auto* child : children_) {
+        delete child;
+    }
+}

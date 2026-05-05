@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../lexer/Token.hpp"
 #include <vector>
 #include <variant>
@@ -19,5 +21,6 @@ class CSTNodes {
         const NonTerminal& getNonTerminal() const;
         const Token& getToken() const;
         const CodeLocation& getLocation() const;
+        const std::vector<CSTNodes*>& getChildren() const;
         ~CSTNodes();
 };

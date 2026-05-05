@@ -1,0 +1,138 @@
+programsy
+ident (typesarraysrecordsparameters)
+semicolon
+
+typesy
+ident (Color)
+eql
+lparent
+ident (Red)
+comma
+ident (Green)
+comma
+ident (Blue)
+rparent
+semicolon
+ident (RangeAlias)
+eql
+arraysy
+lbrack
+intcon (1)
+period
+period
+intcon (10)
+rbrack
+ofsy
+ident (integer)
+semicolon
+ident (Point)
+eql
+recordsy
+ident (x)
+comma
+ident (y)
+colon
+ident (integer)
+semicolon
+ident (colors)
+colon
+ident (Color)
+semicolon
+ident (values)
+colon
+arraysy
+lbrack
+intcon (1)
+period
+period
+intcon (3)
+rbrack
+ofsy
+ident (integer)
+endsy
+semicolon
+ident (PointArray)
+eql
+arraysy
+lbrack
+intcon (1)
+period
+period
+intcon (5)
+rbrack
+ofsy
+ident (Point)
+semicolon
+
+varsy
+ident (p)
+colon
+ident (Point)
+semicolon
+ident (palette)
+colon
+ident (Color)
+semicolon
+ident (points)
+colon
+ident (PointArray)
+semicolon
+
+proceduresy
+ident (DrawPoint)
+lparent
+ident (pt)
+colon
+ident (Point)
+semicolon
+ident (shade)
+colon
+ident (Color)
+semicolon
+ident (coords)
+colon
+arraysy
+lbrack
+intcon (1)
+period
+period
+intcon (2)
+rbrack
+ofsy
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+
+functionsy
+ident (BuildPoint)
+lparent
+ident (x)
+colon
+ident (integer)
+semicolon
+ident (y)
+colon
+ident (integer)
+rparent
+colon
+ident (Point)
+semicolon
+beginsy
+endsy
+semicolon
+
+beginsy
+ident (DrawPoint)
+lparent
+ident (p)
+comma
+ident (palette)
+comma
+ident (points)
+rparent
+semicolon
+endsy
+period

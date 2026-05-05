@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
             compiler.lexer();
         } else if (mode == "p") {
             compiler.lexer();
-            // compiler.parser(); // Kalau udah jadi baru uncomment yak
+            compiler.parser();
         }
         
         std::cout << "\nSelesai.\n";

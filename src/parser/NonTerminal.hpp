@@ -1,3 +1,5 @@
+#pragma once
+
 enum class NonTerminal {
     PROGRAM,
     PROGRAM_HEADER,

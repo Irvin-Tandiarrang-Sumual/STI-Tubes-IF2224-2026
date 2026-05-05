@@ -30,6 +30,15 @@ class Parser {
         // skip comment krn ga kepake
         void skipUselessToken();
 
+        // cek token sekarang tanpa advance
+        bool check(TokenType type) const;
+
+        // cek apakah sudah habis
+        bool isAtEnd() const;
+
+        // cek apakah statement sekarang adalah assignment (lookahead)
+        bool isAssignmentStart() const;
+
         // parse based on production rules
         // program structure
         CSTNodes* parseProgram();
@@ -125,7 +134,7 @@ class Parser {
         // operators
         CSTNodes* parseRelationalOperator();
 
-        CSTNodes* parseAdditionalOperator();
+        CSTNodes* parseAdditiveOperator();
 
         CSTNodes* parseMultiplicativeOperator();
 };

@@ -1,7 +1,7 @@
 #include "../Parser.hpp"
+
 /*
-Production Rule :
-    PROGRAM → PROGRAM-HEADER + DECLARATION-PART + COMPOUND-STATEMENT + period
+    PROGRAM : PROGRAM-HEADER + DECLARATION-PART + COMPOUND-STATEMENT + period
 */
 CSTNodes* Parser::parseProgram() {
     CSTNodes* node = new CSTNodes(NonTerminal::PROGRAM, peek().codeLocation);
@@ -14,8 +14,7 @@ CSTNodes* Parser::parseProgram() {
 }
 
 /*
-Production Rule :
-    PROGRAM-HEADER → programsy + ident + semicolon
+    PROGRAM-HEADER : programsy + ident + semicolon
 */
 CSTNodes* Parser::parseProgramHeader() {
     CSTNodes* node = new CSTNodes(NonTerminal::PROGRAM_HEADER, peek().codeLocation);
@@ -26,8 +25,7 @@ CSTNodes* Parser::parseProgramHeader() {
 }
 
 /*
-Production Rule :
-    BLOCK -> DECLARATION-PART + COMPOUND-STATEMENT
+    BLOCK : DECLARATION-PART + COMPOUND-STATEMENT
 */
 CSTNodes* Parser::parseBlock() {
     CSTNodes* node = new CSTNodes(NonTerminal::BLOCK, peek().codeLocation);

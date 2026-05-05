@@ -1,0 +1,227 @@
+<program>
+    ├── <program-header>
+    │   ├── programsy
+    │   ├── ident(typesarraysrecordsparameters)
+    │   └── semicolon
+    ├── <declaration-part>
+    │   ├── <type-declaration>
+    │   │   ├── typesy
+    │   │   ├── ident(Color)
+    │   │   ├── eql
+    │   │   ├── <type>
+    │   │   │   └── <enumerated>
+    │   │   │       ├── lparent
+    │   │   │       ├── ident(Red)
+    │   │   │       ├── comma
+    │   │   │       ├── ident(Green)
+    │   │   │       ├── comma
+    │   │   │       ├── ident(Blue)
+    │   │   │       └── rparent
+    │   │   ├── semicolon
+    │   │   ├── ident(RangeAlias)
+    │   │   ├── eql
+    │   │   ├── <type>
+    │   │   │   └── <array-type>
+    │   │   │       ├── arraysy
+    │   │   │       ├── lbrack
+    │   │   │       ├── <range>
+    │   │   │       │   ├── <constant>
+    │   │   │       │   │   └── intcon(1)
+    │   │   │       │   ├── period
+    │   │   │       │   ├── period
+    │   │   │       │   └── <constant>
+    │   │   │       │       └── intcon(10)
+    │   │   │       ├── rbrack
+    │   │   │       ├── ofsy
+    │   │   │       └── <type>
+    │   │   │           └── ident(integer)
+    │   │   ├── semicolon
+    │   │   ├── ident(Point)
+    │   │   ├── eql
+    │   │   ├── <type>
+    │   │   │   └── <record-type>
+    │   │   │       ├── recordsy
+    │   │   │       ├── <field-list>
+    │   │   │       │   ├── <field-part>
+    │   │   │       │   │   ├── <identifier-list>
+    │   │   │       │   │   │   ├── ident(x)
+    │   │   │       │   │   │   ├── comma
+    │   │   │       │   │   │   └── ident(y)
+    │   │   │       │   │   ├── colon
+    │   │   │       │   │   └── <type>
+    │   │   │       │   │       └── ident(integer)
+    │   │   │       │   ├── semicolon
+    │   │   │       │   ├── <field-part>
+    │   │   │       │   │   ├── <identifier-list>
+    │   │   │       │   │   │   └── ident(colors)
+    │   │   │       │   │   ├── colon
+    │   │   │       │   │   └── <type>
+    │   │   │       │   │       └── ident(Color)
+    │   │   │       │   ├── semicolon
+    │   │   │       │   └── <field-part>
+    │   │   │       │       ├── <identifier-list>
+    │   │   │       │       │   └── ident(values)
+    │   │   │       │       ├── colon
+    │   │   │       │       └── <type>
+    │   │   │       │           └── <array-type>
+    │   │   │       │               ├── arraysy
+    │   │   │       │               ├── lbrack
+    │   │   │       │               ├── <range>
+    │   │   │       │               │   ├── <constant>
+    │   │   │       │               │   │   └── intcon(1)
+    │   │   │       │               │   ├── period
+    │   │   │       │               │   ├── period
+    │   │   │       │               │   └── <constant>
+    │   │   │       │               │       └── intcon(3)
+    │   │   │       │               ├── rbrack
+    │   │   │       │               ├── ofsy
+    │   │   │       │               └── <type>
+    │   │   │       │                   └── ident(integer)
+    │   │   │       └── endsy
+    │   │   ├── semicolon
+    │   │   ├── ident(PointArray)
+    │   │   ├── eql
+    │   │   ├── <type>
+    │   │   │   └── <array-type>
+    │   │   │       ├── arraysy
+    │   │   │       ├── lbrack
+    │   │   │       ├── <range>
+    │   │   │       │   ├── <constant>
+    │   │   │       │   │   └── intcon(1)
+    │   │   │       │   ├── period
+    │   │   │       │   ├── period
+    │   │   │       │   └── <constant>
+    │   │   │       │       └── intcon(5)
+    │   │   │       ├── rbrack
+    │   │   │       ├── ofsy
+    │   │   │       └── <type>
+    │   │   │           └── ident(Point)
+    │   │   └── semicolon
+    │   ├── <var-declaration>
+    │   │   ├── varsy
+    │   │   ├── <identifier-list>
+    │   │   │   └── ident(p)
+    │   │   ├── colon
+    │   │   ├── <type>
+    │   │   │   └── ident(Point)
+    │   │   ├── semicolon
+    │   │   ├── <identifier-list>
+    │   │   │   └── ident(palette)
+    │   │   ├── colon
+    │   │   ├── <type>
+    │   │   │   └── ident(Color)
+    │   │   ├── semicolon
+    │   │   ├── <identifier-list>
+    │   │   │   └── ident(points)
+    │   │   ├── colon
+    │   │   ├── <type>
+    │   │   │   └── ident(PointArray)
+    │   │   └── semicolon
+    │   ├── <subprogram-declaration>
+    │   │   └── <procedure-declaration>
+    │   │       ├── proceduresy
+    │   │       ├── ident(DrawPoint)
+    │   │       ├── <formal-parameter-list>
+    │   │       │   ├── lparent
+    │   │       │   ├── <parameter-group>
+    │   │       │   │   ├── <identifier-list>
+    │   │       │   │   │   └── ident(pt)
+    │   │       │   │   ├── colon
+    │   │       │   │   └── ident(Point)
+    │   │       │   ├── semicolon
+    │   │       │   ├── <parameter-group>
+    │   │       │   │   ├── <identifier-list>
+    │   │       │   │   │   └── ident(shade)
+    │   │       │   │   ├── colon
+    │   │       │   │   └── ident(Color)
+    │   │       │   ├── semicolon
+    │   │       │   ├── <parameter-group>
+    │   │       │   │   ├── <identifier-list>
+    │   │       │   │   │   └── ident(coords)
+    │   │       │   │   ├── colon
+    │   │       │   │   └── <array-type>
+    │   │       │   │       ├── arraysy
+    │   │       │   │       ├── lbrack
+    │   │       │   │       ├── <range>
+    │   │       │   │       │   ├── <constant>
+    │   │       │   │       │   │   └── intcon(1)
+    │   │       │   │       │   ├── period
+    │   │       │   │       │   ├── period
+    │   │       │   │       │   └── <constant>
+    │   │       │   │       │       └── intcon(2)
+    │   │       │   │       ├── rbrack
+    │   │       │   │       ├── ofsy
+    │   │       │   │       └── <type>
+    │   │       │   │           └── ident(integer)
+    │   │       │   └── rparent
+    │   │       ├── semicolon
+    │   │       ├── <block>
+    │   │       │   ├── <declaration-part>
+    │   │       │   └── <compound-statement>
+    │   │       │       ├── beginsy
+    │   │       │       ├── <statement-list>
+    │   │       │       │   └── <statement>
+    │   │       │       └── endsy
+    │   │       └── semicolon
+    │   └── <subprogram-declaration>
+    │       └── <function-declaration>
+    │           ├── functionsy
+    │           ├── ident(BuildPoint)
+    │           ├── <formal-parameter-list>
+    │           │   ├── lparent
+    │           │   ├── <parameter-group>
+    │           │   │   ├── <identifier-list>
+    │           │   │   │   └── ident(x)
+    │           │   │   ├── colon
+    │           │   │   └── ident(integer)
+    │           │   ├── semicolon
+    │           │   ├── <parameter-group>
+    │           │   │   ├── <identifier-list>
+    │           │   │   │   └── ident(y)
+    │           │   │   ├── colon
+    │           │   │   └── ident(integer)
+    │           │   └── rparent
+    │           ├── colon
+    │           ├── ident(Point)
+    │           ├── semicolon
+    │           ├── <block>
+    │           │   ├── <declaration-part>
+    │           │   └── <compound-statement>
+    │           │       ├── beginsy
+    │           │       ├── <statement-list>
+    │           │       │   └── <statement>
+    │           │       └── endsy
+    │           └── semicolon
+    ├── <compound-statement>
+    │   ├── beginsy
+    │   ├── <statement-list>
+    │   │   ├── <statement>
+    │   │   │   └── <procedure/function-call>
+    │   │   │       ├── ident(DrawPoint)
+    │   │   │       ├── lparent
+    │   │   │       ├── <parameter-list>
+    │   │   │       │   ├── <expression>
+    │   │   │       │   │   └── <simple-expression>
+    │   │   │       │   │       └── <term>
+    │   │   │       │   │           └── <factor>
+    │   │   │       │   │               └── <variable>
+    │   │   │       │   │                   └── ident(p)
+    │   │   │       │   ├── comma
+    │   │   │       │   ├── <expression>
+    │   │   │       │   │   └── <simple-expression>
+    │   │   │       │   │       └── <term>
+    │   │   │       │   │           └── <factor>
+    │   │   │       │   │               └── <variable>
+    │   │   │       │   │                   └── ident(palette)
+    │   │   │       │   ├── comma
+    │   │   │       │   └── <expression>
+    │   │   │       │       └── <simple-expression>
+    │   │   │       │           └── <term>
+    │   │   │       │               └── <factor>
+    │   │   │       │                   └── <variable>
+    │   │   │       │                       └── ident(points)
+    │   │   │       └── rparent
+    │   │   ├── semicolon
+    │   │   └── <statement>
+    │   └── endsy
+    └── period

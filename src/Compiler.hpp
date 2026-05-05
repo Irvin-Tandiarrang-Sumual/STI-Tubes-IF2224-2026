@@ -1,8 +1,10 @@
 #pragma once
 
 #include <filesystem>
+#include <vector>
 
 #include "lexer/Lexer.hpp"
+#include "parser/Parser.hpp"
 #include "writer/Writer.hpp"
 
 class Compiler {
@@ -11,8 +13,10 @@ public:
     ~Compiler();
 
     void lexer();
+    void parser();
 
 private:
     std::filesystem::path inputPath;
     std::string outputDir;
+    std::vector<Token> tokens_;
 };

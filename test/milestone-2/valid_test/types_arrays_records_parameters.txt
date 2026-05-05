@@ -1,0 +1,28 @@
+program typesarraysrecordsparameters;
+
+type
+    Color == (Red, Green, Blue);
+    RangeAlias == array [1..10] of integer;
+    Point == record
+        x, y: integer;
+        colors: Color;
+        values: array [1..3] of integer
+    end;
+    PointArray == array [1..5] of Point;
+
+var
+    p: Point;
+    palette: Color;
+    points: PointArray;
+
+procedure DrawPoint(pt: Point; shade: Color; coords: array [1..2] of integer);
+begin
+end;
+
+function BuildPoint(x: integer; y: integer): Point;
+begin
+end;
+
+begin
+    DrawPoint(p, palette, points);
+end.
