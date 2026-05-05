@@ -1,5 +1,18 @@
 #include "../Parser.hpp"
 
+// <identifier-list> : ident + (comma + ident)*
+CSTNodes* Parser::parseIdentifierList() {
+    CSTNodes* node = new CSTNodes(NonTerminal::IDENTIFIER_LIST, peek().codeLocation);
+    node->addChild(new CSTNodes(expect(TokenType::ident)));
+
+    while (!isAtEnd() && check(TokenType::comma)) {
+        node->addChild(new CSTNodes(expect(TokenType::comma)));
+        node->addChild(new CSTNodes(expect(TokenType::ident)));
+    }
+
+    return node;
+}
+
 // <variable> -> ident + (<component-variable>)*
 CSTNodes* Parser::parseVariable() {
     CSTNodes* node = new CSTNodes(NonTerminal::VARIABLE, peek().codeLocation);
@@ -56,15 +69,15 @@ CSTNodes* Parser::parseIndexList() {
 
 
  // <assignment-statement> -> <variable> + becomes + <expression>
-CSTNodes* Parser::parseAssignmentStatement() {
-    CSTNodes* node = new CSTNodes(NonTerminal::ASSIGNMENT_STATEMENT, peek().codeLocation);
+// CSTNodes* Parser::parseAssignmentStatement() {
+//     CSTNodes* node = new CSTNodes(NonTerminal::ASSIGNMENT_STATEMENT, peek().codeLocation);
 
-    node->addChild(parseVariable());
-    node->addChild(new CSTNodes(expect(TokenType::becomes)));
-    node->addChild(parseExpression());
+//     node->addChild(parseVariable());
+//     node->addChild(new CSTNodes(expect(TokenType::becomes)));
+//     node->addChild(parseExpression());
 
-    return node;
-}
+//     return node;
+// }
 
 // cek apakah posisi saat ini = assignment (di pake habis cek ident di parseVariable)
 bool Parser::isAssignmentStart() const {

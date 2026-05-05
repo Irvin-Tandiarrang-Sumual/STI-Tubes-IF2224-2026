@@ -3,6 +3,8 @@
 Parser::Parser(const std::vector<Token>& tokens)
     : tokens_(tokens) {}
 
+Parser::~Parser() = default;
+
 CSTNodes* Parser::parse() {
     return parseProgram();
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../lexer/Token.hpp"
 #include <vector>
 #include <variant>
