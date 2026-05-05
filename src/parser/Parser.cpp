@@ -17,10 +17,13 @@ const Token& Parser::peekNext() const {
 
 const Token Parser::expect(TokenType token) {
     if (peek().type != token) {
-        throw std::exception(); //
+        std::string expected = tokenTypeToString(token);
+        std::string got = tokenTypeToString(peek().type);
+        throw std::runtime_error( "Syntax error at line " + std::to_string(peek().codeLocation.line) + ", col " + std::to_string(peek().codeLocation.col) + ": expected '" + expected + "', got '" + got + "'");
     }
+    const Token consumed = tokens_.at(currentPosition_);
     advance();
-    return tokens_.at(currentPosition_);
+    return consumed;
 }
 
 void Parser::advance() {
@@ -36,4 +39,13 @@ void Parser::skipUselessToken() {
         (tokens_[currentPosition_].type == TokenType::comment)) {
         currentPosition_++;
     }
+}
+
+bool Parser::check(TokenType type) const {
+    if (isAtEnd()) return false;
+    return tokens_[currentPosition_].type == type;
+}
+
+bool Parser::isAtEnd() const {
+    return currentPosition_ >= tokens_.size();
 }
