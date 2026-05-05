@@ -22,5 +22,7 @@ class CSTNodes {
         const Token& getToken() const;
         const CodeLocation& getLocation() const;
         const std::vector<CSTNodes*>& getChildren() const;
+        const std::string toString() const;
         ~CSTNodes();
+        
 };

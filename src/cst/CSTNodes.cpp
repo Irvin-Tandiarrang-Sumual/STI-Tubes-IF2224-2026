@@ -38,3 +38,15 @@ CSTNodes::~CSTNodes() {
         delete child;
     }
 }
+
+const std::string CSTNodes::toString() const{
+    if (isTerminal()) {
+        const Token& token = getToken();
+        std::string typeStr = tokenTypeToString(token.type);
+        if (tokenNeedsValue(token.type)) {
+            return typeStr + "(" + tokenValueToString(token) + ")";
+        }
+        return typeStr;
+    }
+    return "<" + nonTerminalToString(getNonTerminal()) + ">";
+}
