@@ -134,7 +134,7 @@ void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const s
         std::string childPrefix = prefix;
 
         if (depth == 0) {
-            childPrefix = "    ";
+            childPrefix.clear();
         } else {
             childPrefix += (isLast ? "    " : "│   ");
         }
