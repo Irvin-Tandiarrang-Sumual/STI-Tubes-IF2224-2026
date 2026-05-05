@@ -1,6 +1,6 @@
 #include "../Parser.hpp"
 
-// <identifier-list> : ident + (comma + ident)*
+// IDENTIFIER-LIST : ident + (comma + ident)*
 CSTNodes* Parser::parseIdentifierList() {
     CSTNodes* node = new CSTNodes(NonTerminal::IDENTIFIER_LIST, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::ident)));
@@ -13,7 +13,7 @@ CSTNodes* Parser::parseIdentifierList() {
     return node;
 }
 
-// <variable> -> ident + (<component-variable>)*
+// VARIABLE : ident + (COMPONENT-VARIABLE)*
 CSTNodes* Parser::parseVariable() {
     CSTNodes* node = new CSTNodes(NonTerminal::VARIABLE, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::ident)));
@@ -23,7 +23,7 @@ CSTNodes* Parser::parseVariable() {
     return node;
 }
 
-// <component-variable> -> (lbrack + <index-list> + rbrack) | (period + ident) 
+// COMPONENT-VARIABLE : (lbrack + INDEX-LIST + rbrack) | (period + ident) 
 CSTNodes* Parser::parseComponentVariable() {
     CSTNodes* node = new CSTNodes(NonTerminal::COMPONENT_VARIABLE, peek().codeLocation);
 
@@ -44,7 +44,7 @@ CSTNodes* Parser::parseComponentVariable() {
     throw std::runtime_error("Syntax error at line " + std::to_string(peek().codeLocation.line) + ": expected '[' or '.' in component-variable, got '" + tokenTypeToString(peek().type) + "'" );
 }
 
-// <index-list> -> (intcon | charcon | ident) + (comma + <index-list>)*
+// INDEX-LIST : (intcon | charcon | ident) + (comma + INDEX-LIST)*
 CSTNodes* Parser::parseIndexList() {
     CSTNodes* node = new CSTNodes(NonTerminal::INDEX_LIST, peek().codeLocation);
 
@@ -66,18 +66,6 @@ CSTNodes* Parser::parseIndexList() {
     }
     return node;
 }
-
-
- // <assignment-statement> -> <variable> + becomes + <expression>
-// CSTNodes* Parser::parseAssignmentStatement() {
-//     CSTNodes* node = new CSTNodes(NonTerminal::ASSIGNMENT_STATEMENT, peek().codeLocation);
-
-//     node->addChild(parseVariable());
-//     node->addChild(new CSTNodes(expect(TokenType::becomes)));
-//     node->addChild(parseExpression());
-
-//     return node;
-// }
 
 // cek apakah posisi saat ini = assignment (di pake habis cek ident di parseVariable)
 bool Parser::isAssignmentStart() const {
