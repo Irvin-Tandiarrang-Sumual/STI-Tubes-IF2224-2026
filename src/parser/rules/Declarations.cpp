@@ -1,10 +1,9 @@
 #pragma once
 #include "../Parser.hpp"
 
-/**
- * Production Rule:
- * DECLARATION-PART -> (CONST-DECLARATION)* + (TYPE-DECLARATION)* + (VAR-DECLARATION)* + (SUBPROGRAM-DECLARATION)*
- */
+/*
+    DECLARATION-PART : (CONST-DECLARATION)* + (TYPE-DECLARATION)* + (VAR-DECLARATION)* + (SUBPROGRAM-DECLARATION)*
+*/
 
 CSTNodes* Parser::parseDeclarationPart(){
     CSTNodes* node = new CSTNodes(NonTerminal::DECLARATION_PART, peek().codeLocation);
@@ -24,10 +23,9 @@ CSTNodes* Parser::parseDeclarationPart(){
     return node;
 }
 
-/**
- * Prodiction Rule:
- * CONST-DECLARATION -> constsy + (ident + eql + CONSTANT + semicolon)+
- */
+/*
+    CONST-DECLARATION : constsy + (ident + eql + CONSTANT + semicolon)+
+*/
 CSTNodes* Parser::parseConstDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::CONST_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::constsy)));
@@ -44,10 +42,9 @@ CSTNodes* Parser::parseConstDeclaration(){
     return node;
 }
 
-/**
- * Production Rule:
- * CONSTANT -> charcon | string | [(plus | minus)? + (ident | intcon | realcon)] 
- */
+/*
+    CONSTANT : charcon | string | [(plus | minus)? + (ident | intcon | realcon)]
+*/
 CSTNodes* Parser::parseConstant(){
     CSTNodes* node = new CSTNodes(NonTerminal::CONSTANT, peek().codeLocation);
     switch(peek().type){
@@ -68,10 +65,9 @@ CSTNodes* Parser::parseConstant(){
     return node;
 }
 
-/**
- * Production Rule:
- * TYPE-DECLARATION -> typesy + (ident + eql + TYPE + semicolon)+
- */
+/*
+    TYPE-DECLARATION : typesy + (ident + eql + TYPE + semicolon)+
+*/
 CSTNodes* Parser::parseTypeDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::TYPE_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::typesy)));
@@ -88,10 +84,9 @@ CSTNodes* Parser::parseTypeDeclaration(){
     return node;
 }
 
-/**
- * Production Rule:
- * VAR-DECLARATION -> varsy + (IDENTIFIER-LIST + colon + TYPE + semicolon)+
- */
+/*
+    VAR-DECLARATION : varsy + (IDENTIFIER-LIST + colon + TYPE + semicolon)+
+*/
 CSTNodes* Parser::parseVarDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::VAR_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::varsy)));
@@ -108,10 +103,9 @@ CSTNodes* Parser::parseVarDeclaration(){
     return node;
 }
 
-/**
- * Production Rule:
- * SUBPROGRAM-DECLARATION -> PROCEDURE-DECLARATION | FUNCTION-DECLARATION
- */
+/*
+    SUBPROGRAM-DECLARATION : PROCEDURE-DECLARATION | FUNCTION-DECLARATION
+*/
 CSTNodes* Parser::parseSubprogramDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::SUBPROGRAM_DECLARATION, peek().codeLocation);
     node->addChild(parseProcedureDeclaration());
@@ -120,10 +114,9 @@ CSTNodes* Parser::parseSubprogramDeclaration(){
 }
 
 
-/**
- * Production Rule:
- * PROCEDURE-DECLARATION -> proceduresy + ident + (FORMAL-PARAMETER-LIST)? + semicolon + BLOCK + semicolon
- */
+/*
+    PROCEDURE-DECLARATION : proceduresy + ident + (FORMAL-PARAMETER-LIST)? + semicolon + BLOCK + semicolon
+*/
 CSTNodes* Parser::parseProcedureDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::PROCEDURE_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::proceduresy)));
@@ -134,10 +127,9 @@ CSTNodes* Parser::parseProcedureDeclaration(){
     node->addChild(new CSTNodes(expect(TokenType::semicolon)));
 }
 
-/**
- * Production Rule:
- * FUNCITON-DECLARATION -> functionsy + ident + (FORMAL-PARAMETER-LIST)? + colon + ident + semicolon + BLOCK + semicolon
- */
+/*
+    FUNCTION-DECLARATION : functionsy + ident + (FORMAL-PARAMETER-LIST)? + colon + ident + semicolon + BLOCK + semicolon
+*/
 CSTNodes* Parser::parseFunctionDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::FUNCTION_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::functionsy)));
