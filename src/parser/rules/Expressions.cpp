@@ -7,9 +7,8 @@ CSTNodes* Parser::parseExpression() {
     CSTNodes* node = new CSTNodes(NonTerminal::EXPRESSION, peek().codeLocation);
     node->addChild(parseSimpleExpression());
 
-    if (peek().type == TokenType::eql || peek().type == TokenType::neq ||
-        peek().type == TokenType::gtr || peek().type == TokenType::geq ||
-        peek().type == TokenType::lss || peek().type == TokenType::leq) {
+    if (checkMultiple({TokenType::eql, TokenType::neq, TokenType::gtr, TokenType::geq,
+                        TokenType::lss, TokenType::leq})) {
         node->addChild(parseRelationalOperator());
         node->addChild(parseSimpleExpression());
     }
@@ -23,13 +22,13 @@ CSTNodes* Parser::parseExpression() {
 CSTNodes* Parser::parseSimpleExpression() {
     CSTNodes* node = new CSTNodes(NonTerminal::SIMPLE_EXPRESSION, peek().codeLocation);
 
-    if (peek().type == TokenType::plus || peek().type == TokenType::minus) {
+    if (checkMultiple({TokenType::plus, TokenType::minus})) {
         node->addChild(new CSTNodes(expect(peek().type)));
     }
 
     node->addChild(parseTerm());
 
-    while (peek().type == TokenType::plus || peek().type == TokenType::minus || peek().type == TokenType::orsy) {
+    while (checkMultiple({TokenType::plus,TokenType::minus,TokenType::orsy})) {
         node->addChild(parseAdditiveOperator());
         node->addChild(parseTerm());
     }
@@ -44,9 +43,8 @@ CSTNodes* Parser::parseTerm() {
     CSTNodes* node = new CSTNodes(NonTerminal::TERM, peek().codeLocation);
     node->addChild(parseFactor());
 
-    while (peek().type == TokenType::times || peek().type == TokenType::rdiv ||
-           peek().type == TokenType::idiv || peek().type == TokenType::imod ||
-           peek().type == TokenType::andsy) {
+    while (checkMultiple({TokenType::times, TokenType::rdiv,
+        TokenType::idiv, TokenType::imod, TokenType::andsy})) {
         node->addChild(parseMultiplicativeOperator());
         node->addChild(parseFactor());
     }

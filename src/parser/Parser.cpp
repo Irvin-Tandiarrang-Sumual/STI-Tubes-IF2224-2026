@@ -48,6 +48,16 @@ bool Parser::check(TokenType type) const {
     return tokens_[currentPosition_].type == type;
 }
 
+bool Parser::checkMultiple(const std::vector<TokenType>& tokenTypes) const {
+    if (isAtEnd()) return false;
+    for (size_t i = 0; i < tokenTypes.size(); i++) {
+        if (tokens_[currentPosition_].type == tokenTypes[i]) {
+            return true;
+        }
+    }
+    return false;
+    
+}
 bool Parser::isAtEnd() const {
     return currentPosition_ >= tokens_.size();
 }

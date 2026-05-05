@@ -69,7 +69,7 @@ CSTNodes* Parser::parseIndexList() {
 
 // cek apakah posisi saat ini = assignment (di pake habis cek ident di parseVariable)
 bool Parser::isAssignmentStart() const {
-    if (isAtEnd() || peek().type != TokenType::ident) {
+    if (isAtEnd() || !check(TokenType::ident)) {
         return false;
     }
 

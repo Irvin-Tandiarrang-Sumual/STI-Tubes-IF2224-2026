@@ -32,6 +32,9 @@ class Parser {
 
         // cek token sekarang tanpa advance
         bool check(TokenType type) const;
+        
+        // true at least 1 match
+        bool checkMultiple(const std::vector<TokenType>& tokenTypes) const;
 
         // cek apakah sudah habis
         bool isAtEnd() const;

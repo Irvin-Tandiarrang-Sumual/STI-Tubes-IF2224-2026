@@ -34,8 +34,7 @@ CSTNodes* Parser::parseArrayType() {
     node->addChild(new CSTNodes(expect(TokenType::arraysy)));
     node->addChild(new CSTNodes(expect(TokenType::lbrack)));
     
-    if (peek().type == TokenType::ident || peek().type == TokenType::charcon || 
-        peek().type == TokenType::intcon) {
+    if (checkMultiple({TokenType::ident, TokenType::charcon, TokenType::intcon})) {
         if (peekNext().type == TokenType::period) {
             node->addChild(parseRange());
         } else {
@@ -96,7 +95,7 @@ CSTNodes* Parser::parseFieldList() {
     CSTNodes* node = new CSTNodes(NonTerminal::FIELD_LIST, peek().codeLocation);
     node->addChild(parseFieldPart());
     
-    while (peek().type == TokenType::semicolon) {
+    while (check(TokenType::semicolon)) {
         node->addChild(new CSTNodes(expect(TokenType::semicolon)));
         node->addChild(parseFieldPart());
     }

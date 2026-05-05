@@ -8,7 +8,7 @@ CSTNodes* Parser::parseFormalParameterList() {
     node->addChild(new CSTNodes(expect(TokenType::lparent)));
     node->addChild(parseParameterGroup());
     
-    while (peek().type == TokenType::semicolon) {
+    while (check(TokenType::semicolon)) {
         node->addChild(new CSTNodes(expect(TokenType::semicolon)));
         node->addChild(parseParameterGroup());
     }
@@ -25,7 +25,7 @@ CSTNodes* Parser::parseParameterGroup() {
     node->addChild(parseIdentifierList());
     node->addChild(new CSTNodes(expect(TokenType::colon)));
     
-    if (peek().type == TokenType::arraysy) {
+    if (check(TokenType::arraysy)) {
         node->addChild(parseArrayType());
     } else {
         node->addChild(new CSTNodes(expect(TokenType::ident)));
@@ -41,7 +41,7 @@ CSTNodes* Parser::parseParameterList() {
     CSTNodes* node = new CSTNodes(NonTerminal::PARAMETER_LIST, peek().codeLocation);
     node->addChild(parseExpression());
     
-    while (peek().type == TokenType::comma) {
+    while (check(TokenType::comma)) {
         node->addChild(new CSTNodes(expect(TokenType::comma)));
         node->addChild(parseExpression());
     }

@@ -19,7 +19,7 @@ CSTNodes* Parser::parseStatementList(){
     CSTNodes* node = new CSTNodes(NonTerminal::STATEMENT_LIST, peek().codeLocation);
     node->addChild(parseStatement());
 
-    while (peek().type == TokenType::semicolon) {
+    while (check(TokenType::semicolon)) {
         node->addChild(new CSTNodes(expect(TokenType::semicolon)));
         node->addChild(parseStatement());
     }

@@ -10,7 +10,7 @@ CSTNodes* Parser::parseIfStatement() {
     node->addChild(new CSTNodes(expect(TokenType::thensy)));
     node->addChild(parseStatement());
 
-    if (peek().type == TokenType::elsesy) { 
+    if (check(TokenType::elsesy)) { 
         node->addChild(new CSTNodes(expect(TokenType::elsesy)));
         node->addChild(parseStatement());
     }
@@ -38,7 +38,7 @@ CSTNodes* Parser::parseCaseBlock() {
     CSTNodes* node = new CSTNodes(NonTerminal::CASE_BLOCK, peek().codeLocation);
     node->addChild(parseConstant());
 
-    while (peek().type == TokenType::comma) {
+    while (check(TokenType::comma)) {
         node->addChild(new CSTNodes(expect(TokenType::comma)));
         node->addChild(parseConstant());
     }
@@ -46,7 +46,7 @@ CSTNodes* Parser::parseCaseBlock() {
     node->addChild(new CSTNodes(expect(TokenType::colon)));
     node->addChild(parseStatement());
 
-    while (peek().type == TokenType::semicolon) {
+    while (check(TokenType::semicolon)) {
         node->addChild(new CSTNodes(expect(TokenType::semicolon)));
 
         // Ngecek dulu apakah follow(semicolon) merupakan first(CASE-BLOCK) = first(CONSTANT)
@@ -97,10 +97,10 @@ CSTNodes* Parser::parseForStatement() {
     node->addChild(new CSTNodes(expect(TokenType::becomes)));
     node->addChild(parseExpression());
 
-    if (peek().type == TokenType::tosy) {
+    if (check(TokenType::tosy)) {
         node->addChild(new CSTNodes(expect(TokenType::tosy)));
     } else {
-        node->addChild(new CSTNodes(expect(TokenType::downtosy))); 
+        node->addChild(new CSTNodes(expect(TokenType::downtosy)));
     }
 
     node->addChild(parseExpression());

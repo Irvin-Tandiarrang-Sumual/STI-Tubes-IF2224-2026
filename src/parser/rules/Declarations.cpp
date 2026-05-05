@@ -6,17 +6,16 @@
 
 CSTNodes* Parser::parseDeclarationPart(){
     CSTNodes* node = new CSTNodes(NonTerminal::DECLARATION_PART, peek().codeLocation);
-    while (peek().type == TokenType::constsy) {
+    while (check(TokenType::constsy)) {
         node->addChild(parseConstDeclaration());
     }
-    while (peek().type == TokenType::typesy) {
+    while (check(TokenType::typesy)) {
         node->addChild(parseTypeDeclaration());
     }
-    while (peek().type == TokenType::varsy) {
+    while (check(TokenType::varsy)) {
         node->addChild(parseVarDeclaration());
     }
-    while (peek().type == TokenType::proceduresy ||
-           peek().type == TokenType::functionsy) {
+    while (checkMultiple({TokenType::proceduresy, TokenType::functionsy})) {
         node->addChild(parseSubprogramDeclaration());
     }
     return node;
@@ -32,7 +31,7 @@ CSTNodes* Parser::parseConstDeclaration(){
     node->addChild(new CSTNodes(expect(TokenType::eql)));
     node->addChild(parseConstant());
     node->addChild(new CSTNodes(expect(TokenType::semicolon)));
-    while (peek().type == TokenType::ident){
+    while (check(TokenType::ident)){
         node->addChild(new CSTNodes(expect(TokenType::ident)));
         node->addChild(new CSTNodes(expect(TokenType::eql)));
         node->addChild(parseConstant());
@@ -54,12 +53,12 @@ CSTNodes* Parser::parseConstant(){
             node->addChild(new CSTNodes(expect(TokenType::string)));  
             break;
         default:
-            if (peek().type == TokenType::plus) node->addChild(new CSTNodes(expect(TokenType::plus))); 
-            else if (peek().type == TokenType::minus) node->addChild(new CSTNodes(expect(TokenType::minus)));
+            if (check(TokenType::plus)) node->addChild(new CSTNodes(expect(TokenType::plus))); 
+            else if (check(TokenType::minus)) node->addChild(new CSTNodes(expect(TokenType::minus)));
 
-            if (peek().type == TokenType::ident) node->addChild(new CSTNodes(expect(TokenType::ident))); 
-            else if (peek().type == TokenType::intcon) node->addChild(new CSTNodes(expect(TokenType::intcon))); 
-            else if (peek().type == TokenType::realcon) node->addChild(new CSTNodes(expect(TokenType::realcon))); 
+            if (check(TokenType::ident)) node->addChild(new CSTNodes(expect(TokenType::ident))); 
+            else if (check(TokenType::intcon)) node->addChild(new CSTNodes(expect(TokenType::intcon))); 
+            else if (check(TokenType::realcon)) node->addChild(new CSTNodes(expect(TokenType::realcon))); 
     }
     return node;
 }
@@ -74,7 +73,7 @@ CSTNodes* Parser::parseTypeDeclaration(){
     node->addChild(new CSTNodes(expect(TokenType::eql)));
     node->addChild(parseType());
     node->addChild(new CSTNodes(expect(TokenType::semicolon)));
-    while (peek().type == TokenType::ident){
+    while (check(TokenType::ident)){
         node->addChild(new CSTNodes(expect(TokenType::ident)));
         node->addChild(new CSTNodes(expect(TokenType::eql)));
         node->addChild(parseType());
@@ -93,7 +92,7 @@ CSTNodes* Parser::parseVarDeclaration(){
     node->addChild(new CSTNodes(expect(TokenType::colon)));
     node->addChild(parseType());
     node->addChild(new CSTNodes(expect(TokenType::semicolon)));
-    while (peek().type == TokenType::ident){
+    while (check(TokenType::ident)){
         node->addChild(parseIdentifierList());
         node->addChild(new CSTNodes(expect(TokenType::colon)));
         node->addChild(parseType());
@@ -107,9 +106,9 @@ CSTNodes* Parser::parseVarDeclaration(){
 */
 CSTNodes* Parser::parseSubprogramDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::SUBPROGRAM_DECLARATION, peek().codeLocation);
-    if (peek().type == TokenType::proceduresy) {
+    if (check(TokenType::proceduresy)) {
         node->addChild(parseProcedureDeclaration());
-    } else if (peek().type == TokenType::functionsy) {
+    } else if (check(TokenType::functionsy)) {
         node->addChild(parseFunctionDeclaration());
     }
     return node;
@@ -123,7 +122,7 @@ CSTNodes* Parser::parseProcedureDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::PROCEDURE_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::proceduresy)));
     node->addChild(new CSTNodes(expect(TokenType::ident)));
-    if (peek().type == TokenType::lparent) {
+    if (check(TokenType::lparent)) {
         node->addChild(parseFormalParameterList());
     }
     node->addChild(new CSTNodes(expect(TokenType::semicolon)));
@@ -139,7 +138,7 @@ CSTNodes* Parser::parseFunctionDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::FUNCTION_DECLARATION, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::functionsy)));
     node->addChild(new CSTNodes(expect(TokenType::ident)));
-    if (peek().type == TokenType::lparent) {
+    if (check(TokenType::lparent)) {
         node->addChild(parseFormalParameterList());
     }
     node->addChild(new CSTNodes(expect(TokenType::colon)));
