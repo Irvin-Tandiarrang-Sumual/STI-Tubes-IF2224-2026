@@ -114,20 +114,18 @@ static std::string nodeToString(const CSTNodes* node) {
     return "<" + nonTerminalToString(node->getNonTerminal()) + ">";
 }
 
-void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast) const {
+void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const {
     if (node == nullptr) {
         return;
     }
-    out << prefix;
-    if (!prefix.empty()) {
-        if (isLast) {
-            out << "└── ";
-        } else {
-            out << "├── ";
-        }
-    }
 
-    out << nodeToString(node) << '\n';
+    if (depth == 0) {
+        out << nodeToString(node) << '\n';
+    } else {
+        out << prefix;
+        out << (isLast ? "└── " : "├── ");
+        out << nodeToString(node) << '\n';
+    }
 
     const auto& children = node->getChildren();
 
@@ -135,14 +133,13 @@ void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const s
         bool childIsLast = (i == children.size() - 1);
         std::string childPrefix = prefix;
 
-        if (!prefix.empty()) {
-            if (isLast) {
-                childPrefix += "    ";
-            } else {
-                childPrefix += "│   ";
-            }
+        if (depth == 0) {
+            childPrefix = "    ";
+        } else {
+            childPrefix += (isLast ? "    " : "│   ");
         }
-        writeTreeRecursive(out, children[i], childPrefix, childIsLast);
+
+        writeTreeRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
     }
 }
 
@@ -151,7 +148,7 @@ void Writer::printTree() const {
         std::cerr << "ERROR: root parse tree kosong.\n";
         return;
     }
-    writeTreeRecursive(std::cout, root, "", true);
+    writeTreeRecursive(std::cout, root, "", true, 0);
 }
 
 void Writer::writeTreeToFile() const {
@@ -165,7 +162,7 @@ void Writer::writeTreeToFile() const {
         std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
         return;
     }
-    writeTreeRecursive(fOut, root, "", true);
+    writeTreeRecursive(fOut, root, "", true, 0);
     fOut.close();
 
     std::cout << "Parse tree berhasil disimpan di: " << filename << "\n";

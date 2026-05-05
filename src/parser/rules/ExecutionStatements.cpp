@@ -20,14 +20,14 @@ CSTNodes* Parser::parseProcedureOrFunctionCall(){
     CSTNodes* node = new CSTNodes(NonTerminal::PROCEDURE_OR_FUNCTION_CALL, peek().codeLocation);
     node->addChild(new CSTNodes(expect(TokenType::ident)));
     node->addChild(new CSTNodes(expect(TokenType::lparent)));
-    if (peekNext().type == TokenType::plus
-        || peekNext().type == TokenType::minus
-        || peekNext().type == TokenType::ident
-        || peekNext().type == TokenType::intcon
-        || peekNext().type == TokenType::charcon
-        || peekNext().type == TokenType::string
-        || peekNext().type == TokenType::lparent
-        || peekNext().type == TokenType::notsy
+    if (peek().type == TokenType::plus
+        || peek().type == TokenType::minus
+        || peek().type == TokenType::ident
+        || peek().type == TokenType::intcon
+        || peek().type == TokenType::charcon
+        || peek().type == TokenType::string
+        || peek().type == TokenType::lparent
+        || peek().type == TokenType::notsy
     ) node->addChild(parseParameterList());
     node->addChild(new CSTNodes(expect(TokenType::rparent)));
     return node;

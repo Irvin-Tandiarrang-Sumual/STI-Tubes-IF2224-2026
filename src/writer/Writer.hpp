@@ -14,7 +14,7 @@ class Writer {
         CSTNodes* root = nullptr;
 
         // print tree
-        void writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast) const;
+        void writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);
         
