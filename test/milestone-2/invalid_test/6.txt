@@ -1,0 +1,6 @@
+program InvalidRangeEnum;
+type
+    Num == 1..;
+    Month == (Jan Feb Mar);
+begin
+end.

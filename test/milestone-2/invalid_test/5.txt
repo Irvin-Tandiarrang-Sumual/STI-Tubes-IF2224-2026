@@ -1,0 +1,5 @@
+program InvalidArray;
+type
+    Num == array[1..10 integer;
+begin
+end.

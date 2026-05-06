@@ -1,0 +1,7 @@
+program InvalidFieldList;
+type
+    Data == record
+        x, : integer;
+    end;
+begin
+end.

@@ -1,0 +1,6 @@
+program InvalidProcDec;
+procedure test(x integer);
+begin
+end;
+begin
+end.
