@@ -10,10 +10,10 @@ class Parser {
         
         // return root node aja
         CSTNodes* parse();
+        std::vector<std::string> getErrors() const;
 
     private:
         std::vector<std::string> errorMessages_;
-        std::vector<std::string> getErrors() const;
         std::string makeErrorMessage(const std::string& expected);
         void addError(const std::string& msg);
         const std::vector<Token>& tokens_;
