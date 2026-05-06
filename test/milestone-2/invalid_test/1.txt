@@ -1,6 +1,10 @@
 program InvalidDecPart;
 const
     pi == 1;
+var
+    p: Point;
+    palette: Color;
+    points: PointArray;
 type
     Color == (Red, Green, Blue);
     RangeAlias == array [1..10] of integer;
@@ -10,10 +14,5 @@ type
         values: array [1..3] of integer
     end;
     PointArray == array [1..5] of Point;
-
-var
-    p: Point;
-    palette: Color;
-    points: PointArray;
 begin
 end.
