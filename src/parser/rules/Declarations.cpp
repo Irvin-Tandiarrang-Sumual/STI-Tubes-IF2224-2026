@@ -26,16 +26,16 @@ CSTNodes* Parser::parseDeclarationPart(){
 */
 CSTNodes* Parser::parseConstDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::CONST_DECLARATION, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::constsy)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
-    node->addChild(new CSTNodes(expect(TokenType::eql)));
+    node->addChild(expect(TokenType::constsy));
+    node->addChild(expect(TokenType::ident));
+    node->addChild(expect(TokenType::eql));
     node->addChild(parseConstant());
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     while (check(TokenType::ident)){
-        node->addChild(new CSTNodes(expect(TokenType::ident)));
-        node->addChild(new CSTNodes(expect(TokenType::eql)));
+        node->addChild(expect(TokenType::ident));
+        node->addChild(expect(TokenType::eql));
         node->addChild(parseConstant());
-        node->addChild(new CSTNodes(expect(TokenType::semicolon)));  
+        node->addChild(expect(TokenType::semicolon));  
     }
     return node;
 }
@@ -47,18 +47,18 @@ CSTNodes* Parser::parseConstant(){
     CSTNodes* node = new CSTNodes(NonTerminal::CONSTANT, peek().codeLocation);
     switch(peek().type){
         case TokenType::charcon:
-            node->addChild(new CSTNodes(expect(TokenType::charcon))); 
+            node->addChild(expect(TokenType::charcon));
             break;
         case TokenType::string:
-            node->addChild(new CSTNodes(expect(TokenType::string)));  
+            node->addChild(expect(TokenType::string));
             break;
         default:
-            if (check(TokenType::plus)) node->addChild(new CSTNodes(expect(TokenType::plus))); 
-            else if (check(TokenType::minus)) node->addChild(new CSTNodes(expect(TokenType::minus)));
+            if (check(TokenType::plus)) node->addChild(expect(TokenType::plus)); 
+            else if (check(TokenType::minus)) node->addChild(expect(TokenType::minus));
 
-            if (check(TokenType::ident)) node->addChild(new CSTNodes(expect(TokenType::ident))); 
-            else if (check(TokenType::intcon)) node->addChild(new CSTNodes(expect(TokenType::intcon))); 
-            else if (check(TokenType::realcon)) node->addChild(new CSTNodes(expect(TokenType::realcon))); 
+            if (check(TokenType::ident)) node->addChild(expect(TokenType::ident)); 
+            else if (check(TokenType::intcon)) node->addChild(expect(TokenType::intcon)); 
+            else if (check(TokenType::realcon)) node->addChild(expect(TokenType::realcon)); 
     }
     return node;
 }
@@ -68,16 +68,16 @@ CSTNodes* Parser::parseConstant(){
 */
 CSTNodes* Parser::parseTypeDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::TYPE_DECLARATION, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::typesy)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
-    node->addChild(new CSTNodes(expect(TokenType::eql)));
+    node->addChild(expect(TokenType::typesy));
+    node->addChild(expect(TokenType::ident));
+    node->addChild(expect(TokenType::eql));
     node->addChild(parseType());
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     while (check(TokenType::ident)){
-        node->addChild(new CSTNodes(expect(TokenType::ident)));
-        node->addChild(new CSTNodes(expect(TokenType::eql)));
+        node->addChild(expect(TokenType::ident));
+        node->addChild(expect(TokenType::eql));
         node->addChild(parseType());
-        node->addChild(new CSTNodes(expect(TokenType::semicolon)));  
+        node->addChild(expect(TokenType::semicolon));  
     }
     return node;
 }
@@ -87,16 +87,16 @@ CSTNodes* Parser::parseTypeDeclaration(){
 */
 CSTNodes* Parser::parseVarDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::VAR_DECLARATION, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::varsy)));
+    node->addChild(expect(TokenType::varsy));
     node->addChild(parseIdentifierList());
-    node->addChild(new CSTNodes(expect(TokenType::colon)));
+    node->addChild(expect(TokenType::colon));
     node->addChild(parseType());
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     while (check(TokenType::ident)){
         node->addChild(parseIdentifierList());
-        node->addChild(new CSTNodes(expect(TokenType::colon)));
+        node->addChild(expect(TokenType::colon));
         node->addChild(parseType());
-        node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+        node->addChild(expect(TokenType::semicolon));
     }
     return node;
 }
@@ -120,14 +120,14 @@ CSTNodes* Parser::parseSubprogramDeclaration(){
 */
 CSTNodes* Parser::parseProcedureDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::PROCEDURE_DECLARATION, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::proceduresy)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
+    node->addChild(expect(TokenType::proceduresy));
+    node->addChild(expect(TokenType::ident));
     if (check(TokenType::lparent)) {
         node->addChild(parseFormalParameterList());
     }
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     node->addChild(parseBlock());
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     return node;
 }
 
@@ -136,15 +136,15 @@ CSTNodes* Parser::parseProcedureDeclaration(){
 */
 CSTNodes* Parser::parseFunctionDeclaration(){
     CSTNodes* node = new CSTNodes(NonTerminal::FUNCTION_DECLARATION, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::functionsy)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
+    node->addChild(expect(TokenType::functionsy));
+    node->addChild(expect(TokenType::ident));
     if (check(TokenType::lparent)) {
         node->addChild(parseFormalParameterList());
     }
-    node->addChild(new CSTNodes(expect(TokenType::colon)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::colon));
+    node->addChild(expect(TokenType::ident));
+    node->addChild(expect(TokenType::semicolon));
     node->addChild(parseBlock());
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::semicolon));
     return node;
 }

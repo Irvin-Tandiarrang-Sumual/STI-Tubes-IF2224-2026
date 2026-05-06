@@ -14,11 +14,11 @@ CSTNodes* Parser::parseRelationalOperator() {
         case TokenType::geq:
         case TokenType::lss:
         case TokenType::leq:
-            node->addChild(new CSTNodes(expect(currentType)));
+            node->addChild(expect(currentType));
             break;
         default:
             // Kalau selain itu, fallback ke 'eql' aja (bisa yang lain sebenernya)
-            node->addChild(new CSTNodes(expect(TokenType::eql))); 
+            node->addChild(expect(TokenType::eql)); 
             break;
     }
 
@@ -36,10 +36,10 @@ CSTNodes* Parser::parseAdditiveOperator() {
         case TokenType::plus:
         case TokenType::minus:
         case TokenType::orsy:
-            node->addChild(new CSTNodes(expect(currentType)));
+            node->addChild(expect(currentType));
             break;
         default:
-            node->addChild(new CSTNodes(expect(TokenType::plus))); 
+            node->addChild(expect(TokenType::plus)); 
             break;
     }
 
@@ -59,10 +59,10 @@ CSTNodes* Parser::parseMultiplicativeOperator() {
         case TokenType::idiv:
         case TokenType::imod:
         case TokenType::andsy:
-            node->addChild(new CSTNodes(expect(currentType)));
+            node->addChild(expect(currentType));
             break;
         default:
-            node->addChild(new CSTNodes(expect(TokenType::times))); 
+            node->addChild(expect(TokenType::times)); 
             break;
     }
 

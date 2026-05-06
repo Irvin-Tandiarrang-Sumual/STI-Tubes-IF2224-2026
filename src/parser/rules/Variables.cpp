@@ -3,11 +3,11 @@
 // IDENTIFIER-LIST : ident + (comma + ident)*
 CSTNodes* Parser::parseIdentifierList() {
     CSTNodes* node = new CSTNodes(NonTerminal::IDENTIFIER_LIST, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
+    node->addChild(expect(TokenType::ident));
 
     while (!isAtEnd() && check(TokenType::comma)) {
-        node->addChild(new CSTNodes(expect(TokenType::comma)));
-        node->addChild(new CSTNodes(expect(TokenType::ident)));
+        node->addChild(expect(TokenType::comma));
+        node->addChild(expect(TokenType::ident));
     }
 
     return node;
@@ -16,7 +16,7 @@ CSTNodes* Parser::parseIdentifierList() {
 // VARIABLE : ident + (COMPONENT-VARIABLE)*
 CSTNodes* Parser::parseVariable() {
     CSTNodes* node = new CSTNodes(NonTerminal::VARIABLE, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
+    node->addChild(expect(TokenType::ident));
     while (!isAtEnd() && (check(TokenType::lbrack) || check(TokenType::period))) {
         node->addChild(parseComponentVariable());
     }
@@ -29,19 +29,32 @@ CSTNodes* Parser::parseComponentVariable() {
 
     if (check(TokenType::lbrack)) {
         // akses array: [<index-list>]
-        node->addChild(new CSTNodes(expect(TokenType::lbrack)));
+        node->addChild(expect(TokenType::lbrack));
         node->addChild(parseIndexList());
-        node->addChild(new CSTNodes(expect(TokenType::rbrack)));
+        node->addChild(expect(TokenType::rbrack));
         return node;
     }
 
     if (check(TokenType::period)) {
         // akses field record: . ident
-        node->addChild(new CSTNodes(expect(TokenType::period)));
-        node->addChild(new CSTNodes(expect(TokenType::ident)));
+        node->addChild(expect(TokenType::period));
+        node->addChild(expect(TokenType::ident));
         return node;
     }
-    throw std::runtime_error("Syntax error at line " + std::to_string(peek().codeLocation.line) + ": expected '[' or '.' in component-variable, got '" + tokenTypeToString(peek().type) + "'" );
+    std::string msg = makeErrorMessage("'[' or '.'");
+
+    CSTNodes* errorNode = new CSTNodes(msg, peek().codeLocation);
+    node->addChild(errorNode);
+    addError(msg);
+
+    synchronize({
+        TokenType::semicolon,
+        TokenType::endsy,
+        TokenType::rbrack,
+        TokenType::period
+    });
+
+    return node;
 }
 
 // INDEX-LIST : (intcon | charcon | ident) + (comma + INDEX-LIST)*
@@ -50,18 +63,31 @@ CSTNodes* Parser::parseIndexList() {
 
     // index bisa intcon, charcon, atau ident
     if (check(TokenType::intcon)) {
-        node->addChild(new CSTNodes(expect(TokenType::intcon)));
+        node->addChild(expect(TokenType::intcon));
     } else if (check(TokenType::charcon)) {
-        node->addChild(new CSTNodes(expect(TokenType::charcon)));
+        node->addChild(expect(TokenType::charcon));
     } else if (check(TokenType::ident)) {
-        node->addChild(new CSTNodes(expect(TokenType::ident)));
+        node->addChild(expect(TokenType::ident));
     } else {
-        throw std::runtime_error("Syntax error at line " + std::to_string(peek().codeLocation.line) +  ": expected intcon, charcon, or ident in index-list, got '" + tokenTypeToString(peek().type) + "'");
+        std::string msg = makeErrorMessage("intcon, charcon, or ident");
+
+        CSTNodes* errorNode = new CSTNodes(msg, peek().codeLocation);
+        node->addChild(errorNode);
+        addError(msg);
+
+        synchronize({
+            TokenType::comma,
+            TokenType::rbrack,
+            TokenType::semicolon,
+            TokenType::endsy
+        });
+
+        return node;
     }
 
     // kalo ada koma, berarti masih ada index lagi
     if (!isAtEnd() && check(TokenType::comma)) {
-        node->addChild(new CSTNodes(expect(TokenType::comma)));
+        node->addChild(expect(TokenType::comma));
         node->addChild(parseIndexList());
     }
     return node;
