@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <filesystem>
 #include "../lexer/Token.hpp"
 #include "../cst/CSTNodes.hpp"
 

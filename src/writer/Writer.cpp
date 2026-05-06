@@ -1,8 +1,5 @@
 #include "Writer.hpp"
 
-#include <algorithm>
-#include <filesystem>
-
 Writer::Writer(const std::string &filename, const std::vector<Token> &tokens)
     : filename(filename), tokens(tokens) {}
 
