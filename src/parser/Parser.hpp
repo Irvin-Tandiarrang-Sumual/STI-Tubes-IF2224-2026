@@ -3,7 +3,6 @@
 #include "../lexer/Token.hpp"
 #include "../cst/CSTNodes.hpp"
 #include "NonTerminal.hpp"
-#include "SyntaxError.hpp"
 class Parser {
     public:
         Parser(const std::vector<Token>& tokens);
