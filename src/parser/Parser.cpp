@@ -16,16 +16,31 @@ const Token& Parser::peek() const {
 const Token& Parser::peekNext() const {
     return tokens_[currentPosition_ + 1];
 }
+std::string Parser::makeErrorMessage(const std::string& expected) {
+    return "Syntax error at line " +
+        std::to_string(peek().codeLocation.line) +
+        ", col " +
+        std::to_string(peek().codeLocation.col) +
+        ": expected '" + expected +
+        "', got '" + tokenTypeToString(peek().type) + "'";
+}
 
-const Token Parser::expect(TokenType token) {
-    if (peek().type != token) {
-        std::string expected = tokenTypeToString(token);
-        std::string got = tokenTypeToString(peek().type);
-        throw std::runtime_error( "Syntax error at line " + std::to_string(peek().codeLocation.line) + ", col " + std::to_string(peek().codeLocation.col) + ": expected '" + expected + "', got '" + got + "'");
+CSTNodes* Parser::expect(TokenType token) {
+    if (check(token)) {
+        CSTNodes* newNodes = new CSTNodes(peek());
+        advance();
+        return newNodes;
     }
-    const Token consumed = tokens_.at(currentPosition_);
-    advance();
-    return consumed;
+    std::string expected = tokenTypeToString(token);
+    std::string errorMessage = makeErrorMessage(expected);
+    CSTNodes* errorNode = new CSTNodes(errorMessage, peek().codeLocation);
+    addError(errorMessage); // nambahin
+
+    synchronize({TokenType::semicolon, TokenType::endsy, 
+            TokenType::elsesy, TokenType::untilsy});
+
+    // sync dulu
+    return errorNode;
 }
 
 void Parser::advance() {
@@ -33,7 +48,42 @@ void Parser::advance() {
         currentPosition_++;
     }
     skipUselessToken();
+}
 
+void Parser::synchronize(std::vector<TokenType> syncSet) {
+    for (auto t : syncSet) {
+        if (check(t)) return;
+    }
+    if (!isAtEnd()) {
+        advance();
+    }
+
+    while (!isAtEnd()) {
+        if (check(TokenType::semicolon)) {
+            advance();
+            return;
+        }
+
+        for (auto tok : syncSet) {
+            if (check(tok)) {
+                return;
+            }
+        }
+
+        advance();
+    }
+}
+
+std::vector<std::string> Parser::getErrors() const {
+    return errorMessages_;
+}
+
+void Parser::addError(const std::string& msg) {
+    errorMessages_.push_back(msg);
+}
+
+CSTNodes* Parser::errorNode(std::string message) {
+    return new CSTNodes(message, peek().codeLocation);
 }
 
 void Parser::skipUselessToken() {
