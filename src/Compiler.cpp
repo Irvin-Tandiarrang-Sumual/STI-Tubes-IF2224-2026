@@ -50,9 +50,10 @@ void Compiler::parser() {
         std::filesystem::create_directories(outputDir);
     }
 
-    Writer writer(fullPath.string(), root);
+    Writer writer(fullPath.string(), root, parser.getErrors());
     writer.printTree();
     writer.writeTreeToFile();
+    writer.printParserError();
 
     delete root;
 }
