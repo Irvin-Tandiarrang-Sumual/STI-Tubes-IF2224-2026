@@ -13,6 +13,7 @@ class CSTNodes {
         std::variant<Token, NonTerminal> value_;
         CodeLocation location_;
         bool isError_; // khusus error
+        std::string errorMessage_;
 
 
     public:

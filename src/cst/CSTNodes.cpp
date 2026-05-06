@@ -1,14 +1,14 @@
 #include "CSTNodes.hpp"
 
 CSTNodes::CSTNodes(Token token)
-    : isTerminal_(true), value_(token), location_(token.codeLocation), isError_(false) {}
+    : isTerminal_(true), value_(token), location_(token.codeLocation), isError_(false), errorMessage_("") {}
 
 CSTNodes::CSTNodes(NonTerminal nonTerminal, CodeLocation location)
-    : isTerminal_(false), value_(nonTerminal),location_(location), isError_(false){}
+    : isTerminal_(false), value_(nonTerminal),location_(location), isError_(false), errorMessage_(""){}
 
 CSTNodes::CSTNodes(std::string message, CodeLocation location)
     : isTerminal_(false), value_(NonTerminal::ERROR), location_(location),
-        isError_(true) {}
+        isError_(true), errorMessage_(message) {}
 
 void CSTNodes::addChild(CSTNodes* newChild) {
     if (!isTerminal_) {
@@ -53,6 +53,9 @@ const std::string CSTNodes::toString() const{
             return typeStr + "(" + tokenValueToString(token) + ")";
         }
         return typeStr;
+    }
+    if (isError()) {
+        return "<" + nonTerminalToString(getNonTerminal()) + ":" + errorMessage_ + ">";
     }
     return "<" + nonTerminalToString(getNonTerminal()) + ">";
 }
