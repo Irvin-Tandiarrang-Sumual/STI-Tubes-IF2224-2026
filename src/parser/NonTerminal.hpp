@@ -43,7 +43,8 @@ enum class NonTerminal {
     FACTOR, // 35
     RELATIONAL_OPERATOR,
     ADDITIVE_OPERATOR,
-    MULTIPLICATIVE_OPERATOR
+    MULTIPLICATIVE_OPERATOR,
+    ERROR, //
 };
 
 inline std::string nonTerminalToString(NonTerminal nt) {
