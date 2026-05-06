@@ -12,10 +12,14 @@ class CSTNodes {
         std::vector<CSTNodes*> children_; // kalo isTerminal true empty
         std::variant<Token, NonTerminal> value_;
         CodeLocation location_;
+        bool isError_; // khusus error
+
 
     public:
         CSTNodes(NonTerminal nonTerminal, CodeLocation location);
         CSTNodes(Token token);
+        CSTNodes(std::string message, CodeLocation location);
+        bool isError() const;
         void addChild(CSTNodes* newChild);
         bool isTerminal() const;
         const NonTerminal& getNonTerminal() const;
