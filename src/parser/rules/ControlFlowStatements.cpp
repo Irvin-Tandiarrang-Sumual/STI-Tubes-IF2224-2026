@@ -64,14 +64,14 @@ CSTNodes* Parser::parseCaseBlock() {
 }
 
 /*
-    WHILE-STATEMENT : whilesy + EXPRESSION + dosy + STATEMENT-LIST + semicolon
+    WHILE-STATEMENT : whilesy + EXPRESSION + dosy + COMPOUND-STATEMENT + semicolon
 */
 CSTNodes* Parser::parseWhileStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::WHILE_STATEMENT, peek().codeLocation);
     node->addChild(expect(TokenType::whilesy));
     node->addChild(parseExpression());
     node->addChild(expect(TokenType::dosy));
-    node->addChild(parseStatementList());
+    node->addChild(parseCompoundStatement());
     node->addChild(expect(TokenType::semicolon));
     return node;
 }
