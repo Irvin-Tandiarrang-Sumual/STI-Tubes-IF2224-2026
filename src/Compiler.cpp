@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-Compiler::Compiler(const std::filesystem::path &path) : inputPath(path) {}
+Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
+    : inputPath(path), outputDir(outputDir) {}
 Compiler::~Compiler() = default;
 
 // sekaligus ngelakuin write kali yak :/
@@ -11,7 +12,7 @@ void Compiler::lexer() {
     Lexer lexing(inputPath);
     lexing.tokenize();
 
-    const auto &tokens = lexing.getTokens();
+    tokens_ = lexing.getTokens();
     const auto &errors = lexing.getErrors();
 
     if (!errors.empty()) {
@@ -23,13 +24,36 @@ void Compiler::lexer() {
     }
 
     const std::string baseName = inputPath.stem().string();
-    const std::filesystem::path outputDir = "../test/milestone-1/output";
-    const std::filesystem::path fullPath = outputDir / (baseName + "-result.txt");
+    const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-result.txt");
 
     if (!std::filesystem::exists(outputDir)) {
         std::filesystem::create_directories(outputDir);
     }
 
-    Writer writer(fullPath.string(), tokens);
+    Writer writer(fullPath.string(), tokens_);
     writer.writeToFile();
+}
+
+void Compiler::parser() {
+    if (tokens_.empty()) {
+        throw std::runtime_error("Syntax error: no tokens");
+    }
+
+    std::cout << "Processing parser...\n";
+    Parser parser(tokens_);
+    CSTNodes* root = parser.parse();
+
+    const std::string baseName = inputPath.stem().string();
+    const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-parse-tree.txt");
+
+    if (!std::filesystem::exists(outputDir)) {
+        std::filesystem::create_directories(outputDir);
+    }
+
+    Writer writer(fullPath.string(), root, parser.getErrors());
+    writer.printTree();
+    writer.writeTreeToFile();
+    writer.printParserError();
+
+    delete root;
 }

@@ -1,0 +1,30 @@
+programsy
+ident (subprogram)
+semicolon
+proceduresy
+ident (p)
+lparent
+ident (x)
+colon
+ident (integer)
+rparent
+semicolon
+beginsy
+endsy
+semicolon
+functionsy
+ident (f)
+colon
+ident (real)
+semicolon
+beginsy
+endsy
+semicolon
+beginsy
+ident (p)
+lparent
+intcon (10)
+rparent
+semicolon
+endsy
+period

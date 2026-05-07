@@ -1,0 +1,199 @@
+├── <program-header>
+│   ├── programsy
+│   ├── ident (CombinedInvalid)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <var-declaration>
+│   │   ├── varsy
+│   │   ├── <identifier-list>
+│   │   │   └── ident (x)
+│   │   ├── colon
+│   │   ├── <type>
+│   │   │   └── ident (integer)
+│   │   ├── semicolon
+│   │   ├── <identifier-list>
+│   │   │   └── ident (arr)
+│   │   ├── colon
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── <range>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon (1)
+│   │   │       │   ├── period
+│   │   │       │   ├── period
+│   │   │       │   └── <constant>
+│   │   │       │       └── intcon (10)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident (integer)
+│   │   └── semicolon
+│   ├── <procedure-declaration>
+│   │   ├── proceduresy
+│   │   ├── ident (p)
+│   │   ├── <formal-parameter-list>
+│   │   │   ├── lparent
+│   │   │   ├── <parameter-group>
+│   │   │   │   ├── <identifier-list>
+│   │   │   │   │   └── ident (a)
+│   │   │   │   ├── ERROR: expected colon
+│   │   │   │   └── ident (integer)
+│   │   │   └── rparent
+│   │   ├── semicolon
+│   │   ├── <block>
+│   │   │   └── <compound-statement>
+│   │   │       ├── beginsy
+│   │   │       └── endsy
+│   │   └── semicolon
+│   └── <function-declaration>
+│       ├── functionsy
+│       ├── ident (add)
+│       ├── <formal-parameter-list>
+│       │   ├── lparent
+│       │   ├── <parameter-group>
+│       │   │   ├── <identifier-list>
+│       │   │   │   └── ident (x)
+│       │   │   ├── colon
+│       │   │   └── ident (integer)
+│       │   └── rparent
+│       ├── colon
+│       ├── ident (integer)
+│       ├── semicolon
+│       ├── <block>
+│       │   └── <compound-statement>
+│       │       ├── beginsy
+│       │       └── endsy
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident (x)
+│   │   │       ├── ERROR: expected becomes (:=)
+│   │   │       └── <expression>
+│   │   │           └── intcon (5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident (arr)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── ERROR: expected <index-list>
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── intcon (1)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   ├── ident (x)
+│   │   │       │   ├── gtr
+│   │   │       │   └── intcon (0)
+│   │   │       ├── ERROR: expected thensy
+│   │   │       └── <statement>
+│   │   │           └── x := 1
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <while-statement>
+│   │   │       ├── whilesy
+│   │   │       ├── <expression>
+│   │   │       │   ├── ident (x)
+│   │   │       │   ├── lss
+│   │   │       │   └── intcon (10)
+│   │   │       ├── ERROR: expected dosy
+│   │   │       └── <statement>
+│   │   │           └── x := x + 1
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <for-statement>
+│   │   │       ├── forsy
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       ├── intcon (1)
+│   │   │       ├── ERROR: expected tosy/downtosy
+│   │   │       ├── intcon (10)
+│   │   │       ├── dosy
+│   │   │       └── <statement>
+│   │   │           └── x := x + 1
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <repeat-statement>
+│   │   │       ├── repeatsy
+│   │   │       ├── <statement-list>
+│   │   │       │   └── x := x - 1
+│   │   │       ├── untilsy
+│   │   │       └── ERROR: expected <expression>
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <procedure/function-call>
+│   │   │       ├── ident (print)
+│   │   │       ├── lparent
+│   │   │       ├── ERROR: invalid parameter-list
+│   │   │       └── rparent
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           ├── intcon (1)
+│   │   │           ├── plus
+│   │   │           └── ERROR: expected <term>
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           ├── intcon (5)
+│   │   │           ├── times
+│   │   │           └── ERROR: expected <factor>
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <factor>
+│   │   │           ├── lparent
+│   │   │           ├── <expression>
+│   │   │           │   ├── intcon (5)
+│   │   │           │   ├── plus
+│   │   │           │   └── intcon (1)
+│   │   │           └── ERROR: expected rparent
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── ident (x)
+│   │   │       ├── ERROR: invalid relational-operator (<>==)
+│   │   │       ├── intcon (5)
+│   │   │       ├── thensy
+│   │   │       └── x := 1
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           ├── intcon (1)
+│   │   │           ├── plus
+│   │   │           ├── ERROR: unexpected plus
+│   │   │           └── intcon (2)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── ident (x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           ├── intcon (5)
+│   │   │           ├── ERROR: invalid multiplicative-operator (**)
+│   │   │           └── intcon (2)
+│   │   └── semicolon
+│   └── endsy
+└── period

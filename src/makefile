@@ -5,11 +5,13 @@ CXXFLAGS = -Wall -std=c++17
 TARGET = main
 
 # source files
-SRC = main.cpp \
-      Compiler.cpp \
-      lexer/Lexer.cpp lexer/Token.cpp \
-      reader/Reader.cpp reader/CodeLocation.cpp \
-      writer/Writer.cpp
+SRC = $(wildcard *.cpp) \
+      $(wildcard lexer/*.cpp) \
+      $(wildcard reader/*.cpp) \
+      $(wildcard writer/*.cpp) \
+      $(wildcard cst/*.cpp) \
+      $(wildcard parser/*.cpp) \
+      $(wildcard parser/rules/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 

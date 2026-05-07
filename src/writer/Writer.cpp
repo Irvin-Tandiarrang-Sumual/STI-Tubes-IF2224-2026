@@ -1,8 +1,5 @@
 #include "Writer.hpp"
 
-#include <algorithm>
-#include <filesystem>
-
 Writer::Writer(const std::string &filename, const std::vector<Token> &tokens)
     : filename(filename), tokens(tokens) {}
 
@@ -34,7 +31,7 @@ void Writer::writeToFile() const {
         }
 
         unsigned int endLine = startLine;
-        if (token.type == comment || token.type == string || token.type == charcon || token.type == invalid_token) {
+        if (token.type == comment || token.type == string || token.type == charcon || token.type == unknown) {
             const std::string raw = tokenValueToString(token);
             endLine += static_cast<unsigned int>(std::count(raw.begin(), raw.end(), '\n'));
         }
@@ -48,4 +45,74 @@ void Writer::writeToFile() const {
     if (std::filesystem::exists(filename)) {
         std::cout << "Output berhasil disimpan di: " << filename << "\n";
     }
+}
+
+// BUAT PARSER
+Writer::Writer(const std::string &filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages) 
+    : filename(filename), tokens(), root(root), errorMessages_(parserErrorMessages)  {}
+
+void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const {
+    if (node == nullptr) {
+        return;
+    }
+
+    if (depth == 0) {
+        out << node->toString() << '\n';
+    } else {
+        out << prefix;
+        out << (isLast ? "└── " : "├── ");
+        out << node->toString() << '\n';
+    }
+
+    const auto& children = node->getChildren();
+
+    for (size_t i = 0; i < children.size(); ++i) {
+        bool childIsLast = (i == children.size() - 1);
+        std::string childPrefix = prefix;
+
+        if (depth == 0) {
+            childPrefix.clear();
+        } else {
+            childPrefix += (isLast ? "    " : "│   ");
+        }
+
+        writeTreeRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
+    }
+}
+
+void Writer::printTree() const {
+    if (root == nullptr) {
+        std::cerr << "ERROR: root parse tree kosong.\n";
+        return;
+    }
+    writeTreeRecursive(std::cout, root, "", true, 0);
+}
+
+void Writer::printParserError() const {
+    std::cout << "\n=== Parser Errors ===\n";
+
+    if (errorMessages_.empty()) {
+        return;
+    }
+    for (size_t i = 0; i < errorMessages_.size(); i++) {
+        std::cout << errorMessages_.at(i) + "\n";
+    }
+    
+}
+
+void Writer::writeTreeToFile() const {
+    if (root == nullptr) {
+        std::cerr << "ERROR: root parse tree kosong.\n";
+        return;
+    }
+
+    std::ofstream fOut(filename, std::ios::out | std::ios::binary);
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
+        return;
+    }
+    writeTreeRecursive(fOut, root, "", true, 0);
+    fOut.close();
+
+    std::cout << "Parse tree berhasil disimpan di: " << filename << "\n";
 }

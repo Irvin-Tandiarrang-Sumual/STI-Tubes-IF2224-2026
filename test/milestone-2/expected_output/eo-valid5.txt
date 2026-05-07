@@ -1,0 +1,65 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident (tc5)
+│   └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <case-statement>
+│   │   │       ├── casesy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── ident (x)
+│   │   │       ├── ofsy
+│   │   │       ├── <case-block>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon (1)
+│   │   │       │   ├── colon
+│   │   │       │   ├── <statement>
+│   │   │       │   │   └── <assignment-statement>
+│   │   │       │   │       ├── <variable>
+│   │   │       │   │       │   └── ident (x)
+│   │   │       │   │       ├── becomes
+│   │   │       │   │       └── <expression>
+│   │   │       │   │           └── <simple-expression>
+│   │   │       │   │               └── <term>
+│   │   │       │   │                   └── <factor>
+│   │   │       │   │                       └── intcon (0)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   ├── semicolon
+│   │   └── <statement>
+│   │       └── <assignment-statement>
+│   │           ├── <variable>
+│   │           │   └── ident (x)
+│   │           ├── becomes
+│   │           └── <expression>
+│   │               └── <simple-expression>
+│   │                   ├── <term>
+│   │                   │   └── <factor>
+│   │                   │       └── intcon (1)
+│   │                   ├── <additive-operator>
+│   │                   │   └── plus
+│   │                   └── <term>
+│   │                       ├── <factor>
+│   │                       │   └── intcon (2)
+│   │                       ├── <multiplicative-operator>
+│   │                       │   └── times
+│   │                       └── <factor>
+│   │                           ├── lparent
+│   │                           ├── <expression>
+│   │                           │   └── <simple-expression>
+│   │                           │       └── <term>
+│   │                           │           ├── <factor>
+│   │                           │           │   └── intcon (3)
+│   │                           │           ├── <multiplicative-operator>
+│   │                           │           │   └── idiv
+│   │                           │           └── <factor>
+│   │                           │               └── intcon (4)
+│   │                           └── rparent
+│   └── endsy
+└── period

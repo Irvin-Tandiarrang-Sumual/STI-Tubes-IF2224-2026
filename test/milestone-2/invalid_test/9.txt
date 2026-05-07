@@ -1,0 +1,5 @@
+program InvalidVarDec;
+var
+    a b: integer;
+begin
+end.

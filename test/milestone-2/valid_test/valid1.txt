@@ -1,0 +1,8 @@
+program tc1;
+const 
+  pi == 3.14;
+  angka == 100;
+var x: integer;
+begin
+  x := 10;
+end.

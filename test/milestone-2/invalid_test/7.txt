@@ -1,0 +1,11 @@
+program InvalidRecord;
+type
+    Person == record
+        name string;
+        age: integer
+    end
+var
+    p: Person;
+begin
+    p.age := 20;
+end.

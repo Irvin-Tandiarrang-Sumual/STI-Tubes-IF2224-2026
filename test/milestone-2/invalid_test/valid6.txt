@@ -1,0 +1,24 @@
+program tc6;
+const
+  neg == -10;
+  pos == +5.5;
+var
+  arr: array[1..10] of integer;
+  rec: record x: integer; y: real; end;
+function hitung(a, b: integer; c: real): integer;
+begin
+end;
+begin
+  arr[1, 2] := -5;
+  rec.x := hitung(1, 2, 3.0);
+  
+  if not (arr[1] == 0) and (rec.x > 0) then
+    arr[2] := arr[2] or 1;
+    
+  case rec.x of
+    1, 2: rec.x := 10;
+  end;
+  
+  for i := 10 downto 1 do
+    rec.x := rec.x - 1;
+end.

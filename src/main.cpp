@@ -5,23 +5,33 @@
 #include <string>
 #include <vector>
 
-int main() {
-    std::cout << "=== ARION LEXER ===\n\n";
-
-    std::string filename;
-    std::cout << "Masukkan path/nama file input: ";
-    std::getline(std::cin, filename);
-
-    if (filename.empty()) {
-        std::cerr << "ERROR: nama file tidak boleh kosong.\n";
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        std::cerr << "Cara penggunaan: " << argv[0] << " <mode> <nama_file>\n";
+        std::cerr << "Mode:\n";
+        std::cerr << "  l  -> Menjalankan Lexer\n";
+        std::cerr << "  p  -> Menjalankan Lexer & Parser\n";
         return 1;
     }
 
+    std::string mode = argv[1];
+    std::string filename = argv[2];
+
+    if (mode != "l" && mode != "p") {
+        std::cerr << "ERROR: Mode tidak valid. Gunakan 'l' atau 'p'.\n";
+        return 1;
+    }
+
+    std::cout << "=== ARION " << (mode == "l" ? "LEXER" : "PARSER") << " ===\n\n";
+
+    std::string testFolder = (mode == "l") ? "../test/milestone-1" : "../test/milestone-2";
+    std::string outputDir = testFolder + "/output";
+
     std::vector<std::filesystem::path> candidates = {
         std::filesystem::path(filename),
-        std::filesystem::path("../test/milestone-1") / filename,
-        std::filesystem::path("../test/milestone-1/valid_test") / filename,
-        std::filesystem::path("../test/milestone-1/invalid_test") / filename
+        std::filesystem::path(testFolder) / filename,
+        std::filesystem::path(testFolder) / "valid_test" / filename,
+        std::filesystem::path(testFolder) / "unique_test" / filename
     };
 
     std::filesystem::path inputPath;
@@ -39,11 +49,19 @@ int main() {
 
     try {
         std::cout << "Membuka file: " << inputPath.string() << "\n";
-        Compiler compiler(inputPath);
-        compiler.lexer();
-        std::cout << "Selesai.\n";
+        
+        Compiler compiler(inputPath, outputDir);
+
+        if (mode == "l") {
+            compiler.lexer();
+        } else if (mode == "p") {
+            compiler.lexer();
+            compiler.parser();
+        }
+        
+        std::cout << "\nSelesai.\n";
     } catch (const std::exception &e) {
-        std::cerr << "RUNTIME ERROR: " << e.what() << "\n";
+        std::cerr << "\nRUNTIME ERROR: " << e.what() << "\n";
         return 1;
     }
 
