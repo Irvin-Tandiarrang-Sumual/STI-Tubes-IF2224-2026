@@ -1,8 +1,5 @@
 #include "Writer.hpp"
 
-#include <algorithm>
-#include <filesystem>
-
 Writer::Writer(const std::string &filename, const std::vector<Token> &tokens)
     : filename(filename), tokens(tokens) {}
 
@@ -51,7 +48,8 @@ void Writer::writeToFile() const {
 }
 
 // BUAT PARSER
-Writer::Writer(const std::string &filename, CSTNodes* root) : filename(filename), tokens(), root(root) {}
+Writer::Writer(const std::string &filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages) 
+    : filename(filename), tokens(), root(root), errorMessages_(parserErrorMessages)  {}
 
 void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const {
     if (node == nullptr) {
@@ -88,6 +86,18 @@ void Writer::printTree() const {
         return;
     }
     writeTreeRecursive(std::cout, root, "", true, 0);
+}
+
+void Writer::printParserError() const {
+    std::cout << "\n=== Parser Errors ===\n";
+
+    if (errorMessages_.empty()) {
+        return;
+    }
+    for (size_t i = 0; i < errorMessages_.size(); i++) {
+        std::cout << errorMessages_.at(i) + "\n";
+    }
+    
 }
 
 void Writer::writeTreeToFile() const {

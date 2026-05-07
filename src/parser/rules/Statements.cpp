@@ -5,9 +5,9 @@
 */
 CSTNodes* Parser::parseCompoundStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::COMPOUND_STATEMENT, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::beginsy)));
+    node->addChild(expect(TokenType::beginsy));
     node->addChild(parseStatementList());
-    node->addChild(new CSTNodes(expect(TokenType::endsy)));
+    node->addChild(expect(TokenType::endsy));
     return node;
 }
 
@@ -20,7 +20,7 @@ CSTNodes* Parser::parseStatementList(){
     node->addChild(parseStatement());
 
     while (check(TokenType::semicolon)) {
-        node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+        node->addChild(expect(TokenType::semicolon));
         node->addChild(parseStatement());
     }
 

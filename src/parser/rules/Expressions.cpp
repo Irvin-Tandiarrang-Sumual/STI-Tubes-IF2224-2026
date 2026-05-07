@@ -23,7 +23,7 @@ CSTNodes* Parser::parseSimpleExpression() {
     CSTNodes* node = new CSTNodes(NonTerminal::SIMPLE_EXPRESSION, peek().codeLocation);
 
     if (checkMultiple({TokenType::plus, TokenType::minus})) {
-        node->addChild(new CSTNodes(expect(peek().type)));
+        node->addChild(expect(peek().type));
     }
 
     node->addChild(parseTerm());
@@ -67,18 +67,24 @@ CSTNodes* Parser::parseFactor() {
             }
             break;
         case TokenType::intcon:
+            node->addChild(expect(TokenType::intcon));
+            break;
         case TokenType::realcon:
+            node->addChild(expect(TokenType::realcon));
+            break;
         case TokenType::charcon:
+            node->addChild(expect(TokenType::charcon));
+            break;
         case TokenType::string:
-            node->addChild(parseConstant());
+            node->addChild(expect(TokenType::string));
             break;
         case TokenType::lparent:
-            node->addChild(new CSTNodes(expect(TokenType::lparent)));
+            node->addChild(expect(TokenType::lparent));
             node->addChild(parseExpression());
-            node->addChild(new CSTNodes(expect(TokenType::rparent)));
+            node->addChild(expect(TokenType::rparent));
             break;
         case TokenType::notsy:
-            node->addChild(new CSTNodes(expect(TokenType::notsy)));
+            node->addChild(expect(TokenType::notsy));
             node->addChild(parseFactor());
             break;
         default:

@@ -10,8 +10,12 @@ class Parser {
         
         // return root node aja
         CSTNodes* parse();
+        std::vector<std::string> getErrors() const;
 
     private:
+        std::vector<std::string> errorMessages_;
+        std::string makeErrorMessage(const std::string& expected);
+        void addError(const std::string& msg);
         const std::vector<Token>& tokens_;
         size_t currentPosition_ = 0;
 
@@ -23,9 +27,12 @@ class Parser {
 
         // periksa apakah sesuai yang dimau dan panggil advance jika sesuai
         // kalo engga bakal throw exception
-        const Token expect(TokenType token);
+        CSTNodes* expect(TokenType token);
 
         void advance();
+
+        // buat sync ketika terjadi error (maju sampe titik "aman")
+        void synchronize(std::vector<TokenType> syncSet);
 
         // skip comment krn ga kepake
         void skipUselessToken();
@@ -41,6 +48,8 @@ class Parser {
 
         // cek apakah statement sekarang adalah assignment (lookahead)
         bool isAssignmentStart() const;
+
+        CSTNodes* errorNode(std::string message);
 
         // parse based on production rules
         // program structure

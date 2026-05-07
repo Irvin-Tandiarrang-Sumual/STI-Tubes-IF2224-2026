@@ -8,7 +8,7 @@ CSTNodes* Parser::parseProgram() {
     node->addChild(parseProgramHeader());
     node->addChild(parseDeclarationPart());
     node->addChild(parseCompoundStatement());
-    node->addChild(new CSTNodes(expect(TokenType::period)));
+    node->addChild(expect(TokenType::period));
 
     return node;
 }
@@ -18,9 +18,9 @@ CSTNodes* Parser::parseProgram() {
 */
 CSTNodes* Parser::parseProgramHeader() {
     CSTNodes* node = new CSTNodes(NonTerminal::PROGRAM_HEADER, peek().codeLocation);
-    node->addChild(new CSTNodes(expect(TokenType::programsy)));
-    node->addChild(new CSTNodes(expect(TokenType::ident)));
-    node->addChild(new CSTNodes(expect(TokenType::semicolon)));
+    node->addChild(expect(TokenType::programsy));
+    node->addChild(expect(TokenType::ident));
+    node->addChild(expect(TokenType::semicolon));
     return node;
 }
 

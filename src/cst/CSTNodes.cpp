@@ -1,10 +1,14 @@
 #include "CSTNodes.hpp"
 
 CSTNodes::CSTNodes(Token token)
-    : isTerminal_(true), value_(token), location_(token.codeLocation) {}
+    : isTerminal_(true), value_(token), location_(token.codeLocation), isError_(false), errorMessage_("") {}
 
 CSTNodes::CSTNodes(NonTerminal nonTerminal, CodeLocation location)
-    : isTerminal_(false), value_(nonTerminal),location_(location) {}
+    : isTerminal_(false), value_(nonTerminal),location_(location), isError_(false), errorMessage_(""){}
+
+CSTNodes::CSTNodes(std::string message, CodeLocation location)
+    : isTerminal_(false), value_(NonTerminal::ERROR), location_(location),
+        isError_(true), errorMessage_(message) {}
 
 void CSTNodes::addChild(CSTNodes* newChild) {
     if (!isTerminal_) {
@@ -12,7 +16,9 @@ void CSTNodes::addChild(CSTNodes* newChild) {
         children_.push_back(newChild);
     }
 }
-
+bool CSTNodes::isError() const {
+    return isError_;
+}
 bool CSTNodes::isTerminal() const {
     return isTerminal_;
 }
@@ -47,6 +53,9 @@ const std::string CSTNodes::toString() const{
             return typeStr + "(" + tokenValueToString(token) + ")";
         }
         return typeStr;
+    }
+    if (isError()) {
+        return "<" + nonTerminalToString(getNonTerminal()) + ":" + errorMessage_ + ">";
     }
     return "<" + nonTerminalToString(getNonTerminal()) + ">";
 }
