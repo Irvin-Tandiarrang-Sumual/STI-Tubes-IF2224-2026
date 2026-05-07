@@ -1,0 +1,81 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(ifelse)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(age)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(age)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(25)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   ├── <simple-expression>
+│   │   │       │   │   └── <term>
+│   │   │       │   │       └── <factor>
+│   │   │       │   │           └── <variable>
+│   │   │       │   │               └── ident(age)
+│   │   │       │   ├── <relational-operator>
+│   │   │       │   │   └── geq
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(18)
+│   │   │       ├── thensy
+│   │   │       ├── <statement>
+│   │   │       │   └── <procedure/function-call>
+│   │   │       │       ├── ident(writeln)
+│   │   │       │       ├── lparent
+│   │   │       │       ├── <parameter-list>
+│   │   │       │       │   └── <expression>
+│   │   │       │       │       └── <simple-expression>
+│   │   │       │       │           └── <term>
+│   │   │       │       │               └── <factor>
+│   │   │       │       │                   └── string(Adult)
+│   │   │       │       └── rparent
+│   │   │       ├── elsesy
+│   │   │       └── <statement>
+│   │   │           └── <procedure/function-call>
+│   │   │               ├── ident(writeln)
+│   │   │               ├── lparent
+│   │   │               ├── <parameter-list>
+│   │   │               │   └── <expression>
+│   │   │               │       └── <simple-expression>
+│   │   │               │           └── <term>
+│   │   │               │               └── <factor>
+│   │   │               │                   └── string(Minor)
+│   │   │               └── rparent
+│   │   ├── semicolon
+│   │   └── <statement>
+│   │       └── <procedure/function-call>
+│   │           ├── ident(writeln)
+│   │           ├── lparent
+│   │           ├── <parameter-list>
+│   │           │   └── <expression>
+│   │           │       └── <simple-expression>
+│   │           │           └── <term>
+│   │           │               └── <factor>
+│   │           │                   └── string(Done)
+│   │           └── rparent
+│   └── endsy
+└── period
