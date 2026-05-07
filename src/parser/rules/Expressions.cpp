@@ -67,10 +67,16 @@ CSTNodes* Parser::parseFactor() {
             }
             break;
         case TokenType::intcon:
+            node->addChild(expect(TokenType::intcon));
+            break;
         case TokenType::realcon:
+            node->addChild(expect(TokenType::realcon));
+            break;
         case TokenType::charcon:
+            node->addChild(expect(TokenType::charcon));
+            break;
         case TokenType::string:
-            node->addChild(parseConstant());
+            node->addChild(expect(TokenType::string));
             break;
         case TokenType::lparent:
             node->addChild(expect(TokenType::lparent));
