@@ -1,4 +1,4 @@
-# Arion Compiler - Part Parser
+# Arion Compiler - Part Parser 🦫
 
 ## Strategi Algoritma
 merupakan nama kelompok kami yang jika disingkat menjadi STI
@@ -11,7 +11,7 @@ merupakan nama kelompok kami yang jika disingkat menjadi STI
 | 5  | Jennifer Khang | 13524110 |
 ## Deskripsi Program
 
-Program yang dibuat saat ini merupakan bagian dari compiler yang akan menjadi tujuan akhir dari tugas besar IF2224 (TBFO) bukan Stima, hehe, saat ini. Saat ini program baru sampai pada tahap parser. Di mana parser bertujuan untuk memastikan urutan token membentuk struktur sintaks yang valid, mendeteksi dan melaporkan kesalahan sintaks, dan mempersiapkan representasi program untuk tahap berikutnya. Parser akan menghasilkan parse tree yang akan dipakai di tahap berikutnya! yippie :D
+Program yang dibuat saat ini merupakan bagian dari compiler yang akan menjadi tujuan akhir dari tugas besar IF2224 (TBFO) bukan Stima, hehe, saat ini. Saat ini program baru sampai pada tahap parser. Di mana parser bertujuan untuk memastikan urutan token membentuk struktur sintaks yang valid, mendeteksi dan melaporkan kesalahan sintaks (memanfaatkan Panic Mode Recovery), dan mempersiapkan representasi program untuk tahap berikutnya. Parser akan menghasilkan parse tree yang akan dipakai di tahap berikutnya! yippie :D
 
 ## Requirements
 
@@ -39,26 +39,19 @@ Perintah ini akan mengkompilasi semua file source code dan menghasilkan executab
 Setelah kompilasi berhasil, jalankan program dengan:
 
 ```bash
-./main
+./main <mode> <nama_file>
+Mode:
+ l -> menjalankan lexer
+ p -> menjalankan lexer & parser
+
+Nama File harus yang berada di `../test/milestone-2/valid_test/`
 ```
 
-Program akan menampilkan prompt untuk memasukkan nama file input:
+### 3. Output
 
+Hasil parsing (parse tree) dalam bentuk file `.txt` akan diberikan di `../test/milestone-2/output`, di mana nama file output merupakan `nama file input` + `-parse-tree.txt`dan parse tree yang sama akan di-print ke terminal beserta error message yang ada.
 
-### 3. Memberikan Input
-
-Masukkan path atau nama file yang ingin dianalisis. Program hanya dapat membuka file `.txt` yang berada di `../test/milestone-1/valid_test/`
-
-Contoh:
-```
-Masukkan path/nama file input: valid1.txt
-```
-
-### 4. Output
-
-Hasil parsing (parse tree) dalam bentuk file `.txt` akan diberikan di `../test/milestone-2/output` dan parse tree yang sama akan di-print ke terminal
-
-### 5. Membersihkan Compiled Files
+### 4. Membersihkan Compiled Files
 
 Untuk menghapus file object dan executable, jalankan:
 
