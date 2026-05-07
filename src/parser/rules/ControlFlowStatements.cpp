@@ -89,7 +89,7 @@ CSTNodes* Parser::parseRepeatStatement() {
 }
 
 /*
-    FOR-STATEMENT : forsy + ident + becomes + EXPRESSION + (tosy | downtosy) + EXPRESSION + dosy + STATEMENT
+    FOR-STATEMENT : forsy + ident + becomes + EXPRESSION + (tosy | downtosy) + EXPRESSION + dosy + COMPOUND-STATEMENT
 */
 CSTNodes* Parser::parseForStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::FOR_STATEMENT, peek().codeLocation);
@@ -106,6 +106,6 @@ CSTNodes* Parser::parseForStatement() {
 
     node->addChild(parseExpression());
     node->addChild(expect(TokenType::dosy));
-    node->addChild(parseStatement());
+    node->addChild(parseCompoundStatement());
     return node;
 }
