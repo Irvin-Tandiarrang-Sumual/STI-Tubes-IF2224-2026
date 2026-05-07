@@ -1,0 +1,26 @@
+programsy
+ident (missingsemicolon)
+semicolon
+varsy
+ident (a)
+comma
+ident (b)
+colon
+ident (integer)
+semicolon
+beginsy
+ident (a)
+becomes
+intcon (5)
+ident (b)
+becomes
+intcon (10)
+semicolon
+ident (writeln)
+lparent
+ident (a)
+comma
+ident (b)
+rparent
+endsy
+period

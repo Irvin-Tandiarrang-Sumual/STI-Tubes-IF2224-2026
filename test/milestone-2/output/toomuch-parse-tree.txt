@@ -1,0 +1,22 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Hello)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(a)
+│       │   ├── comma
+│       │   └── ident(b)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── <unknown:Syntax error at line 4, col 17: expected 'semicolon', got 'elsesy'>
+├── <compound-statement>
+│   ├── <unknown:Syntax error at line 4, col 17: expected 'beginsy', got 'elsesy'>
+│   ├── <statement-list>
+│   │   └── <statement>
+│   └── <unknown:Syntax error at line 4, col 17: expected 'endsy', got 'elsesy'>
+└── <unknown:Syntax error at line 4, col 17: expected 'period', got 'elsesy'>

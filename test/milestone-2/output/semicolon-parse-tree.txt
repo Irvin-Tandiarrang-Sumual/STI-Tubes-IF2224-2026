@@ -1,0 +1,31 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(missingsemicolon)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(a)
+│       │   ├── comma
+│       │   └── ident(b)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   └── <statement>
+│   │       └── <assignment-statement>
+│   │           ├── <variable>
+│   │           │   └── ident(a)
+│   │           ├── becomes
+│   │           └── <expression>
+│   │               └── <simple-expression>
+│   │                   └── <term>
+│   │                       └── <factor>
+│   │                           └── intcon(5)
+│   └── <unknown:Syntax error at line 5, col 3: expected 'endsy', got 'ident'>
+└── <unknown:Syntax error at line 6, col 3: expected 'period', got 'ident'>

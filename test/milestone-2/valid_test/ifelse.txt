@@ -1,0 +1,10 @@
+program ifelse;
+var age: integer;
+begin
+  age := 25;
+  if age >= 18 then
+    writeln('Adult')
+  else
+    writeln('Minor');
+  writeln('Done')
+end.

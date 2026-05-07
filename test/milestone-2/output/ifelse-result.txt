@@ -1,0 +1,34 @@
+programsy
+ident (ifelse)
+semicolon
+varsy
+ident (age)
+colon
+ident (integer)
+semicolon
+beginsy
+ident (age)
+becomes
+intcon (25)
+semicolon
+ifsy
+ident (age)
+geq
+intcon (18)
+thensy
+ident (writeln)
+lparent
+string (Adult)
+rparent
+elsesy
+ident (writeln)
+lparent
+string (Minor)
+rparent
+semicolon
+ident (writeln)
+lparent
+string (Done)
+rparent
+endsy
+period
