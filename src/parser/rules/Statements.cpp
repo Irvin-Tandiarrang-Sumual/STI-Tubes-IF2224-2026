@@ -28,11 +28,16 @@ CSTNodes* Parser::parseStatementList(){
 }
 
 /*
-    STATEMENT : ASSIGNMENT-STATEMENT | IF-STATEMENT | CASE-STATEMENT | WHILE-STATEMENT | REPEAT-STATEMENT | FOR-STATEMENT | PROCEDURE-OR-FUNCTION-CALL
+    STATEMENT : (ASSIGNMENT-STATEMENT | IF-STATEMENT | CASE-STATEMENT | WHILE-STATEMENT | REPEAT-STATEMENT | FOR-STATEMENT | PROCEDURE-OR-FUNCTION-CALL)?
 */
 
 CSTNodes* Parser::parseStatement(){
     CSTNodes* node = new CSTNodes(NonTerminal::STATEMENT, peek().codeLocation);
+
+    if (check(TokenType::semicolon) || check(TokenType::endsy)) {
+        return node;
+    }
+
     switch (peek().type) {
         case TokenType::ident:
             if (peekNext().type == TokenType::becomes ||

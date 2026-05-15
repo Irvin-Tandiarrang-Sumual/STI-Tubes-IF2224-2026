@@ -239,21 +239,6 @@ void Lexer::processNumber() {
         lexeme.push_back(reader.getCurrentCharacter());
         reader.advance();
     }
-
-    // ngebaikin kasus "33N"
-    if (isalpha(reader.getCurrentCharacter())){
-            std::stringstream invalidStream;
-            invalidStream << lexeme;
-
-            while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
-                invalidStream << reader.getCurrentCharacter();
-                reader.advance();
-            }
-
-            addToken(Token(unknown, invalidStream.str(), loc));
-            addError(loc, "Format angka tidak valid", invalidStream.str());
-            return;
-        }
     
     // cek character skrg apa
     if (reader.getCurrentCharacter() == '.') {
@@ -265,20 +250,7 @@ void Lexer::processNumber() {
                 lexeme.push_back(reader.getCurrentCharacter());
                 reader.advance();
             }
-            // ngebaikin kasus "33N"
-            if (isalpha(reader.getCurrentCharacter())){
-                    std::stringstream invalidStream;
-                    invalidStream << lexeme;
 
-                    while(!reader.isEOF() && isalnum(reader.getCurrentCharacter())){
-                        invalidStream << reader.getCurrentCharacter();
-                        reader.advance();
-                    }
-
-                    addToken(Token(unknown, invalidStream.str(), loc));
-                    addError(loc, "Format real tidak valid", invalidStream.str());
-                    return;
-                }
             addToken(Token(realcon, lexeme, loc));
             return;
         }
@@ -298,13 +270,6 @@ void Lexer::processNumber() {
         }
         addToken(Token(unknown, badLexeme, loc));
         addError(loc, "Format real tidak valid", badLexeme);
-        return;
-    }
-
-    if (!reader.isEOF() && isIdentifierBody(reader.getCurrentCharacter())) {
-        lexeme += readUntilDelimiter();
-        addToken(Token(unknown, lexeme, loc));
-        addError(loc, "Format angka tidak valid", lexeme);
         return;
     }
 
