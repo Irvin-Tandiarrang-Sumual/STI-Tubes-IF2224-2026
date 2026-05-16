@@ -1,6 +1,7 @@
 #include <iostream>
+#include "DataType.hpp"
 struct IdentifierTableEntry {
-    explicit IdentifierTableEntry(std::string name, int linkIndex, int type, int reference, bool normal, int level, int address);
+    explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address);
     // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
     // Indeks dimulai dari 33 karena ada reserved words termasuk predefined identifiers.
     std::string name;
@@ -11,7 +12,7 @@ struct IdentifierTableEntry {
 
     // Tipe dasar dari identifier, misalnya: integer, boolean, char,
     // real, array, record, dll. Biasanya berupa kode numerik.
-    int type;
+    DataType type;
     
     //Pointer/indeks ke tabel lain jika tipe adalah komposit (array/record).
     // Mengarah ke atab (array table) atau btab (record/procedure block)
@@ -31,18 +32,18 @@ struct IdentifierTableEntry {
 };
 
 struct ArrayTableEntry{
-    explicit ArrayTableEntry(int arrayIndex, int indexType, int elementType, int compositeTypeReference,
+    explicit ArrayTableEntry(int arrayIndex, DataType indexType, DataType elementType, int compositeTypeReference,
                             int low, int high, int elementSize, int size);
     // Indeks entri array
     int arrayIndex;
 
     // Tipe indeks array (misalnya integer).
     // Berupa kode tipe dari tabel tab.
-    int indexType;
+    DataType indexType;
 
     // Tipe elemen array (misalnya integer).
     // Berupa kode tipe dari tabel tab.
-    int elementType;
+    DataType elementType;
 
     // Pointer/indeks ke detail tipe elemen jika elemen
     // adalah tipe komposit (misalnya array dalam array, atau record).
