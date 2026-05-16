@@ -1,0 +1,87 @@
+#include <iostream>
+struct IdentifierTableEntry {
+    explicit IdentifierTableEntry(std::string name, int linkIndex, int type, int reference, bool normal, int level, int address);
+    // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
+    // Indeks dimulai dari 33 karena ada reserved words termasuk predefined identifiers.
+    std::string name;
+    
+    // Pointer/indeks ke identifier sebelumnya dalam scope yang sama.
+    // Digunakan untuk manajemen scope (linked list per blok).
+    int linkIndex;
+
+    // Tipe dasar dari identifier, misalnya: integer, boolean, char,
+    // real, array, record, dll. Biasanya berupa kode numerik.
+    int type;
+    
+    //Pointer/indeks ke tabel lain jika tipe adalah komposit (array/record).
+    // Mengarah ke atab (array table) atau btab (record/procedure block)
+    int reference;
+
+    // Menandai apakah identifier adalah variabel normal (=1)
+    // atau parameter by-reference (var parameter) (=0).
+    bool normal;
+
+    // Tingkat lexical level tempat identifier dideklarasikan
+    // (0 = global, 1 = dalam prosedur, 2 = dalam prosedur di dalam prosedur, dst).
+    int level;
+            
+    // Makna tergantung jenis objek: offset variabel di stack frame,
+    //nilai konstanta, offset field record, alamat prosedur, atau ukuran/penanda lain.
+    int address;
+};
+
+struct ArrayTableEntry{
+    explicit ArrayTableEntry(int arrayIndex, int indexType, int elementType, int compositeTypeReference,
+                            int low, int high, int elementSize, int size);
+    // Indeks entri array
+    int arrayIndex;
+
+    // Tipe indeks array (misalnya integer).
+    // Berupa kode tipe dari tabel tab.
+    int indexType;
+
+    // Tipe elemen array (misalnya integer).
+    // Berupa kode tipe dari tabel tab.
+    int elementType;
+
+    // Pointer/indeks ke detail tipe elemen jika elemen
+    // adalah tipe komposit (misalnya array dalam array, atau record).
+    // Mengarah ke atab atau btab.
+    int compositeTypeReference;
+    
+    // Batas bawah indeks array (misalnya 1 pada array[1..10]
+    // atau 0 pada array[0..15]).
+    int low;
+    
+    // batas atas indeks array
+    int high;
+    
+    // ukuran satu elemen array (dalam byte/unit memori)
+    int elementSize;
+
+    // total ukuran array
+    int size;
+};
+
+struct BlockTableEntry {
+    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parameterSize, int variableSize);
+    // Indeks entri block (setiap block mewakili
+    // prosedur, fungsi, atau record type definition).
+    int blockIndex;
+
+    // Pointer/indeks ke identifier terakhir yang dideklarasikan
+    // di dalam block tersebut (menghubungkan field record,
+    // parameter, atau variabel lokal).
+    int last;
+
+    // Pointer/indeks ke parameter terakhir dari prosedur/fungsi pada block tersebut. Jika block adalah record, nilainya 0.
+    int latestParameter;
+
+    // Total ukuran parameter block  (dalam byte/unit memori).
+    int parameterSize;
+
+    // Total ukuran variabel lokal block (dalam byte/unit memori)
+    int variableSize;
+
+
+};
