@@ -6,7 +6,7 @@ enum class DataType {
     CHAR,
     BOOLEAN,
     STRING,
-    SUBRANGE,
+    RANGE,
     ENUMERATED,
     ARRAY,
     RECORD
