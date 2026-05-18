@@ -1,6 +1,5 @@
 #pragma once
 #include "../reader/CodeLocation.hpp"
-#include "../symboltable/DataType.hpp"
 #include <vector>
 #include <memory>
 #include <string>
@@ -10,11 +9,14 @@ class ASTNode {
     public:
         CodeLocation location_;
         std::vector<ASTNode*> children_;
-        ASTNode* parent_;
+        ASTNode* parent_ = nullptr;
         virtual ~ASTNode() = default;
 };
 
-class ASTTypeNode : public ASTNode {};
+class ASTTypeNode : public ASTNode {
+    public:
+        bool isAnonymous = false;
+};
 class ASTExpressionNode : public ASTNode {};
 class ASTStatementNode : public ASTNode {};
 class ASTDeclarationNode : public ASTNode {};
@@ -27,8 +29,15 @@ class ASTDeclarationNode : public ASTNode {};
 class ASTPrimitiveType : public ASTTypeNode {
     public:
         std::string type;
-        ASTPrimitiveType(std::string type) : type(type) {}
+        ASTPrimitiveType(std::string type) : type(std::move(type)) {}
 };
+
+class ASTNamedTypeNode : public ASTTypeNode {
+    public:
+        std::string typeName;
+        ASTNamedTypeNode(std::string typeName) : typeName(std::move(typeName)) {}
+};
+
 
 // Range
 // Production Rule : <range> -> <constant> + period + period + <constant>
@@ -91,9 +100,9 @@ class ASTRecordTypeNode : public ASTTypeNode {
 // Semantic Rule : literal = new ASTLiteralExpressionNode(value)
 class ASTLiteralExpressionNode : public ASTExpressionNode {
     public:
-        std::variant<int, double, char, std::string> value;
-        ASTLiteralExpressionNode(std::variant<int, double, char, std::string> value) 
-            : value(value) {}
+        std::variant<int, double, char, bool, std::string> value;
+        ASTLiteralExpressionNode(std::variant<int, double, char, bool, std::string> value) 
+            : value(std::move(value)) {}
 };
 
 // Component Variable Helper (Untuk array index atau record field)
@@ -101,9 +110,22 @@ class ASTLiteralExpressionNode : public ASTExpressionNode {
 // Semantic Rule : component = new ASTVariableComponent(isArrayIndex, fieldName, indices)
 class ASTVariableComponent {
     public:
-        bool isArrayIndex;
+        bool isArrayIndex = false;
         std::string fieldName;
         std::vector<std::unique_ptr<ASTExpressionNode>> indices;
+
+        ASTVariableComponent() = default;
+
+        explicit ASTVariableComponent(std::string fieldName)
+            : isArrayIndex(false), fieldName(std::move(fieldName)) {}
+
+        explicit ASTVariableComponent(std::vector<std::unique_ptr<ASTExpressionNode>> indices)
+            : isArrayIndex(true), indices(std::move(indices)) {}
+
+        ASTVariableComponent(ASTVariableComponent&&) noexcept = default;
+        ASTVariableComponent& operator=(ASTVariableComponent&&) noexcept = default;
+        ASTVariableComponent(const ASTVariableComponent&) = delete;
+        ASTVariableComponent& operator=(const ASTVariableComponent&) = delete;
 };
 
 // Variable Access
@@ -114,7 +136,7 @@ class ASTVariableExpressionNode : public ASTExpressionNode {
         std::string baseName;
         std::vector<ASTVariableComponent> components;
         ASTVariableExpressionNode(std::string baseName, std::vector<ASTVariableComponent> components)
-            : baseName(baseName), components(std::move(components)) {}
+            : baseName(std::move(baseName)), components(std::move(components)) {}
 };
 
 // Unary Expression (not, +, -)
@@ -125,7 +147,7 @@ class ASTUnaryExpressionNode : public ASTExpressionNode {
         std::string op;
         std::unique_ptr<ASTExpressionNode> operand;
         ASTUnaryExpressionNode(std::string op, std::unique_ptr<ASTExpressionNode> operand)
-            : op(op), operand(std::move(operand)) {}
+            : op(std::move(op)), operand(std::move(operand)) {}
 };
 
 // Binary Expression (+, -, *, /, div, mod, and, or, =, <>, <, >, <=, >=)
@@ -137,7 +159,7 @@ class ASTBinaryExpressionNode : public ASTExpressionNode {
         std::unique_ptr<ASTExpressionNode> lhs;
         std::unique_ptr<ASTExpressionNode> rhs;
         ASTBinaryExpressionNode(std::string op, std::unique_ptr<ASTExpressionNode> lhs, std::unique_ptr<ASTExpressionNode> rhs)
-            : op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+            : op(std::move(op)), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 };
 
 // Function/Procedure Call as Expression
@@ -148,11 +170,19 @@ class ASTCallExpressionNode : public ASTExpressionNode {
         std::string callee;
         std::vector<std::unique_ptr<ASTExpressionNode>> arguments;
         ASTCallExpressionNode(std::string callee, std::vector<std::unique_ptr<ASTExpressionNode>> arguments)
-            : callee(callee), arguments(std::move(arguments)) {}
+            : callee(std::move(callee)), arguments(std::move(arguments)) {}
 };
 
 
 // statement
+
+// Empty Statement
+// Production Rule : <statement> -> ε
+// Semantic Rule : empty-stmt = new ASTEmptyStatementNode()
+class ASTEmptyStatementNode : public ASTStatementNode {
+    public:
+        ASTEmptyStatementNode() = default;
+};
 
 // Compound Statement (Block)
 // Production Rule : <compound-statement> -> beginsy + <statement-list> + endsy
@@ -188,13 +218,13 @@ class ASTIfStatementNode : public ASTStatementNode {
 };
 
 // While Statement
-// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <statement>
+// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <compound-statement> + semicolon
 // Semantic Rule : while-stmt = new ASTWhileStatementNode(condition, body)
 class ASTWhileStatementNode : public ASTStatementNode {
     public:
         std::unique_ptr<ASTExpressionNode> condition;
-        std::unique_ptr<ASTStatementNode> body;
-        ASTWhileStatementNode(std::unique_ptr<ASTExpressionNode> condition, std::unique_ptr<ASTStatementNode> body)
+        std::unique_ptr<ASTBlockStatementNode> body;
+        ASTWhileStatementNode(std::unique_ptr<ASTExpressionNode> condition, std::unique_ptr<ASTBlockStatementNode> body)
             : condition(std::move(condition)), body(std::move(body)) {}
 };
 
@@ -210,7 +240,7 @@ class ASTRepeatStatementNode : public ASTStatementNode {
 };
 
 // For Statement
-// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <statement>
+// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <compound-statement> + semicolon
 // Semantic Rule : for-stmt = new ASTForStatementNode(iteratorName, startVal, endVal, isDownTo, body)
 class ASTForStatementNode : public ASTStatementNode {
     public:
@@ -218,9 +248,9 @@ class ASTForStatementNode : public ASTStatementNode {
         std::unique_ptr<ASTExpressionNode> startVal;
         std::unique_ptr<ASTExpressionNode> endVal;
         bool isDownTo;
-        std::unique_ptr<ASTStatementNode> body;
-        ASTForStatementNode(std::string iteratorName, std::unique_ptr<ASTExpressionNode> startVal, std::unique_ptr<ASTExpressionNode> endVal, bool isDownTo, std::unique_ptr<ASTStatementNode> body)
-            : iteratorName(iteratorName), startVal(std::move(startVal)), endVal(std::move(endVal)), isDownTo(isDownTo), body(std::move(body)) {}
+        std::unique_ptr<ASTBlockStatementNode> body;
+        ASTForStatementNode(std::string iteratorName, std::unique_ptr<ASTExpressionNode> startVal, std::unique_ptr<ASTExpressionNode> endVal, bool isDownTo, std::unique_ptr<ASTBlockStatementNode> body)
+            : iteratorName(std::move(iteratorName)), startVal(std::move(startVal)), endVal(std::move(endVal)), isDownTo(isDownTo), body(std::move(body)) {}
 };
 
 // Case Block Helper
@@ -231,6 +261,11 @@ class ASTCaseBranchNode {
         std::unique_ptr<ASTStatementNode> body;
         ASTCaseBranchNode(std::vector<std::unique_ptr<ASTExpressionNode>> constants, std::unique_ptr<ASTStatementNode> body)
             : constants(std::move(constants)), body(std::move(body)) {}
+
+        ASTCaseBranchNode(ASTCaseBranchNode&&) noexcept = default;
+        ASTCaseBranchNode& operator=(ASTCaseBranchNode&&) noexcept = default;
+        ASTCaseBranchNode(const ASTCaseBranchNode&) = delete;
+        ASTCaseBranchNode& operator=(const ASTCaseBranchNode&) = delete;
 };
 
 // Case Statement
@@ -265,7 +300,7 @@ class ASTConstDeclarationNode : public ASTDeclarationNode {
         std::string name;
         std::unique_ptr<ASTExpressionNode> value;
         ASTConstDeclarationNode(std::string name, std::unique_ptr<ASTExpressionNode> value)
-            : name(name), value(std::move(value)) {}
+            : name(std::move(name)), value(std::move(value)) {}
 };
 
 // Type Declaration
@@ -276,7 +311,7 @@ class ASTTypeDeclarationNode : public ASTDeclarationNode {
         std::string name;
         std::unique_ptr<ASTTypeNode> typeDefinition;
         ASTTypeDeclarationNode(std::string name, std::unique_ptr<ASTTypeNode> typeDefinition)
-            : name(name), typeDefinition(std::move(typeDefinition)) {}
+            : name(std::move(name)), typeDefinition(std::move(typeDefinition)) {}
 };
 
 // Var Declaration
@@ -299,6 +334,11 @@ class ASTParameterGroup {
         std::unique_ptr<ASTTypeNode> type;
         ASTParameterGroup(std::vector<std::string> identifiers, std::unique_ptr<ASTTypeNode> type)
             : identifiers(std::move(identifiers)), type(std::move(type)) {}
+
+        ASTParameterGroup(ASTParameterGroup&&) noexcept = default;
+        ASTParameterGroup& operator=(ASTParameterGroup&&) noexcept = default;
+        ASTParameterGroup(const ASTParameterGroup&) = delete;
+        ASTParameterGroup& operator=(const ASTParameterGroup&) = delete;
 };
 
 // Subprogram Declaration Base
@@ -310,14 +350,15 @@ class ASTSubprogramDeclarationNode : public ASTDeclarationNode {
         std::unique_ptr<ASTBlockStatementNode> body;
 
         ASTSubprogramDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations, std::unique_ptr<ASTBlockStatementNode> body)
-            : name(name), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(std::move(body)) {}
+            : name(std::move(name)), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(std::move(body)) {}
 };
 
 // Procedure Declaration
 // Production Rule : <procedure-declaration> -> proceduresy + ident + (<formal-parameter-list>)? + semicolon + <block> + semicolon
 // Semantic Rule : proc-decl = new ASTProcedureDeclarationNode(name, parameters, localDeclarations, body)
 class ASTProcedureDeclarationNode : public ASTSubprogramDeclarationNode {
-    using ASTSubprogramDeclarationNode::ASTSubprogramDeclarationNode; // Mewarisi constructor
+    public:
+        using ASTSubprogramDeclarationNode::ASTSubprogramDeclarationNode; // Mewarisi constructor
 };
 
 // Function Declaration
@@ -327,7 +368,7 @@ class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
     public:
         std::string returnTypeName;
         ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations, std::unique_ptr<ASTBlockStatementNode> body)
-            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), std::move(body)), returnTypeName(returnTypeName) {}
+            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), std::move(body)), returnTypeName(std::move(returnTypeName)) {}
 };
 
 
@@ -341,5 +382,5 @@ class ASTProgramNode : public ASTNode {
         std::unique_ptr<ASTBlockStatementNode> mainBlock;
 
         ASTProgramNode(std::string programName, std::vector<std::unique_ptr<ASTDeclarationNode>> declarations, std::unique_ptr<ASTBlockStatementNode> mainBlock)
-            : programName(programName), declarations(std::move(declarations)), mainBlock(std::move(mainBlock)) {}
+            : programName(std::move(programName)), declarations(std::move(declarations)), mainBlock(std::move(mainBlock)) {}
 };
