@@ -1,4 +1,4 @@
-#include "ASTBuilder.hpp"
+#include "../ASTBuilder.hpp"
 
 std::unique_ptr<ASTVariableExpressionNode> ASTBuilder::buildVariable(const CSTNodes* node) {
     if (node == nullptr || node->isError() || node->isTerminal() || node->getNonTerminal() != NonTerminal::VARIABLE) {
