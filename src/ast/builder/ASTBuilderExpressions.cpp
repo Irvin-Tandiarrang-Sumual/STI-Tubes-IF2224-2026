@@ -10,7 +10,7 @@ ASTExpressionNode* ASTBuilder::buildExpression(const CSTNodes* node) {
     // Jika punya 3 anak, berarti ada <relational-operator> di tengah
     if (children.size() == 3) {
         const CSTNodes* opNode = children[1]->childAt(0); 
-        std::string opString = std::get<std::string>(opNode->getToken().value);
+        std::string opString = operatorText(opNode->getToken().type);
         auto right = buildSimpleExpression(children[2]);
         return new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
     }
@@ -30,7 +30,7 @@ ASTExpressionNode* ASTBuilder::buildSimpleExpression(const CSTNodes* node) {
     // Cek apakah child pertama adalah token terminal berupa unary sign (+ atau -)
     if (children[0]->isTerminal() && (children[0]->getToken().type == TokenType::plus || children[0]->getToken().type == TokenType::minus)) {
         hasLeadingSign = true;
-        leadingSign = std::get<std::string>(children[0]->getToken().value);
+        leadingSign = operatorText(children[0]->getToken().type);
         i++;
     }
 
@@ -43,7 +43,7 @@ ASTExpressionNode* ASTBuilder::buildSimpleExpression(const CSTNodes* node) {
     // Looping Left-Associative untuk <additive-operator> <term>
     while (i < children.size()) {
         const CSTNodes* opNode = children[i++]->childAt(0);
-        std::string opString = std::get<std::string>(opNode->getToken().value);
+        std::string opString = operatorText(opNode->getToken().type);
         auto right = buildTerm(children[i++]);
         left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
     }
@@ -61,7 +61,7 @@ ASTExpressionNode* ASTBuilder::buildTerm(const CSTNodes* node) {
     // Looping Left-Associative untuk <multiplicative-operator> <factor>
     while (i < children.size()) {
         const CSTNodes* opNode = children[i++]->childAt(0);
-        std::string opString = std::get<std::string>(opNode->getToken().value);
+        std::string opString = operatorText(opNode->getToken().type);
         auto right = buildFactor(children[i++]);
         left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
     }
@@ -109,7 +109,7 @@ ASTExpressionNode* ASTBuilder::buildConstant(const CSTNodes* node) {
     // Cek unary sign di depan identifier/literal
     if (children[0]->isTerminal() && (children[0]->getToken().type == TokenType::plus || children[0]->getToken().type == TokenType::minus)) {
         hasSign = true;
-        sign = std::get<std::string>(children[0]->getToken().value);
+        sign = operatorText(children[0]->getToken().type);
         valNode = children[1];
     }
 
@@ -126,11 +126,23 @@ ASTExpressionNode* ASTBuilder::buildLiteralOrIdentifierExpression(const CSTNodes
     const Token& token = tokenNode->getToken();
     
     switch (token.type) {
-        case TokenType::intcon:
-            return new ASTLiteralExpressionNode(std::get<int>(token.value));
+        case TokenType::intcon: {
+            const std::string raw = tokenValueToString(token);
+            try {
+                return new ASTLiteralExpressionNode(std::stoi(raw));
+            } catch (...) {
+                return nullptr;
+            }
+        }
             
-        case TokenType::realcon:
-            return new ASTLiteralExpressionNode(std::get<double>(token.value));
+        case TokenType::realcon: {
+            const std::string raw = tokenValueToString(token);
+            try {
+                return new ASTLiteralExpressionNode(std::stod(raw));
+            } catch (...) {
+                return nullptr;
+            }
+        }
             
         case TokenType::charcon: {
             std::string s = std::get<std::string>(token.value);
