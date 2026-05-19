@@ -63,7 +63,6 @@ void Compiler::parser() {
     writer.writeCSTToFile();
     writer.printParserError();
 
-    // do not delete here; destructor will delete cstRoot_
 }
 
 void Compiler::semantic() {
@@ -71,9 +70,11 @@ void Compiler::semantic() {
         std::cout << "Terdapat Error pada Proses-Proses Sebelumnya, Semantic tidak dapat dilanjutkan\n";
         return;
     }
+
+    std::cout << "Processing Semantic Analysis...\n";
     ASTBuilder builder;
 
-    ASTProgramNode* astRoot = builder.build(cstRoot_); 
+    ASTProgramNode* astRoot = builder.build(cstRoot_);
 
     const std::string baseName = inputPath.stem().string();
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-ast.txt");

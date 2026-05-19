@@ -139,6 +139,7 @@ void Writer::printParserError() const {
     std::cout << "\n=== Parser Errors ===\n";
 
     if (errorMessages_.empty()) {
+        std::cout << "Tidak Terdapat Error pada Tahapan Parser!\n\n";
         return;
     }
     for (size_t i = 0; i < errorMessages_.size(); i++) {
