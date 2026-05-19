@@ -5,7 +5,7 @@ Writer::Writer(const std::string &filename, const std::vector<Token> &tokens)
 
 Writer::~Writer() = default;
 
-void Writer::writeToFile() const {
+void Writer::writeTokenToFile() const {
     std::ofstream fOut(filename, std::ios::out | std::ios::binary);
     if (!fOut.is_open()) {
         std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";

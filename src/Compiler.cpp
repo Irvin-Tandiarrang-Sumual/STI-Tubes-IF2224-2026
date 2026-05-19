@@ -31,7 +31,7 @@ void Compiler::lexer() {
     }
 
     Writer writer(fullPath.string(), tokens_);
-    writer.writeToFile();
+    writer.writeTokenToFile();
 }
 
 void Compiler::parser() {

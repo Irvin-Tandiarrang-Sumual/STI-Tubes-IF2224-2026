@@ -25,7 +25,8 @@ class Writer {
         Writer(const std::string& filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages);
         ~Writer();
 
-        void writeToFile() const;
+        void writeTokenToFile() const;
+
 
         void writeCSTToFile() const;
         void printCST() const;
