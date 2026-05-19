@@ -51,7 +51,7 @@ void Writer::writeToFile() const {
 Writer::Writer(const std::string &filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages) 
     : filename(filename), tokens(), root(root), errorMessages_(parserErrorMessages)  {}
 
-void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const {
+void Writer::writeCSTRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const {
     if (node == nullptr) {
         return;
     }
@@ -76,16 +76,16 @@ void Writer::writeTreeRecursive(std::ostream& out, const CSTNodes* node, const s
             childPrefix += (isLast ? "    " : "│   ");
         }
 
-        writeTreeRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
+        writeCSTRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
     }
 }
 
-void Writer::printTree() const {
+void Writer::printCST() const {
     if (root == nullptr) {
         std::cerr << "ERROR: root parse tree kosong.\n";
         return;
     }
-    writeTreeRecursive(std::cout, root, "", true, 0);
+    writeCSTRecursive(std::cout, root, "", true, 0);
 }
 
 void Writer::printParserError() const {
@@ -100,7 +100,7 @@ void Writer::printParserError() const {
     
 }
 
-void Writer::writeTreeToFile() const {
+void Writer::writeCSTToFile() const {
     if (root == nullptr) {
         std::cerr << "ERROR: root parse tree kosong.\n";
         return;
@@ -111,7 +111,7 @@ void Writer::writeTreeToFile() const {
         std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
         return;
     }
-    writeTreeRecursive(fOut, root, "", true, 0);
+    writeCSTRecursive(fOut, root, "", true, 0);
     fOut.close();
 
     std::cout << "Parse tree berhasil disimpan di: " << filename << "\n";

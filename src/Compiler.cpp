@@ -51,8 +51,8 @@ void Compiler::parser() {
     }
 
     Writer writer(fullPath.string(), root, parser.getErrors());
-    writer.printTree();
-    writer.writeTreeToFile();
+    writer.printCST();
+    writer.writeCSTToFile();
     writer.printParserError();
 
     delete root;

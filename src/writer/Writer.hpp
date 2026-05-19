@@ -17,7 +17,7 @@ class Writer {
         const std::vector<std::string> errorMessages_;
 
         // print tree
-        void writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        void writeCSTRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);
         
@@ -27,8 +27,8 @@ class Writer {
 
         void writeToFile() const;
 
-        void writeTreeToFile() const;
-        void printTree() const;
+        void writeCSTToFile() const;
+        void printCST() const;
         void printParserError() const;
 
 };
