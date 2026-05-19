@@ -63,20 +63,19 @@ std::vector<ASTExpressionNode*> ASTBuilder::buildIndexList(const CSTNodes* node)
         }
 
         if (child->isTerminal()) {
-            if (child->getToken().type == TokenType::comma) {
-                continue;
-            }
-
-            if (child->getToken().type == TokenType::intcon || child->getToken().type == TokenType::charcon || child->getToken().type == TokenType::ident) {
-                indices.push_back(buildLiteralOrIdentifierExpression(child));
-            }
+            // lbrack, rbrack, dan comma hanya pemisah sintaksis.
             continue;
         }
 
-        if (child->getNonTerminal() == NonTerminal::INDEX_LIST) {
+        if (child->getNonTerminal() == NonTerminal::EXPRESSION) {
+            ASTExpressionNode* expr = buildExpression(child);
+            if (expr != nullptr) {
+                indices.push_back(expr);
+            }
+        } else if (child->getNonTerminal() == NonTerminal::INDEX_LIST) {
             auto nestedIndices = buildIndexList(child);
-            for (auto& indexExpr : nestedIndices) {
-                indices.push_back(std::move(indexExpr));
+            for (auto* indexExpr : nestedIndices) {
+                indices.push_back(indexExpr);
             }
         }
     }
