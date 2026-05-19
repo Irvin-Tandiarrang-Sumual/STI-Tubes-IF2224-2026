@@ -1,10 +1,15 @@
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include "DataType.hpp"
 struct IdentifierTableEntry {
     explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address);
     // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
-    // Indeks dimulai dari 33 karena ada reserved words termasuk predefined identifiers.
     std::string name;
+
+    // Indeks dimulai dari 33 karena ada reserved words termasuk predefined identifiers.
+    int index;
+
     
     // Pointer/indeks ke identifier sebelumnya dalam scope yang sama.
     // Digunakan untuk manajemen scope (linked list per blok).
@@ -29,6 +34,35 @@ struct IdentifierTableEntry {
     // Makna tergantung jenis objek: offset variabel di stack frame,
     //nilai konstanta, offset field record, alamat prosedur, atau ukuran/penanda lain.
     int address;
+
+    // to string
+    static::std::string getHeader() {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5)  << "idx"
+            << std::setw(12) << "id"
+            << std::setw(6)  << "type"
+            << std::setw(6)  << "ref"
+            << std::setw(6)  << "nrm"
+            << std::setw(6)  << "lev"
+            << std::setw(6)  << "adr"
+            << std::setw(6)  << "link";
+        return ss.str();
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5)  << index
+            << std::setw(12) << name
+            << std::setw(6)  << static_cast<int>(type)
+            << std::setw(6)  << reference
+            << std::setw(6)  << (normal ? 1 : 0)
+            << std::setw(6)  << level
+            << std::setw(6)  << address
+            << std::setw(6)  << linkIndex;
+        return ss.str();
+    }
 };
 
 struct ArrayTableEntry{
@@ -62,6 +96,36 @@ struct ArrayTableEntry{
 
     // total ukuran array
     int size;
+
+    // to string
+
+    static::std::string getHeader() {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5) << "idx"
+            << std::setw(8) << "inxtyp"
+            << std::setw(8) << "eltyp"
+            << std::setw(6) << "ref"
+            << std::setw(6) << "low"
+            << std::setw(6) << "high"
+            << std::setw(6) << "elsz"
+            << std::setw(6) << "size";
+        return ss.str();
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5) << arrayIndex
+            << std::setw(8) << static_cast<int>(indexType)
+            << std::setw(8) << static_cast<int>(elementType)
+            << std::setw(6) << compositeTypeReference
+            << std::setw(6) << low
+            << std::setw(6) << high
+            << std::setw(6) << elementSize
+            << std::setw(6) << size;
+        return ss.str();
+    }
 };
 
 struct BlockTableEntry {
@@ -84,5 +148,26 @@ struct BlockTableEntry {
     // Total ukuran variabel lokal block (dalam byte/unit memori)
     int variableSize;
 
+    static std::string getHeader() {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5)  << "idx"
+            << std::setw(8)  << "last"
+            << std::setw(10) << "lparam"
+            << std::setw(8)  << "psize"
+            << std::setw(8)  << "vsize";
+        return ss.str();
+    }
 
+    // 2. Fungsi untuk mencetak baris data Block
+    std::string toString() const {
+        std::stringstream ss;
+        ss << std::left 
+            << std::setw(5)  << blockIndex
+            << std::setw(8)  << last
+            << std::setw(10) << latestParameter
+            << std::setw(8)  << parameterSize
+            << std::setw(8)  << variableSize;
+        return ss.str();
+    }
 };

@@ -20,7 +20,7 @@ bool isPrimitiveTypeName(const std::string& name) {
 }
 
 // Dispatcher utama untuk CST <type> ke node AST type yang sesuai.
-std::unique_ptr<ASTTypeNode> ASTBuilder::buildType(const CSTNodes* node) {
+ASTTypeNode* ASTBuilder::buildType(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -65,13 +65,13 @@ std::unique_ptr<ASTTypeNode> ASTBuilder::buildType(const CSTNodes* node) {
 }
 
 // Mengubah ident type menjadi primitive type atau named type.
-std::unique_ptr<ASTTypeNode> ASTBuilder::buildTypeFromIdentifier(const std::string& name, const CSTNodes* source) {
-	std::unique_ptr<ASTTypeNode> result;
+ASTTypeNode* ASTBuilder::buildTypeFromIdentifier(const std::string& name, const CSTNodes* source) {
+	ASTTypeNode* result;
 
 	if (isPrimitiveTypeName(name)) {
-		result = std::make_unique<ASTPrimitiveType>(toLowerCopy(name));
+		result = new ASTPrimitiveType(toLowerCopy(name));
 	} else {
-		result = std::make_unique<ASTNamedTypeNode>(name);
+		result = new ASTNamedTypeNode(name);
 	}
 
 	if (result != nullptr && source != nullptr) {
@@ -83,7 +83,7 @@ std::unique_ptr<ASTTypeNode> ASTBuilder::buildTypeFromIdentifier(const std::stri
 }
 
 // Mengubah CST <array-type> menjadi ASTArrayTypeNode.
-std::unique_ptr<ASTArrayTypeNode> ASTBuilder::buildArrayType(const CSTNodes* node) {
+ASTArrayTypeNode* ASTBuilder::buildArrayType(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -94,7 +94,7 @@ std::unique_ptr<ASTArrayTypeNode> ASTBuilder::buildArrayType(const CSTNodes* nod
 		return nullptr;
 	}
 
-	std::unique_ptr<ASTTypeNode> indexType;
+	ASTTypeNode* indexType;
 	if (!indexNode->isTerminal() && indexNode->getNonTerminal() == NonTerminal::RANGE) {
 		indexType = buildRangeType(indexNode);
 	} else if (indexNode->isTerminal() && indexNode->getToken().type == TokenType::ident) {
@@ -103,15 +103,15 @@ std::unique_ptr<ASTArrayTypeNode> ASTBuilder::buildArrayType(const CSTNodes* nod
 		indexType = buildType(indexNode);
 	}
 
-	std::unique_ptr<ASTTypeNode> elementType = buildType(elementNode);
-	auto result = std::make_unique<ASTArrayTypeNode>(std::move(indexType), std::move(elementType));
+	ASTTypeNode* elementType = buildType(elementNode);
+	auto result = new ASTArrayTypeNode(std::move(indexType), std::move(elementType));
 	result->location_ = node->getLocation();
 	result->isAnonymous = true;
 	return result;
 }
 
 // Mengubah CST <range> menjadi ASTRangeType berisi batas awal dan akhir.
-std::unique_ptr<ASTRangeType> ASTBuilder::buildRangeType(const CSTNodes* node) {
+ASTRangeType* ASTBuilder::buildRangeType(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -124,14 +124,14 @@ std::unique_ptr<ASTRangeType> ASTBuilder::buildRangeType(const CSTNodes* node) {
 
 	auto startConstant = buildConstant(startNode);
 	auto endConstant = buildConstant(endNode);
-	auto result = std::make_unique<ASTRangeType>(std::move(startConstant), std::move(endConstant));
+	auto result = new ASTRangeType(std::move(startConstant), std::move(endConstant));
 	result->location_ = node->getLocation();
 	result->isAnonymous = true;
 	return result;
 }
 
 // Mengubah CST <enumerated> menjadi daftar enumerator AST.
-std::unique_ptr<ASTEnumeratedTypeNode> ASTBuilder::buildEnumeratedType(const CSTNodes* node) {
+ASTEnumeratedTypeNode* ASTBuilder::buildEnumeratedType(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -145,21 +145,21 @@ std::unique_ptr<ASTEnumeratedTypeNode> ASTBuilder::buildEnumeratedType(const CST
 		}
 	}
 
-	auto result = std::make_unique<ASTEnumeratedTypeNode>(std::move(elements));
+	auto result = new ASTEnumeratedTypeNode(std::move(elements));
 	result->location_ = node->getLocation();
 	result->isAnonymous = true;
 	return result;
 }
 
 // Mengubah CST <record-type> menjadi ASTRecordTypeNode berisi field list.
-std::unique_ptr<ASTRecordTypeNode> ASTBuilder::buildRecordType(const CSTNodes* node) {
+ASTRecordTypeNode* ASTBuilder::buildRecordType(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
 
 	const CSTNodes* fieldListNode = node->childAt(1);
 	std::vector<ASTRecordFieldNode> fields = buildFieldList(fieldListNode);
-	auto result = std::make_unique<ASTRecordTypeNode>(std::move(fields));
+	auto result = new ASTRecordTypeNode(std::move(fields));
 	result->location_ = node->getLocation();
 	result->isAnonymous = true;
 	return result;
@@ -192,7 +192,7 @@ ASTRecordFieldNode ASTBuilder::buildFieldPart(const CSTNodes* node) {
 	const CSTNodes* identifierListNode = node->childAt(0);
 	const CSTNodes* typeNode = node->childAt(2);
 	std::vector<std::string> identifiers = buildIdentifierList(identifierListNode);
-	std::unique_ptr<ASTTypeNode> fieldType = buildType(typeNode);
+	ASTTypeNode* fieldType = buildType(typeNode);
 	return ASTRecordFieldNode(std::move(identifiers), std::move(fieldType));
 }
 

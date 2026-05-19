@@ -5,7 +5,7 @@
 /*
     Entry point ASTBuilder.
 */
-std::unique_ptr<ASTProgramNode> ASTBuilder::build(const CSTNodes* root) {
+ASTProgramNode* ASTBuilder::build(const CSTNodes* root) {
     if (root == nullptr) {
         return nullptr;
     }

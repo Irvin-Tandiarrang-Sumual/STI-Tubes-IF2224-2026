@@ -1,6 +1,6 @@
 #include "../ASTBuilder.hpp"
 
-std::unique_ptr<ASTBlockStatementNode> ASTBuilder::buildCompoundStatement(const CSTNodes* node) {
+ASTBlockStatementNode* ASTBuilder::buildCompoundStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -8,11 +8,11 @@ std::unique_ptr<ASTBlockStatementNode> ASTBuilder::buildCompoundStatement(const 
 	// Struktur: beginsy + <statement-list> + endsy
 	const CSTNodes* stmtListNode = node->firstChildOf(NonTerminal::STATEMENT_LIST);
 	auto stmts = buildStatementList(stmtListNode);
-	return std::make_unique<ASTBlockStatementNode>(std::move(stmts));
+	return new ASTBlockStatementNode(std::move(stmts));
 }
 
-std::vector<std::unique_ptr<ASTStatementNode>> ASTBuilder::buildStatementList(const CSTNodes* node) {
-	std::vector<std::unique_ptr<ASTStatementNode>> out;
+std::vector<ASTStatementNode*> ASTBuilder::buildStatementList(const CSTNodes* node) {
+	std::vector<ASTStatementNode*> out;
 	if (node == nullptr || node->isError()) {
 		return out;
 	}
@@ -28,19 +28,19 @@ std::vector<std::unique_ptr<ASTStatementNode>> ASTBuilder::buildStatementList(co
 	return out;
 }
 
-std::unique_ptr<ASTStatementNode> ASTBuilder::buildStatement(const CSTNodes* node) {
+ASTStatementNode* ASTBuilder::buildStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
 	const auto& children = node->getChildren();
 	// Empty statement -> ASTEmptyStatementNode
 	if (children.empty()) {
-		return std::make_unique<ASTEmptyStatementNode>();
+		return new ASTEmptyStatementNode();
 	}
 
 	const CSTNodes* inner = children[0];
 	if (inner == nullptr) {
-		return std::make_unique<ASTEmptyStatementNode>();
+		return new ASTEmptyStatementNode();
 	}
 
 	if (!inner->isTerminal()) {
@@ -60,15 +60,15 @@ std::unique_ptr<ASTStatementNode> ASTBuilder::buildStatement(const CSTNodes* nod
 		} else if (nt == NonTerminal::PROCEDURE_OR_FUNCTION_CALL) {
 			auto callExpr = buildProcedureOrFunctionCall(inner);
 			if (callExpr != nullptr) {
-				return std::make_unique<ASTCallStatementNode>(std::move(callExpr));
+				return new ASTCallStatementNode(std::move(callExpr));
 			}
 		}
 	}
 
-	return std::make_unique<ASTEmptyStatementNode>();
+	return new ASTEmptyStatementNode();
 }
 
-std::unique_ptr<ASTAssignmentStatementNode> ASTBuilder::buildAssignmentStatement(const CSTNodes* node) {
+ASTAssignmentStatementNode* ASTBuilder::buildAssignmentStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) return nullptr;
 	const auto& children = node->getChildren();
 	if (children.size() < 3) {
@@ -79,10 +79,10 @@ std::unique_ptr<ASTAssignmentStatementNode> ASTBuilder::buildAssignmentStatement
 	if (target == nullptr || value == nullptr) {
 		return nullptr;
 	}
-	return std::make_unique<ASTAssignmentStatementNode>(std::move(target), std::move(value));
+	return new ASTAssignmentStatementNode(std::move(target), std::move(value));
 }
 
-std::unique_ptr<ASTStatementNode> ASTBuilder::buildIfStatement(const CSTNodes* node) {
+ASTStatementNode* ASTBuilder::buildIfStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -92,16 +92,16 @@ std::unique_ptr<ASTStatementNode> ASTBuilder::buildIfStatement(const CSTNodes* n
 	auto condition = buildExpression(children[1]);
 	auto thenBranch = buildStatement(children[3]);
 
-	std::unique_ptr<ASTStatementNode> elseBranch = nullptr;
+	ASTStatementNode* elseBranch = nullptr;
 	if (children.size() >= 6) {
 		// children[4] = elsesy token, children[5] = statement
 		elseBranch = buildStatement(children[5]);
 	}
 
-	return std::make_unique<ASTIfStatementNode>(std::move(condition), std::move(thenBranch), std::move(elseBranch));
+	return new ASTIfStatementNode(std::move(condition), std::move(thenBranch), std::move(elseBranch));
 }
 
-std::unique_ptr<ASTCaseStatementNode> ASTBuilder::buildCaseStatement(const CSTNodes* node) {
+ASTCaseStatementNode* ASTBuilder::buildCaseStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -111,7 +111,7 @@ std::unique_ptr<ASTCaseStatementNode> ASTBuilder::buildCaseStatement(const CSTNo
 	auto condition = buildExpression(children[1]);
 	std::vector<ASTCaseBranchNode> branches;
 	collectCaseBranches(children[3], branches);
-	return std::make_unique<ASTCaseStatementNode>(std::move(condition), std::move(branches));
+	return new ASTCaseStatementNode(std::move(condition), std::move(branches));
 }
 
 void ASTBuilder::collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBranchNode>& out) {
@@ -122,7 +122,7 @@ void ASTBuilder::collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBr
 	const auto& children = node->getChildren();
 
 	// collect leading constants (may be multiple separated by comma)
-	std::vector<std::unique_ptr<ASTExpressionNode>> constants;
+	std::vector<ASTExpressionNode*> constants;
 	std::size_t i = 0;
 	while (i < children.size()) {
 		const CSTNodes* ch = children[i];
@@ -146,7 +146,7 @@ void ASTBuilder::collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBr
 	if (i < children.size() && children[i]->isTerminal() && children[i]->getToken().type == TokenType::colon) i++;
 
 	// statement body
-	std::unique_ptr<ASTStatementNode> body = nullptr;
+	ASTStatementNode* body = nullptr;
 	if (i < children.size() && !children[i]->isTerminal() && children[i]->getNonTerminal() == NonTerminal::STATEMENT) {
 		body = buildStatement(children[i]);
 		i++;
@@ -166,7 +166,7 @@ void ASTBuilder::collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBr
 	}
 }
 
-std::unique_ptr<ASTWhileStatementNode> ASTBuilder::buildWhileStatement(const CSTNodes* node) {
+ASTWhileStatementNode* ASTBuilder::buildWhileStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -177,20 +177,20 @@ std::unique_ptr<ASTWhileStatementNode> ASTBuilder::buildWhileStatement(const CST
 
 	auto condition = buildExpression(children[1]);
 	auto body = buildCompoundStatement(children[3]);
-	return std::make_unique<ASTWhileStatementNode>(std::move(condition), std::move(body));
+	return new ASTWhileStatementNode(std::move(condition), std::move(body));
 }
 
-std::unique_ptr<ASTRepeatStatementNode> ASTBuilder::buildRepeatStatement(const CSTNodes* node) {
+ASTRepeatStatementNode* ASTBuilder::buildRepeatStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) return nullptr;
 	const auto& children = node->getChildren();
 	if (children.size() < 4) return nullptr;
 
 	auto body = buildStatementList(children[1]);
 	auto condition = buildExpression(children[3]);
-	return std::make_unique<ASTRepeatStatementNode>(std::move(body), std::move(condition));
+	return new ASTRepeatStatementNode(std::move(body), std::move(condition));
 }
 
-std::unique_ptr<ASTForStatementNode> ASTBuilder::buildForStatement(const CSTNodes* node) {
+ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -199,17 +199,16 @@ std::unique_ptr<ASTForStatementNode> ASTBuilder::buildForStatement(const CSTNode
 		return nullptr;
 	}
 
-	ASTBuilder builder;
-	std::string iteratorName = builder.tokenText(children[1]);
-	auto startVal = builder.buildExpression(children[3]);
+	std::string iteratorName = tokenText(children[1]);
+	auto startVal = buildExpression(children[3]);
 	bool isDownTo = (children[4]->isTerminal() && children[4]->getToken().type == TokenType::downtosy);
-	auto endVal = builder.buildExpression(children[5]);
+	auto endVal = buildExpression(children[5]);
 	auto body = buildCompoundStatement(children[7]);
 
-	return std::make_unique<ASTForStatementNode>(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body));
+	return new ASTForStatementNode(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body));
 }
 
-std::unique_ptr<ASTCallExpressionNode> ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* node) {
+ASTCallExpressionNode* ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* node) {
 	if (node == nullptr || node->isError()) {
 		return nullptr;
 	}
@@ -219,17 +218,16 @@ std::unique_ptr<ASTCallExpressionNode> ASTBuilder::buildProcedureOrFunctionCall(
 		return nullptr;
 	}
 
-	ASTBuilder builder;
-	std::string callee = builder.tokenText(children[0]);
-	std::vector<std::unique_ptr<ASTExpressionNode>> args;
+	std::string callee = tokenText(children[0]);
+	std::vector<ASTExpressionNode*> args;
 	// parameter list may be at index 2 (between lparent and rparent)
 	for (const CSTNodes* ch : children) {
 		if (ch == nullptr) continue;
 		if (!ch->isTerminal() && ch->getNonTerminal() == NonTerminal::PARAMETER_LIST) {
-			args = builder.buildParameterList(ch);
+			args = buildParameterList(ch);
 			break;
 		}
 	}
 
-	return std::make_unique<ASTCallExpressionNode>(callee, std::move(args));
+	return new ASTCallExpressionNode(callee, std::move(args));
 }

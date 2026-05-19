@@ -11,7 +11,10 @@ SRC = $(wildcard *.cpp) \
       $(wildcard writer/*.cpp) \
       $(wildcard cst/*.cpp) \
       $(wildcard parser/*.cpp) \
-      $(wildcard parser/rules/*.cpp)
+      $(wildcard parser/rules/*.cpp) \
+      $(wildcard ast/*.cpp) \
+      $(wildcard ast/builder/*.cpp)
+
 
 OBJ = $(SRC:.cpp=.o)
 

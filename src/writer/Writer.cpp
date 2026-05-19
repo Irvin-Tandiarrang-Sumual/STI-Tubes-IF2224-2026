@@ -5,7 +5,7 @@ Writer::Writer(const std::string &filename, const std::vector<Token> &tokens)
 
 Writer::~Writer() = default;
 
-void Writer::writeToFile() const {
+void Writer::writeTokenToFile() const {
     std::ofstream fOut(filename, std::ios::out | std::ios::binary);
     if (!fOut.is_open()) {
         std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
@@ -80,6 +80,53 @@ void Writer::writeCSTRecursive(std::ostream& out, const CSTNodes* node, const st
     }
 }
 
+void Writer::writeASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const {
+    if (node == nullptr) return;
+
+    if (depth == 0) {
+        out << node->toString() << '\n';
+    } else {
+        out << prefix;
+        out << (isLast ? "└── " : "├── ");
+        out << node->toString() << '\n';
+    }
+
+    const auto& children = node->children_;
+    for (size_t i = 0; i < children.size(); ++i) {
+        bool childIsLast = (i == children.size() - 1);
+        std::string childPrefix = prefix;
+
+        if (depth == 0) childPrefix.clear();
+        else childPrefix += (isLast ? "    " : "│   ");
+
+        writeASTRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
+    }
+}
+
+void Writer::printAST(const ASTNode* rootAst) const {
+    if (rootAst == nullptr) {
+        std::cerr << "ERROR: root AST kosong.\n";
+        return;
+    }
+    writeASTRecursive(std::cout, rootAst, "", true, 0);
+}
+
+void Writer::writeASTToFile(const ASTNode* rootAst) const {
+    if (rootAst == nullptr) {
+        std::cerr << "ERROR: root AST kosong.\n";
+        return;
+    }
+
+    std::ofstream fOut(filename, std::ios::out | std::ios::binary);
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
+        return;
+    }
+    writeASTRecursive(fOut, rootAst, "", true, 0);
+    fOut.close();
+    std::cout << "AST berhasil disimpan di: " << filename << "\n";
+}
+
 void Writer::printCST() const {
     if (root == nullptr) {
         std::cerr << "ERROR: root parse tree kosong.\n";
@@ -92,6 +139,7 @@ void Writer::printParserError() const {
     std::cout << "\n=== Parser Errors ===\n";
 
     if (errorMessages_.empty()) {
+        std::cout << "Tidak Terdapat Error pada Tahapan Parser!\n\n";
         return;
     }
     for (size_t i = 0; i < errorMessages_.size(); i++) {

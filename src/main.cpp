@@ -11,20 +11,38 @@ int main(int argc, char* argv[]) {
         std::cerr << "Mode:\n";
         std::cerr << "  l  -> Menjalankan Lexer\n";
         std::cerr << "  p  -> Menjalankan Lexer & Parser\n";
+        std::cerr << "  s  -> Menjalankan Lexer, Parser & Semantic\n";
         return 1;
     }
 
     std::string mode = argv[1];
     std::string filename = argv[2];
 
-    if (mode != "l" && mode != "p") {
-        std::cerr << "ERROR: Mode tidak valid. Gunakan 'l' atau 'p'.\n";
+    if (mode != "l" && mode != "p" && mode != "s") {
+        std::cerr << "ERROR: Mode tidak valid. Gunakan 'l', 'p', atau 's'.\n";
         return 1;
     }
 
-    std::cout << "=== ARION " << (mode == "l" ? "LEXER" : "PARSER") << " ===\n\n";
+    std::string modeOut;
+    if (mode == "l") {
+        modeOut = "LEXER";
+    } else if (mode == "p") {
+        modeOut = "PARSER";
+    } else if (mode == "s") {
+        modeOut = "SEMANTIC";
+    }
 
-    std::string testFolder = (mode == "l") ? "../test/milestone-1" : "../test/milestone-2";
+    std::cout << "=== ARION " << modeOut << " ===\n\n";
+
+    std::string testFolder;
+    if (mode == "l") {
+        testFolder = "../test/milestone-1";
+    } else if (mode == "p") {
+        testFolder = "../test/milestone-2";
+    } else {
+        testFolder = "../test/milestone-3";
+    }
+    
     std::string outputDir = testFolder + "/output";
 
     std::vector<std::filesystem::path> candidates = {
@@ -57,6 +75,10 @@ int main(int argc, char* argv[]) {
         } else if (mode == "p") {
             compiler.lexer();
             compiler.parser();
+        } else if (mode == "s") {
+            compiler.lexer();
+            compiler.parser();
+            compiler.semantic();
         }
         
         std::cout << "\nSelesai.\n";

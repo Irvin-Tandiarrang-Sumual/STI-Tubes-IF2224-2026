@@ -13,7 +13,7 @@ class ASTBuilder {
         ASTBuilder() = default;
 
         // Entry point: expects root <program> CST node.
-        std::unique_ptr<ASTProgramNode> build(const CSTNodes* root);
+        ASTProgramNode* build(const CSTNodes* root);
 
     private:
 
@@ -22,26 +22,26 @@ class ASTBuilder {
         std::string operatorText(TokenType type) const;
 
         // Program structure
-        std::unique_ptr<ASTProgramNode> buildProgram(const CSTNodes* node);
+        ASTProgramNode* buildProgram(const CSTNodes* node);
         std::string buildProgramHeader(const CSTNodes* node);
-        void buildDeclarationPart(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out);
-        void buildBlock(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& localDeclarations, std::unique_ptr<ASTBlockStatementNode>& body);
+        void buildDeclarationPart(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out);
+        void buildBlock(const CSTNodes* node, std::vector<ASTDeclarationNode*>& localDeclarations, ASTBlockStatementNode*& body);
 
         // Declarations
-        void buildConstDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out);
-        void buildTypeDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out);
-        void buildVarDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out);
-        std::unique_ptr<ASTDeclarationNode> buildSubprogramDeclaration(const CSTNodes* node);
-        std::unique_ptr<ASTDeclarationNode> buildProcedureDeclaration(const CSTNodes* node);
-        std::unique_ptr<ASTDeclarationNode> buildFunctionDeclaration(const CSTNodes* node);
+        void buildConstDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out);
+        void buildTypeDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out);
+        void buildVarDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out);
+        ASTDeclarationNode* buildSubprogramDeclaration(const CSTNodes* node);
+        ASTDeclarationNode* buildProcedureDeclaration(const CSTNodes* node);
+        ASTDeclarationNode* buildFunctionDeclaration(const CSTNodes* node);
 
         // Types
-        std::unique_ptr<ASTTypeNode> buildType(const CSTNodes* node);
-        std::unique_ptr<ASTTypeNode> buildTypeFromIdentifier(const std::string& name, const CSTNodes* source);
-        std::unique_ptr<ASTArrayTypeNode> buildArrayType(const CSTNodes* node);
-        std::unique_ptr<ASTRangeType> buildRangeType(const CSTNodes* node);
-        std::unique_ptr<ASTEnumeratedTypeNode> buildEnumeratedType(const CSTNodes* node);
-        std::unique_ptr<ASTRecordTypeNode> buildRecordType(const CSTNodes* node);
+        ASTTypeNode* buildType(const CSTNodes* node);
+        ASTTypeNode* buildTypeFromIdentifier(const std::string& name, const CSTNodes* source);
+        ASTArrayTypeNode* buildArrayType(const CSTNodes* node);
+        ASTRangeType* buildRangeType(const CSTNodes* node);
+        ASTEnumeratedTypeNode* buildEnumeratedType(const CSTNodes* node);
+        ASTRecordTypeNode* buildRecordType(const CSTNodes* node);
         std::vector<ASTRecordFieldNode> buildFieldList(const CSTNodes* node);
         ASTRecordFieldNode buildFieldPart(const CSTNodes* node);
         std::vector<std::string> buildIdentifierList(const CSTNodes* node);
@@ -49,31 +49,31 @@ class ASTBuilder {
         // Parameters
         std::vector<ASTParameterGroup> buildFormalParameterList(const CSTNodes* node);
         ASTParameterGroup buildParameterGroup(const CSTNodes* node);
-        std::vector<std::unique_ptr<ASTExpressionNode>> buildParameterList(const CSTNodes* node);
+        std::vector<ASTExpressionNode*> buildParameterList(const CSTNodes* node);
 
         // Statements
-        std::unique_ptr<ASTBlockStatementNode> buildCompoundStatement(const CSTNodes* node);
-        std::vector<std::unique_ptr<ASTStatementNode>> buildStatementList(const CSTNodes* node);
-        std::unique_ptr<ASTStatementNode> buildStatement(const CSTNodes* node);
-        std::unique_ptr<ASTAssignmentStatementNode> buildAssignmentStatement(const CSTNodes* node);
-        std::unique_ptr<ASTStatementNode> buildIfStatement(const CSTNodes* node);
-        std::unique_ptr<ASTCaseStatementNode> buildCaseStatement(const CSTNodes* node);
+        ASTBlockStatementNode* buildCompoundStatement(const CSTNodes* node);
+        std::vector<ASTStatementNode*> buildStatementList(const CSTNodes* node);
+        ASTStatementNode* buildStatement(const CSTNodes* node);
+        ASTAssignmentStatementNode* buildAssignmentStatement(const CSTNodes* node);
+        ASTStatementNode* buildIfStatement(const CSTNodes* node);
+        ASTCaseStatementNode* buildCaseStatement(const CSTNodes* node);
         void collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBranchNode>& out);
-        std::unique_ptr<ASTWhileStatementNode> buildWhileStatement(const CSTNodes* node);
-        std::unique_ptr<ASTRepeatStatementNode> buildRepeatStatement(const CSTNodes* node);
-        std::unique_ptr<ASTForStatementNode> buildForStatement(const CSTNodes* node);
-        std::unique_ptr<ASTCallExpressionNode> buildProcedureOrFunctionCall(const CSTNodes* node);
+        ASTWhileStatementNode* buildWhileStatement(const CSTNodes* node);
+        ASTRepeatStatementNode* buildRepeatStatement(const CSTNodes* node);
+        ASTForStatementNode* buildForStatement(const CSTNodes* node);
+        ASTCallExpressionNode* buildProcedureOrFunctionCall(const CSTNodes* node);
 
         // Variables
-        std::unique_ptr<ASTVariableExpressionNode> buildVariable(const CSTNodes* node);
+        ASTVariableExpressionNode* buildVariable(const CSTNodes* node);
         ASTVariableComponent buildComponentVariable(const CSTNodes* node);
-        std::vector<std::unique_ptr<ASTExpressionNode>> buildIndexList(const CSTNodes* node);
+        std::vector<ASTExpressionNode*> buildIndexList(const CSTNodes* node);
 
         // Expressions
-        std::unique_ptr<ASTExpressionNode> buildExpression(const CSTNodes* node);
-        std::unique_ptr<ASTExpressionNode> buildSimpleExpression(const CSTNodes* node);
-        std::unique_ptr<ASTExpressionNode> buildTerm(const CSTNodes* node);
-        std::unique_ptr<ASTExpressionNode> buildFactor(const CSTNodes* node);
-        std::unique_ptr<ASTExpressionNode> buildConstant(const CSTNodes* node);
-        std::unique_ptr<ASTExpressionNode> buildLiteralOrIdentifierExpression(const CSTNodes* tokenNode);
+        ASTExpressionNode* buildExpression(const CSTNodes* node);
+        ASTExpressionNode* buildSimpleExpression(const CSTNodes* node);
+        ASTExpressionNode* buildTerm(const CSTNodes* node);
+        ASTExpressionNode* buildFactor(const CSTNodes* node);
+        ASTExpressionNode* buildConstant(const CSTNodes* node);
+        ASTExpressionNode* buildLiteralOrIdentifierExpression(const CSTNodes* tokenNode);
 };
