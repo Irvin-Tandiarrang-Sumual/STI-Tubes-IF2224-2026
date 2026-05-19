@@ -199,11 +199,10 @@ ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
 		return nullptr;
 	}
 
-	ASTBuilder builder;
-	std::string iteratorName = builder.tokenText(children[1]);
-	auto startVal = builder.buildExpression(children[3]);
+	std::string iteratorName = tokenText(children[1]);
+	auto startVal = buildExpression(children[3]);
 	bool isDownTo = (children[4]->isTerminal() && children[4]->getToken().type == TokenType::downtosy);
-	auto endVal = builder.buildExpression(children[5]);
+	auto endVal = buildExpression(children[5]);
 	auto body = buildCompoundStatement(children[7]);
 
 	return new ASTForStatementNode(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body));
@@ -219,14 +218,13 @@ ASTCallExpressionNode* ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* 
 		return nullptr;
 	}
 
-	ASTBuilder builder;
-	std::string callee = builder.tokenText(children[0]);
+	std::string callee = tokenText(children[0]);
 	std::vector<ASTExpressionNode*> args;
 	// parameter list may be at index 2 (between lparent and rparent)
 	for (const CSTNodes* ch : children) {
 		if (ch == nullptr) continue;
 		if (!ch->isTerminal() && ch->getNonTerminal() == NonTerminal::PARAMETER_LIST) {
-			args = builder.buildParameterList(ch);
+			args = buildParameterList(ch);
 			break;
 		}
 	}
