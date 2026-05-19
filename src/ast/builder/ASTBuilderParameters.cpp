@@ -27,7 +27,7 @@ ASTParameterGroup ASTBuilder::buildParameterGroup(const CSTNodes* node) {
 	const CSTNodes* identifierListNode = node->childAt(0);
 	const CSTNodes* typeNode = node->childAt(2);
 	std::vector<std::string> identifiers = buildIdentifierList(identifierListNode);
-	std::unique_ptr<ASTTypeNode> type;
+	ASTTypeNode* type;
 
 	if (typeNode != nullptr) {
 		type = buildType(typeNode);
@@ -37,8 +37,8 @@ ASTParameterGroup ASTBuilder::buildParameterGroup(const CSTNodes* node) {
 }
 
 // Mengubah CST <parameter-list> pada call menjadi vector argument expression AST.
-std::vector<std::unique_ptr<ASTExpressionNode>> ASTBuilder::buildParameterList(const CSTNodes* node) {
-	std::vector<std::unique_ptr<ASTExpressionNode>> parameters;
+std::vector<ASTExpressionNode*> ASTBuilder::buildParameterList(const CSTNodes* node) {
+	std::vector<ASTExpressionNode*> parameters;
 	if (node == nullptr || node->isError()) {
 		return parameters;
 	}

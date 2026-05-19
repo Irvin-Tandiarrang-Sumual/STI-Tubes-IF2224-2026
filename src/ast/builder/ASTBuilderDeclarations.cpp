@@ -2,7 +2,7 @@
 
 // Production Rule : <const-declaration> -> constsy + (ident + eql + <constant> + semicolon)+
 // Semantic Rule : const-declaration = new ASTConstDeclarationNode(name, value)
-void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out) {
+void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out) {
     if (node == nullptr) {
         return;
     }
@@ -33,7 +33,7 @@ void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<std::un
                     const CSTNodes* constantNode = children[i];
                     auto value = buildConstant(constantNode);
                     if (value != nullptr) {
-                        out.push_back(std::make_unique<ASTConstDeclarationNode>(name, std::move(value)));
+                        out.push_back(new ASTConstDeclarationNode(name, std::move(value)));
                     }
                     i++;
                 }
@@ -50,7 +50,7 @@ void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<std::un
 
 // Production Rule : <type-declaration> -> typesy + (ident + eql + <type> + semicolon)+
 // Semantic Rule : type-declaration = new ASTTypeDeclarationNode(name, typeDefinition)
-void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out) {
+void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out) {
     if (node == nullptr) {
         return;
     }
@@ -78,7 +78,7 @@ void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<std::uni
                     const CSTNodes* typeNode = children[i];
                     auto typeDefinition = buildType(typeNode);
                     if (typeDefinition != nullptr) {
-                        out.push_back(std::make_unique<ASTTypeDeclarationNode>(name, std::move(typeDefinition)));
+                        out.push_back(new ASTTypeDeclarationNode(name, std::move(typeDefinition)));
                     }
                     i++;
                 }
@@ -94,7 +94,7 @@ void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<std::uni
 
 // Production Rule : <var-declaration> -> varsy + (<identifier-list> + colon + <type> + semicolon)+
 // Semantic Rule : var-declaration = new ASTVarDeclarationNode(identifiers, type)
-void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out) {
+void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out) {
     if (node == nullptr) {
         return;
     }
@@ -124,7 +124,7 @@ void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<std::uniq
                     const CSTNodes* typeNode = children[i];
                     auto type = buildType(typeNode);
                     if (type != nullptr && !identifiers.empty()) {
-                        out.push_back(std::make_unique<ASTVarDeclarationNode>(identifiers, std::move(type)));
+                        out.push_back(new ASTVarDeclarationNode(identifiers, std::move(type)));
                     }
                     i++;
                 }
@@ -140,7 +140,7 @@ void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<std::uniq
 
 // Production Rule : <subprogram-declaration> -> <procedure-declaration> | <function-declaration>
 // Semantic Rule : Cari berdasarkan non-terminal
-std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildSubprogramDeclaration(const CSTNodes* node) {
+ASTDeclarationNode* ASTBuilder::buildSubprogramDeclaration(const CSTNodes* node) {
     if (node == nullptr) {
         return nullptr;
     }
@@ -163,7 +163,7 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildSubprogramDeclaration(const
 
 // Production Rule : <procedure-declaration> -> proceduresy + ident + (<formal-parameter-list>)? + semicolon + <block> + semicolon
 // Semantic Rule : procedure-declaration = new ASTProcedureDeclarationNode(name, parameters, localDeclarations, body)
-std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildProcedureDeclaration(const CSTNodes* node) {
+ASTDeclarationNode* ASTBuilder::buildProcedureDeclaration(const CSTNodes* node) {
     if (node == nullptr) {
         return nullptr;
     }
@@ -195,8 +195,8 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildProcedureDeclaration(const 
         i++;
     }
 
-    std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations;
-    std::unique_ptr<ASTBlockStatementNode> body;
+    std::vector<ASTDeclarationNode*> localDeclarations;
+    ASTBlockStatementNode* body;
 
     if (i < children.size() && !children[i]->isTerminal() &&
         children[i]->getNonTerminal() == NonTerminal::BLOCK) {
@@ -209,7 +209,7 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildProcedureDeclaration(const 
         i++;
     }
 
-    return std::make_unique<ASTProcedureDeclarationNode>(
+    return new ASTProcedureDeclarationNode(
         name,
         std::move(parameters),
         std::move(localDeclarations),
@@ -219,7 +219,7 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildProcedureDeclaration(const 
 
 // Production Rule : <function-declaration> -> functionsy + ident + (<formal-parameter-list>)? + colon + ident + semicolon + <block> + semicolon
 // Semantic Rule : function-declaration = new ASTFunctionDeclarationNode(name, parameters, returnTypeName, localDeclarations, body)
-std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildFunctionDeclaration(const CSTNodes* node) {
+ASTDeclarationNode* ASTBuilder::buildFunctionDeclaration(const CSTNodes* node) {
     if (node == nullptr) {
         return nullptr;
     }
@@ -263,8 +263,8 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildFunctionDeclaration(const C
         i++;
     }
 
-    std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations;
-    std::unique_ptr<ASTBlockStatementNode> body;
+    std::vector<ASTDeclarationNode*> localDeclarations;
+    ASTBlockStatementNode* body;
 
     if (i < children.size() && !children[i]->isTerminal() &&
         children[i]->getNonTerminal() == NonTerminal::BLOCK) {
@@ -276,7 +276,7 @@ std::unique_ptr<ASTDeclarationNode> ASTBuilder::buildFunctionDeclaration(const C
         i++;
     }
 
-    return std::make_unique<ASTFunctionDeclarationNode>(
+    return new ASTFunctionDeclarationNode(
         name,
         std::move(parameters),
         returnTypeName,

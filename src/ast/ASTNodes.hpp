@@ -51,7 +51,7 @@ class ASTDeclarationNode : public ASTNode {};
 class ASTPrimitiveType : public ASTTypeNode {
     public:
         std::string type;
-        ASTPrimitiveType(std::string type) : type(std::move(type)) {}
+        ASTPrimitiveType(std::string type) : type(type) {}
 
         std::string toString() const override {
             return "PrimitiveType: " + type;
@@ -74,10 +74,10 @@ class ASTNamedTypeNode : public ASTTypeNode {
 // Semantic Rule : range = new ASTRangeType(startConstant, endConstant)
 class ASTRangeType : public ASTTypeNode {
     public:
-        std::unique_ptr<ASTExpressionNode> startConstant;
-        std::unique_ptr<ASTExpressionNode> endConstant;
-        ASTRangeType(std::unique_ptr<ASTExpressionNode> startConstant, std::unique_ptr<ASTExpressionNode> endConstant)
-            : startConstant(std::move(startConstant)), endConstant(std::move(endConstant)) {}
+        ASTExpressionNode* startConstant;
+        ASTExpressionNode* endConstant;
+        ASTRangeType(ASTExpressionNode* startConstant, ASTExpressionNode* endConstant)
+            : startConstant(startConstant), endConstant(endConstant) {}
 
         std::string toString() const override {
             return "RangeType";
@@ -89,10 +89,10 @@ class ASTRangeType : public ASTTypeNode {
 // Semantic Rule : array-type = new ASTArrayTypeNode(indexType, elementType)
 class ASTArrayTypeNode : public ASTTypeNode {
     public:
-        std::unique_ptr<ASTTypeNode> indexType;
-        std::unique_ptr<ASTTypeNode> elementType;
-        ASTArrayTypeNode(std::unique_ptr<ASTTypeNode> index, std::unique_ptr<ASTTypeNode> element)
-            : indexType(std::move(index)), elementType(std::move(element)) {}
+        ASTTypeNode* indexType;
+        ASTTypeNode* elementType;
+        ASTArrayTypeNode(ASTTypeNode* index, ASTTypeNode* element)
+            : indexType(index), elementType(element) {}
 
         std::string toString() const override {
             return "ArrayType";
@@ -119,9 +119,9 @@ class ASTEnumeratedTypeNode : public ASTTypeNode {
 class ASTRecordFieldNode {
     public:
         std::vector<std::string> identifiers;
-        std::unique_ptr<ASTTypeNode> type;
-        ASTRecordFieldNode(std::vector<std::string> identifiers, std::unique_ptr<ASTTypeNode> type)
-            : identifiers(std::move(identifiers)), type(std::move(type)) {}
+        ASTTypeNode* type;
+        ASTRecordFieldNode(std::vector<std::string> identifiers, ASTTypeNode* type)
+            : identifiers(std::move(identifiers)), type(type) {}
 };
 
 // Record
@@ -148,7 +148,7 @@ class ASTLiteralExpressionNode : public ASTExpressionNode {
     public:
         std::variant<int, double, char, bool, std::string> value;
         ASTLiteralExpressionNode(std::variant<int, double, char, bool, std::string> value) 
-            : value(std::move(value)) {}
+            : value(value) {}
 
         std::string toString() const override {
             return "Literal: " + astVariantToString(value);
@@ -162,14 +162,14 @@ class ASTVariableComponent {
     public:
         bool isArrayIndex = false;
         std::string fieldName;
-        std::vector<std::unique_ptr<ASTExpressionNode>> indices;
+        std::vector<ASTExpressionNode*> indices;
 
         ASTVariableComponent() = default;
 
         explicit ASTVariableComponent(std::string fieldName)
             : isArrayIndex(false), fieldName(std::move(fieldName)) {}
 
-        explicit ASTVariableComponent(std::vector<std::unique_ptr<ASTExpressionNode>> indices)
+        explicit ASTVariableComponent(std::vector<ASTExpressionNode*> indices)
             : isArrayIndex(true), indices(std::move(indices)) {}
 
         ASTVariableComponent(ASTVariableComponent&&) noexcept = default;
@@ -199,9 +199,9 @@ class ASTVariableExpressionNode : public ASTExpressionNode {
 class ASTUnaryExpressionNode : public ASTExpressionNode {
     public:
         std::string op;
-        std::unique_ptr<ASTExpressionNode> operand;
-        ASTUnaryExpressionNode(std::string op, std::unique_ptr<ASTExpressionNode> operand)
-            : op(std::move(op)), operand(std::move(operand)) {}
+        ASTExpressionNode* operand;
+        ASTUnaryExpressionNode(std::string op, ASTExpressionNode* operand)
+            : op(std::move(op)), operand(operand) {}
 
         std::string toString() const override {
             return "UnaryOp: " + op;
@@ -214,10 +214,10 @@ class ASTUnaryExpressionNode : public ASTExpressionNode {
 class ASTBinaryExpressionNode : public ASTExpressionNode {
     public:
         std::string op;
-        std::unique_ptr<ASTExpressionNode> lhs;
-        std::unique_ptr<ASTExpressionNode> rhs;
-        ASTBinaryExpressionNode(std::string op, std::unique_ptr<ASTExpressionNode> lhs, std::unique_ptr<ASTExpressionNode> rhs)
-            : op(std::move(op)), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+        ASTExpressionNode* lhs;
+        ASTExpressionNode* rhs;
+        ASTBinaryExpressionNode(std::string op, ASTExpressionNode* lhs, ASTExpressionNode* rhs)
+            : op(std::move(op)), lhs(lhs), rhs(rhs) {}
 
         std::string toString() const override {
             return "BinaryOp: " + op;
@@ -230,8 +230,8 @@ class ASTBinaryExpressionNode : public ASTExpressionNode {
 class ASTCallExpressionNode : public ASTExpressionNode {
     public:
         std::string callee;
-        std::vector<std::unique_ptr<ASTExpressionNode>> arguments;
-        ASTCallExpressionNode(std::string callee, std::vector<std::unique_ptr<ASTExpressionNode>> arguments)
+        std::vector<ASTExpressionNode*> arguments;
+        ASTCallExpressionNode(std::string callee, std::vector<ASTExpressionNode*> arguments)
             : callee(std::move(callee)), arguments(std::move(arguments)) {}
 
         std::string toString() const override {
@@ -259,8 +259,8 @@ class ASTEmptyStatementNode : public ASTStatementNode {
 // Semantic Rule : compound-stmt = new ASTBlockStatementNode(statements)
 class ASTBlockStatementNode : public ASTStatementNode {
     public:
-        std::vector<std::unique_ptr<ASTStatementNode>> statements;
-        ASTBlockStatementNode(std::vector<std::unique_ptr<ASTStatementNode>> statements) 
+        std::vector<ASTStatementNode*> statements;
+        ASTBlockStatementNode(std::vector<ASTStatementNode*> statements) 
             : statements(std::move(statements)) {}
 
         std::string toString() const override {
@@ -273,10 +273,10 @@ class ASTBlockStatementNode : public ASTStatementNode {
 // Semantic Rule : assignment-stmt = new ASTAssignmentStatementNode(target, value)
 class ASTAssignmentStatementNode : public ASTStatementNode {
     public:
-        std::unique_ptr<ASTVariableExpressionNode> target;
-        std::unique_ptr<ASTExpressionNode> value;
-        ASTAssignmentStatementNode(std::unique_ptr<ASTVariableExpressionNode> target, std::unique_ptr<ASTExpressionNode> value)
-            : target(std::move(target)), value(std::move(value)) {}
+        ASTVariableExpressionNode* target;
+        ASTExpressionNode* value;
+        ASTAssignmentStatementNode(ASTVariableExpressionNode* target, ASTExpressionNode* value)
+            : target(target), value(value) {}
 
         std::string toString() const override {
             return "Assignment";
@@ -288,11 +288,11 @@ class ASTAssignmentStatementNode : public ASTStatementNode {
 // Semantic Rule : if-stmt = new ASTIfStatementNode(condition, thenBranch, elseBranch)
 class ASTIfStatementNode : public ASTStatementNode {
     public:
-        std::unique_ptr<ASTExpressionNode> condition;
-        std::unique_ptr<ASTStatementNode> thenBranch;
-        std::unique_ptr<ASTStatementNode> elseBranch;
-        ASTIfStatementNode(std::unique_ptr<ASTExpressionNode> condition, std::unique_ptr<ASTStatementNode> thenBranch, std::unique_ptr<ASTStatementNode> elseBranch = nullptr)
-            : condition(std::move(condition)), thenBranch(std::move(thenBranch)), elseBranch(std::move(elseBranch)) {}
+        ASTExpressionNode* condition;
+        ASTStatementNode* thenBranch;
+        ASTStatementNode* elseBranch;
+        ASTIfStatementNode(ASTExpressionNode* condition, ASTStatementNode* thenBranch, ASTStatementNode* elseBranch = nullptr)
+            : condition(condition), thenBranch(thenBranch), elseBranch(elseBranch) {}
 
         std::string toString() const override {
             return "If";
@@ -304,10 +304,10 @@ class ASTIfStatementNode : public ASTStatementNode {
 // Semantic Rule : while-stmt = new ASTWhileStatementNode(condition, body)
 class ASTWhileStatementNode : public ASTStatementNode {
     public:
-        std::unique_ptr<ASTExpressionNode> condition;
-        std::unique_ptr<ASTBlockStatementNode> body;
-        ASTWhileStatementNode(std::unique_ptr<ASTExpressionNode> condition, std::unique_ptr<ASTBlockStatementNode> body)
-            : condition(std::move(condition)), body(std::move(body)) {}
+        ASTExpressionNode* condition;
+        ASTBlockStatementNode* body;
+        ASTWhileStatementNode(ASTExpressionNode* condition, ASTBlockStatementNode* body)
+            : condition(condition), body(body) {}
 
         std::string toString() const override {
             return "While";
@@ -319,10 +319,10 @@ class ASTWhileStatementNode : public ASTStatementNode {
 // Semantic Rule : repeat-stmt = new ASTRepeatStatementNode(body, condition)
 class ASTRepeatStatementNode : public ASTStatementNode {
     public:
-        std::vector<std::unique_ptr<ASTStatementNode>> body;
-        std::unique_ptr<ASTExpressionNode> condition;
-        ASTRepeatStatementNode(std::vector<std::unique_ptr<ASTStatementNode>> body, std::unique_ptr<ASTExpressionNode> condition)
-            : body(std::move(body)), condition(std::move(condition)) {}
+        std::vector<ASTStatementNode*> body;
+        ASTExpressionNode* condition;
+        ASTRepeatStatementNode(std::vector<ASTStatementNode*> body, ASTExpressionNode* condition)
+            : body(body), condition(condition) {}
 
         std::string toString() const override {
             return "Repeat";
@@ -335,12 +335,12 @@ class ASTRepeatStatementNode : public ASTStatementNode {
 class ASTForStatementNode : public ASTStatementNode {
     public:
         std::string iteratorName;
-        std::unique_ptr<ASTExpressionNode> startVal;
-        std::unique_ptr<ASTExpressionNode> endVal;
+        ASTExpressionNode* startVal;
+        ASTExpressionNode* endVal;
         bool isDownTo;
-        std::unique_ptr<ASTBlockStatementNode> body;
-        ASTForStatementNode(std::string iteratorName, std::unique_ptr<ASTExpressionNode> startVal, std::unique_ptr<ASTExpressionNode> endVal, bool isDownTo, std::unique_ptr<ASTBlockStatementNode> body)
-            : iteratorName(std::move(iteratorName)), startVal(std::move(startVal)), endVal(std::move(endVal)), isDownTo(isDownTo), body(std::move(body)) {}
+        ASTBlockStatementNode* body;
+        ASTForStatementNode(std::string iteratorName, ASTExpressionNode* startVal, ASTExpressionNode* endVal, bool isDownTo, ASTBlockStatementNode* body)
+            : iteratorName(std::move(iteratorName)), startVal(startVal), endVal(endVal), isDownTo(isDownTo), body(body) {}
 
         std::string toString() const override {
             return "For: " + iteratorName;
@@ -351,10 +351,10 @@ class ASTForStatementNode : public ASTStatementNode {
 // Production Rule : <case-block> -> <constant> + (comma + <constant>)* + colon + <statement> + (semicolon + <case-block>?)* // Semantic Rule : case-branch = new ASTCaseBranchNode(constants, body)
 class ASTCaseBranchNode {
     public:
-        std::vector<std::unique_ptr<ASTExpressionNode>> constants;
-        std::unique_ptr<ASTStatementNode> body;
-        ASTCaseBranchNode(std::vector<std::unique_ptr<ASTExpressionNode>> constants, std::unique_ptr<ASTStatementNode> body)
-            : constants(std::move(constants)), body(std::move(body)) {}
+        std::vector<ASTExpressionNode*> constants;
+        ASTStatementNode* body;
+        ASTCaseBranchNode(std::vector<ASTExpressionNode*> constants, ASTStatementNode* body)
+            : constants(std::move(constants)), body(body) {}
 
         ASTCaseBranchNode(ASTCaseBranchNode&&) noexcept = default;
         ASTCaseBranchNode& operator=(ASTCaseBranchNode&&) noexcept = default;
@@ -367,10 +367,10 @@ class ASTCaseBranchNode {
 // Semantic Rule : case-stmt = new ASTCaseStatementNode(condition, branches)
 class ASTCaseStatementNode : public ASTStatementNode {
     public:
-        std::unique_ptr<ASTExpressionNode> condition;
+        ASTExpressionNode* condition;
         std::vector<ASTCaseBranchNode> branches;
-        ASTCaseStatementNode(std::unique_ptr<ASTExpressionNode> condition, std::vector<ASTCaseBranchNode> branches)
-            : condition(std::move(condition)), branches(std::move(branches)) {}
+        ASTCaseStatementNode(ASTExpressionNode* condition, std::vector<ASTCaseBranchNode> branches)
+            : condition(condition), branches(std::move(branches)) {}
 
         std::string toString() const override {
             return "Case";
@@ -382,9 +382,9 @@ class ASTCaseStatementNode : public ASTStatementNode {
 // Semantic Rule : call-stmt = new ASTCallStatementNode(callExpr)
 class ASTCallStatementNode : public ASTStatementNode {
     public:
-        std::unique_ptr<ASTCallExpressionNode> callExpr;
-        ASTCallStatementNode(std::unique_ptr<ASTCallExpressionNode> callExpr) 
-            : callExpr(std::move(callExpr)) {}
+        ASTCallExpressionNode* callExpr;
+        ASTCallStatementNode(ASTCallExpressionNode* callExpr) 
+            : callExpr(callExpr) {}
 
         std::string toString() const override {
             return "CallStatement";
@@ -400,9 +400,9 @@ class ASTCallStatementNode : public ASTStatementNode {
 class ASTConstDeclarationNode : public ASTDeclarationNode {
     public:
         std::string name;
-        std::unique_ptr<ASTExpressionNode> value;
-        ASTConstDeclarationNode(std::string name, std::unique_ptr<ASTExpressionNode> value)
-            : name(std::move(name)), value(std::move(value)) {}
+        ASTExpressionNode* value;
+        ASTConstDeclarationNode(std::string name, ASTExpressionNode* value)
+            : name(std::move(name)), value(value) {}
 
         std::string toString() const override {
             return "ConstDeclaration: " + name;
@@ -415,9 +415,9 @@ class ASTConstDeclarationNode : public ASTDeclarationNode {
 class ASTTypeDeclarationNode : public ASTDeclarationNode {
     public:
         std::string name;
-        std::unique_ptr<ASTTypeNode> typeDefinition;
-        ASTTypeDeclarationNode(std::string name, std::unique_ptr<ASTTypeNode> typeDefinition)
-            : name(std::move(name)), typeDefinition(std::move(typeDefinition)) {}
+        ASTTypeNode* typeDefinition;
+        ASTTypeDeclarationNode(std::string name, ASTTypeNode* typeDefinition)
+            : name(std::move(name)), typeDefinition(typeDefinition) {}
 
         std::string toString() const override {
             return "TypeDeclaration: " + name;
@@ -430,9 +430,9 @@ class ASTTypeDeclarationNode : public ASTDeclarationNode {
 class ASTVarDeclarationNode : public ASTDeclarationNode {
     public:
         std::vector<std::string> identifiers;
-        std::unique_ptr<ASTTypeNode> type;
-        ASTVarDeclarationNode(std::vector<std::string> identifiers, std::unique_ptr<ASTTypeNode> type)
-            : identifiers(std::move(identifiers)), type(std::move(type)) {}
+        ASTTypeNode* type;
+        ASTVarDeclarationNode(std::vector<std::string> identifiers, ASTTypeNode* type)
+            : identifiers(std::move(identifiers)), type(type) {}
 
         std::string toString() const override {
             return "VarDeclaration";
@@ -445,9 +445,9 @@ class ASTVarDeclarationNode : public ASTDeclarationNode {
 class ASTParameterGroup {
     public:
         std::vector<std::string> identifiers;
-        std::unique_ptr<ASTTypeNode> type;
-        ASTParameterGroup(std::vector<std::string> identifiers, std::unique_ptr<ASTTypeNode> type)
-            : identifiers(std::move(identifiers)), type(std::move(type)) {}
+        ASTTypeNode* type;
+        ASTParameterGroup(std::vector<std::string> identifiers, ASTTypeNode* type)
+            : identifiers(std::move(identifiers)), type(type) {}
 
         ASTParameterGroup(ASTParameterGroup&&) noexcept = default;
         ASTParameterGroup& operator=(ASTParameterGroup&&) noexcept = default;
@@ -460,11 +460,11 @@ class ASTSubprogramDeclarationNode : public ASTDeclarationNode {
     public:
         std::string name;
         std::vector<ASTParameterGroup> parameters;
-        std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations;
-        std::unique_ptr<ASTBlockStatementNode> body;
+        std::vector<ASTDeclarationNode*> localDeclarations;
+        ASTBlockStatementNode* body;
 
-        ASTSubprogramDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations, std::unique_ptr<ASTBlockStatementNode> body)
-            : name(std::move(name)), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(std::move(body)) {}
+        ASTSubprogramDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body)
+            : name(std::move(name)), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(body) {}
 
         std::string toString() const override {
             return "SubprogramDeclaration: " + name;
@@ -485,8 +485,8 @@ class ASTProcedureDeclarationNode : public ASTSubprogramDeclarationNode {
 class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
     public:
         std::string returnTypeName;
-        ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<std::unique_ptr<ASTDeclarationNode>> localDeclarations, std::unique_ptr<ASTBlockStatementNode> body)
-            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), std::move(body)), returnTypeName(std::move(returnTypeName)) {}
+        ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body)
+            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), body), returnTypeName(std::move(returnTypeName)) {}
 
         std::string toString() const override {
             return "FunctionDeclaration: " + name + " : " + returnTypeName;
@@ -500,11 +500,11 @@ class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
 class ASTProgramNode : public ASTNode {
     public:
         std::string programName;
-        std::vector<std::unique_ptr<ASTDeclarationNode>> declarations;
-        std::unique_ptr<ASTBlockStatementNode> mainBlock;
+        std::vector<ASTDeclarationNode*> declarations;
+        ASTBlockStatementNode* mainBlock;
 
-        ASTProgramNode(std::string programName, std::vector<std::unique_ptr<ASTDeclarationNode>> declarations, std::unique_ptr<ASTBlockStatementNode> mainBlock)
-            : programName(std::move(programName)), declarations(std::move(declarations)), mainBlock(std::move(mainBlock)) {}
+        ASTProgramNode(std::string programName, std::vector<ASTDeclarationNode*> declarations, ASTBlockStatementNode* mainBlock)
+            : programName(std::move(programName)), declarations(std::move(declarations)), mainBlock(mainBlock) {}
 
         std::string toString() const override {
             return "Program: " + programName;

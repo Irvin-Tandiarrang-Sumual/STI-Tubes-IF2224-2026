@@ -2,16 +2,16 @@
 
 // Production Rule : <program> -> <program-header> + <declaration-part> + <compound-statement> + period
 // Semantic Rule : program = new ASTProgramNode(programName, declarations, mainBlock)
-std::unique_ptr<ASTProgramNode> ASTBuilder::buildProgram(const CSTNodes* node){
+ASTProgramNode* ASTBuilder::buildProgram(const CSTNodes* node){
     // Ekstrak nama program
     std::string programName = buildProgramHeader(node->firstChildOf(NonTerminal::PROGRAM_HEADER));
 
     // Bangun bagian deklarasi
-    std::vector<std::unique_ptr<ASTDeclarationNode>> declarations;
+    std::vector<ASTDeclarationNode*> declarations;
     buildDeclarationPart(node->firstChildOf(NonTerminal::DECLARATION_PART), declarations);
     auto mainBlock = buildCompoundStatement(node->firstChildOf(NonTerminal::COMPOUND_STATEMENT));
 
-    return std::make_unique<ASTProgramNode>(
+    return new ASTProgramNode(
         programName,
         std::move(declarations),
         std::move(mainBlock)
@@ -26,7 +26,7 @@ std::string ASTBuilder::buildProgramHeader(const CSTNodes* node){
 
 // Production Rule : <declaration-part> -> (<const-declaration> | <type-declaration> | <var-declaration> | <subprogram-declaration>)*
 // Semantic Rule : declarations = [const-declaration*, type-declaration*, var-declaration*, subprogram-declaration*]
-void ASTBuilder::buildDeclarationPart(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out){
+void ASTBuilder::buildDeclarationPart(const CSTNodes* node, std::vector<ASTDeclarationNode*>& out){
     if (node == nullptr) {
         return;
     }
@@ -53,7 +53,7 @@ void ASTBuilder::buildDeclarationPart(const CSTNodes* node, std::vector<std::uni
 
 // Production Rule : <block> -> <declaration-part> + <compound-statement>
 // Semantic Rule : block = (localDeclarations, body)
-void ASTBuilder::buildBlock(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& localDeclarations, std::unique_ptr<ASTBlockStatementNode>& body){
+void ASTBuilder::buildBlock(const CSTNodes* node, std::vector<ASTDeclarationNode*>& localDeclarations, ASTBlockStatementNode*& body){
     if (node == nullptr) {
         return;
     }

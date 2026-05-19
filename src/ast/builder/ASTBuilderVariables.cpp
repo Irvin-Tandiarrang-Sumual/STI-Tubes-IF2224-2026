@@ -1,6 +1,6 @@
 #include "../ASTBuilder.hpp"
 
-std::unique_ptr<ASTVariableExpressionNode> ASTBuilder::buildVariable(const CSTNodes* node) {
+ASTVariableExpressionNode* ASTBuilder::buildVariable(const CSTNodes* node) {
     if (node == nullptr || node->isError() || node->isTerminal() || node->getNonTerminal() != NonTerminal::VARIABLE) {
         return nullptr;
     }
@@ -22,7 +22,7 @@ std::unique_ptr<ASTVariableExpressionNode> ASTBuilder::buildVariable(const CSTNo
         }
     }
 
-    return std::make_unique<ASTVariableExpressionNode>(tokenText(baseNameNode), std::move(components));
+    return new ASTVariableExpressionNode(tokenText(baseNameNode), std::move(components));
 }
 
 ASTVariableComponent ASTBuilder::buildComponentVariable(const CSTNodes* node) {
@@ -50,8 +50,8 @@ ASTVariableComponent ASTBuilder::buildComponentVariable(const CSTNodes* node) {
     return component;
 }
 
-std::vector<std::unique_ptr<ASTExpressionNode>> ASTBuilder::buildIndexList(const CSTNodes* node) {
-    std::vector<std::unique_ptr<ASTExpressionNode>> indices;
+std::vector<ASTExpressionNode*> ASTBuilder::buildIndexList(const CSTNodes* node) {
+    std::vector<ASTExpressionNode*> indices;
 
     if (node == nullptr || node->isError() || node->isTerminal() || node->getNonTerminal() != NonTerminal::INDEX_LIST) {
         return indices;
