@@ -8,13 +8,14 @@ ASTProgramNode* ASTBuilder::buildProgram(const CSTNodes* node){
 
     // Bangun bagian deklarasi
     std::vector<ASTDeclarationNode*> declarations;
-    buildDeclarationPart(node->firstChildOf(NonTerminal::DECLARATION_PART), declarations);
-    auto mainBlock = buildCompoundStatement(node->firstChildOf(NonTerminal::COMPOUND_STATEMENT));
+    buildDeclarationPart(node->firstChildOf(NonTerminal::DECLARATION_PART),declarations
+    );
 
-    return new ASTProgramNode(
-        programName,
-        std::move(declarations),
-        std::move(mainBlock)
+    ASTDeclarationsNode* declarationsNode = new ASTDeclarationsNode(std::move(declarations));
+
+    ASTBlockStatementNode* mainBlock = buildCompoundStatement(node->firstChildOf(NonTerminal::COMPOUND_STATEMENT));
+
+    return new ASTProgramNode(programName, declarationsNode, mainBlock
     );
 }
 
