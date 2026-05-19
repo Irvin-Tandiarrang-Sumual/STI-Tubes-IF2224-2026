@@ -1,8 +1,5 @@
 #include "../ASTBuilder.hpp"
 
-#include <algorithm>
-#include <cctype>
-
 namespace {
 
 // Helper kecil untuk membandingkan nama type tanpa peduli huruf besar/kecil.

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <cctype>
+#include <algorithm>
 class ASTBuilder {
     public:
         ASTBuilder() = default;
