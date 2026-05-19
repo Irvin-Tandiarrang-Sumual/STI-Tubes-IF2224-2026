@@ -1,9 +1,8 @@
 #include "../ASTBuilder.hpp"
-#include "../ASTNodes.hpp"
 
 // Production Rule : <program> -> <program-header> + <declaration-part> + <compound-statement> + period
 // Semantic Rule : program = new ASTProgramNode(programName, declarations, mainBlock)
-std::unique_ptr<ASTProgramNode> buildProgram(const CSTNodes* node){
+std::unique_ptr<ASTProgramNode> ASTBuilder::buildProgram(const CSTNodes* node){
     // Ekstrak nama program
     std::string programName = buildProgramHeader(node->firstChildOf(NonTerminal::PROGRAM_HEADER));
 
@@ -21,13 +20,13 @@ std::unique_ptr<ASTProgramNode> buildProgram(const CSTNodes* node){
 
 // Production Rule : <program-header> -> programsy + ident + semicolon
 // Semantic Rule : programName = ident
-std::string buildProgramHeader(const CSTNodes* node){
+std::string ASTBuilder::buildProgramHeader(const CSTNodes* node){
     return tokenText(node->firstTokenOf(TokenType::ident));
 }
 
 // Production Rule : <declaration-part> -> (<const-declaration> | <type-declaration> | <var-declaration> | <subprogram-declaration>)*
 // Semantic Rule : declarations = [const-declaration*, type-declaration*, var-declaration*, subprogram-declaration*]
-void buildDeclarationPart(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out){
+void ASTBuilder::buildDeclarationPart(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& out){
     if (node == nullptr) {
         return;
     }
@@ -54,7 +53,7 @@ void buildDeclarationPart(const CSTNodes* node, std::vector<std::unique_ptr<ASTD
 
 // Production Rule : <block> -> <declaration-part> + <compound-statement>
 // Semantic Rule : block = (localDeclarations, body)
-void buildBlock(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& localDeclarations, std::unique_ptr<ASTBlockStatementNode>& body){
+void ASTBuilder::buildBlock(const CSTNodes* node, std::vector<std::unique_ptr<ASTDeclarationNode>>& localDeclarations, std::unique_ptr<ASTBlockStatementNode>& body){
     if (node == nullptr) {
         return;
     }
