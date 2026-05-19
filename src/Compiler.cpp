@@ -2,7 +2,7 @@
 
 
 Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
-    : inputPath(path), outputDir(outputDir) {}
+    : inputPath(path), outputDir(outputDir), cstRoot_(nullptr) {}
 Compiler::~Compiler() {
     if (cstRoot_ != nullptr) {
         delete cstRoot_;
@@ -71,15 +71,11 @@ void Compiler::semantic() {
         std::cout << "Terdapat Error pada Proses-Proses Sebelumnya, Semantic tidak dapat dilanjutkan\n";
         return;
     }
-    std::cout << "Here f\n";
-    
     ASTBuilder builder;
 
-    std::unique_ptr<ASTProgramNode> astRoot = builder.build(cstRoot_); 
+    ASTProgramNode* astRoot = builder.build(cstRoot_); 
 
     const std::string baseName = inputPath.stem().string();
-    std::cout << "Here\n";
-    
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-ast.txt");
 
     if (!std::filesystem::exists(outputDir)) {
@@ -87,6 +83,9 @@ void Compiler::semantic() {
     }
 
     Writer writer(fullPath.string(), cstRoot_, cstErrors_);
-    
-    writer.printAST(astRoot.get());
+
+    writer.printAST(astRoot);
+    writer.writeASTToFile(astRoot);
+
+    delete astRoot;
 }
