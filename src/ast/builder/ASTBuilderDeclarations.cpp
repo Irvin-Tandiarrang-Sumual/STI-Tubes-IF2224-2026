@@ -122,10 +122,15 @@ void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<ASTDeclar
 
                 if (i < children.size()) {
                     const CSTNodes* typeNode = children[i];
-                    auto type = buildType(typeNode);
-                    if (type != nullptr && !identifiers.empty()) {
-                        out.push_back(new ASTVarDeclarationNode(identifiers, std::move(type)));
+                    if (typeNode != nullptr && !identifiers.empty()) {
+                    for (const std::string& identifier : identifiers) {
+                        ASTTypeNode* singleType = buildType(typeNode);
+
+                        if (singleType != nullptr) {
+                            out.push_back(new ASTVarDeclarationNode(identifier, singleType));
+                        }
                     }
+                }
                     i++;
                 }
             }
