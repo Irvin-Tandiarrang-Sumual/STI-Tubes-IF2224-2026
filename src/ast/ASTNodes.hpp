@@ -1,4 +1,6 @@
 #pragma once
+#include <any>
+#include "ASTVisitor.hpp"
 #include "../reader/CodeLocation.hpp"
 #include <vector>
 #include <memory>
@@ -22,7 +24,6 @@ inline std::string astVariantToString(const std::variant<int, double, char, bool
         }
     }, value);
 }
-
 class ASTNode {
     public:
         CodeLocation location_;
@@ -33,6 +34,8 @@ class ASTNode {
                 delete child;
             }
         }
+
+        virtual std::any accept(ASTVisitor *visitor) = 0;
 
         virtual std::string toString() const {
             return "ASTNode";
@@ -57,6 +60,10 @@ class ASTPrimitiveType : public ASTTypeNode {
         std::string type;
         ASTPrimitiveType(std::string type) : type(type) {}
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visit(this);
+        }
+
         std::string toString() const override {
             return "PrimitiveType: " + type;
         }
@@ -66,6 +73,10 @@ class ASTNamedTypeNode : public ASTTypeNode {
     public:
         std::string typeName;
         ASTNamedTypeNode(std::string typeName) : typeName(std::move(typeName)) {}
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitNamedTypeNode(this);
+        }
 
         std::string toString() const override {
             return "NamedType: " + typeName;
@@ -86,6 +97,10 @@ class ASTRangeType : public ASTTypeNode {
             if (endConstant != nullptr) children_.push_back(endConstant);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitRangeType(this);
+        }
+
         std::string toString() const override {
             return "RangeType";
         }
@@ -104,6 +119,10 @@ class ASTArrayTypeNode : public ASTTypeNode {
             if (elementType != nullptr) children_.push_back(elementType);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitArrayTypeNode(this);
+        }
+
         std::string toString() const override {
             return "ArrayType";
         }
@@ -117,6 +136,10 @@ class ASTEnumeratedTypeNode : public ASTTypeNode {
         std::vector<std::string> elements;
         ASTEnumeratedTypeNode(std::vector<std::string> elements)
             : elements(std::move(elements)) {}
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitEnumeratedTypeNode(this);
+        }
 
         std::string toString() const override {
             return "EnumeratedType";
@@ -147,6 +170,10 @@ class ASTRecordTypeNode : public ASTTypeNode {
             }
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitRecordTypeNode(this);
+        }
+
         std::string toString() const override {
             return "RecordType";
         }
@@ -163,6 +190,10 @@ class ASTLiteralExpressionNode : public ASTExpressionNode {
         std::variant<int, double, char, bool, std::string> value;
         ASTLiteralExpressionNode(std::variant<int, double, char, bool, std::string> value) 
             : value(value) {}
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitLiteralExpressionNode(this);
+        }
 
         std::string toString() const override {
             return "Literal: " + astVariantToString(value);
@@ -208,6 +239,10 @@ class ASTVariableExpressionNode : public ASTExpressionNode {
             }
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitVariableExpressionNode(this);
+        }
+
         std::string toString() const override {
             return "Variable: " + baseName;
         }
@@ -223,6 +258,10 @@ class ASTUnaryExpressionNode : public ASTExpressionNode {
         ASTUnaryExpressionNode(std::string op, ASTExpressionNode* operand)
             : op(std::move(op)), operand(operand) {
             if (operand != nullptr) children_.push_back(operand);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitUnaryExpressionNode(this);
         }
 
         std::string toString() const override {
@@ -244,6 +283,10 @@ class ASTBinaryExpressionNode : public ASTExpressionNode {
             if (rhs != nullptr) children_.push_back(rhs);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitBinaryExpressionNode(this);
+        }
+
         std::string toString() const override {
             return "BinaryOp: " + op;
         }
@@ -263,6 +306,10 @@ class ASTCallExpressionNode : public ASTExpressionNode {
             }
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitCallExpressionNode(this);
+        }
+
         std::string toString() const override {
             return "Call: " + callee;
         }
@@ -277,6 +324,10 @@ class ASTCallExpressionNode : public ASTExpressionNode {
 class ASTEmptyStatementNode : public ASTStatementNode {
     public:
         ASTEmptyStatementNode() = default;
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitEmptyStatementNode(this);
+        }
 
         std::string toString() const override {
             return "EmptyStatement";
@@ -296,6 +347,10 @@ class ASTBlockStatementNode : public ASTStatementNode {
             }
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitBlockStatementNode(this);
+        }
+
         std::string toString() const override {
             return "Block";
         }
@@ -312,6 +367,10 @@ class ASTAssignmentStatementNode : public ASTStatementNode {
             : target(target), value(value) {
             if (target != nullptr) children_.push_back(target);
             if (value != nullptr) children_.push_back(value);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitAssignmentStatementNode(this);
         }
 
         std::string toString() const override {
@@ -334,6 +393,10 @@ class ASTIfStatementNode : public ASTStatementNode {
             if (elseBranch != nullptr) children_.push_back(elseBranch);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitIfStatementNode(this);
+        }
+
         std::string toString() const override {
             return "If";
         }
@@ -350,6 +413,10 @@ class ASTWhileStatementNode : public ASTStatementNode {
             : condition(condition), body(body) {
             if (condition != nullptr) children_.push_back(condition);
             if (body != nullptr) children_.push_back(body);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitWhileStatementNode(this);
         }
 
         std::string toString() const override {
@@ -372,6 +439,10 @@ class ASTRepeatStatementNode : public ASTStatementNode {
             if (condition != nullptr) children_.push_back(condition);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitRepeatStatementNode(this);
+        }
+
         std::string toString() const override {
             return "Repeat";
         }
@@ -392,6 +463,10 @@ class ASTForStatementNode : public ASTStatementNode {
             if (startVal != nullptr) children_.push_back(startVal);
             if (endVal != nullptr) children_.push_back(endVal);
             if (body != nullptr) children_.push_back(body);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitForStatementNode(this);
         }
 
         std::string toString() const override {
@@ -432,6 +507,10 @@ class ASTCaseStatementNode : public ASTStatementNode {
             }
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitCaseStatementNode(this);
+        }
+
         std::string toString() const override {
             return "Case";
         }
@@ -446,6 +525,10 @@ class ASTCallStatementNode : public ASTStatementNode {
         ASTCallStatementNode(ASTCallExpressionNode* callExpr) 
             : callExpr(callExpr) {
             if (callExpr != nullptr) children_.push_back(callExpr);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitCallStatementNode(this);
         }
 
         std::string toString() const override {
@@ -470,6 +553,10 @@ public:
         }
     }
 
+    std::any accept(ASTVisitor *visitor) override {
+        return visitor->visitDeclarationsNode(this);
+    }
+
     std::string toString() const override {
         return "Declarations";
     }
@@ -485,6 +572,10 @@ class ASTConstDeclarationNode : public ASTDeclarationNode {
         ASTConstDeclarationNode(std::string name, ASTExpressionNode* value)
             : name(std::move(name)), value(value) {
             if (value != nullptr) children_.push_back(value);
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitConstDeclarationNode(this);
         }
 
         std::string toString() const override {
@@ -504,6 +595,10 @@ class ASTTypeDeclarationNode : public ASTDeclarationNode {
             if (typeDefinition != nullptr) children_.push_back(typeDefinition);
         }
 
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitTypeDeclarationNode(this);
+        }
+
         std::string toString() const override {
             return "TypeDeclaration: " + name;
         }
@@ -519,6 +614,10 @@ class ASTVarDeclarationNode : public ASTDeclarationNode {
 
         ASTVarDeclarationNode(std::string name, ASTTypeNode* type)
             : identifiers(std::move(name)), type(type) {}
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitVarDeclarationNode(this);
+        }
         
         std::string toString() const override {
             std::string typeText = "unknown";
@@ -584,6 +683,10 @@ class ASTSubprogramDeclarationNode : public ASTDeclarationNode {
 class ASTProcedureDeclarationNode : public ASTSubprogramDeclarationNode {
     public:
         using ASTSubprogramDeclarationNode::ASTSubprogramDeclarationNode; // Mewarisi constructor
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitProcedureDeclarationNode(this);
+        }
 };
 
 // Function Declaration
@@ -594,6 +697,10 @@ class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
         std::string returnTypeName;
         ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body)
             : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), body), returnTypeName(std::move(returnTypeName)) {}
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitFunctionDeclarationNode(this);
+        }
 
         std::string toString() const override {
             return "FunctionDeclaration: " + name + " : " + returnTypeName;
@@ -621,6 +728,10 @@ class ASTProgramNode : public ASTNode {
                 mainBlock->parent_ = this;
                 children_.push_back(mainBlock);
             }
+        }
+
+        std::any accept(ASTVisitor *visitor) override {
+            return visitor->visitProgramNode(this);
         }
 
         std::string toString() const override {
