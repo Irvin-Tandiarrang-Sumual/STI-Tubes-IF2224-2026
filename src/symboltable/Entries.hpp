@@ -36,7 +36,7 @@ struct IdentifierTableEntry {
     int address;
 
     // to string
-    static::std::string getHeader() {
+    static std::string getHeader() {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5)  << "idx"
@@ -99,7 +99,7 @@ struct ArrayTableEntry{
 
     // to string
 
-    static::std::string getHeader() {
+    static std::string getHeader() {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5) << "idx"
