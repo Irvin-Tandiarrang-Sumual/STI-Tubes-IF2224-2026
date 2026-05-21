@@ -35,6 +35,9 @@ struct IdentifierTableEntry {
     //nilai konstanta, offset field record, alamat prosedur, atau ukuran/penanda lain.
     int address;
 
+    // kasus struct
+    std::string typeName;
+
     // to string
     static std::string getHeader() {
         std::stringstream ss;
@@ -96,6 +99,9 @@ struct ArrayTableEntry{
 
     // total ukuran array
     int size;
+
+    // kasus struct
+    std::string typeName;
 
     // to string
 

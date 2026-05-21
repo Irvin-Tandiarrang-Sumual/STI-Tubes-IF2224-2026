@@ -9,5 +9,6 @@ enum class DataType {
     RANGE,
     ENUMERATED,
     ARRAY,
-    RECORD
+    RECORD,
+    VOID
 };

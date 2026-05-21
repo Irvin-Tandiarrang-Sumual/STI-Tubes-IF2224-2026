@@ -11,4 +11,5 @@ class Table {
         void insert(const T& entry);
         T& get(int index);
         std::string toString(const std::string& tableName) const;
+        int size();
 };

@@ -23,3 +23,8 @@ std::string Table<T>::toString(const std::string& tableName) const {
     }
     return ss.str();
 }
+
+template <typename T>
+int Table<T>::size() {
+    return entries_.size();
+}
