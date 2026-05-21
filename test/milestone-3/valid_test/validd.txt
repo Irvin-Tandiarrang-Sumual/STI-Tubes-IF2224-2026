@@ -1,0 +1,4 @@
+program TestNegatif;
+begin
+    variabelGhoib := 'Hello' + 100;
+end.

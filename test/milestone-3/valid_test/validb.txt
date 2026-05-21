@@ -1,0 +1,7 @@
+program TestRecord;
+type Data == record umur: integer end;
+var d: Data;
+begin
+    d := 20;
+    d.umur := 20;
+end.

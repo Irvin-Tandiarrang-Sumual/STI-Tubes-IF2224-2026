@@ -175,7 +175,16 @@ class ASTRecordTypeNode : public ASTTypeNode {
         }
 
         std::string toString() const override {
-            return "RecordType";
+            std::string fieldsStr = "RecordType(";
+            for (size_t i = 0; i < fields.size(); i++) {
+                for (size_t j = 0; j < fields[i].identifiers.size(); j++) {
+                    fieldsStr += fields[i].identifiers[j];
+                    if (j < fields[i].identifiers.size() - 1) fieldsStr += ", ";
+                }
+                if (i < fields.size() - 1) fieldsStr += "; ";
+            }
+            fieldsStr += ")";
+            return fieldsStr;
         }
 };
 
@@ -244,7 +253,15 @@ class ASTVariableExpressionNode : public ASTExpressionNode {
         }
 
         std::string toString() const override {
-            return "Variable: " + baseName;
+            std::string res = "Variable: " + baseName;
+            for (const auto& comp : components) {
+                if (comp.isArrayIndex) {
+                    res += "[]";
+                } else {
+                    res += "." + comp.fieldName;
+                }
+            }
+            return res;
         }
 };
 
@@ -703,7 +720,19 @@ class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
         }
 
         std::string toString() const override {
-            return "FunctionDeclaration: " + name + " : " + returnTypeName;
+            std::string paramStr = "";
+            if (!parameters.empty()) {
+                paramStr += "(";
+                for (size_t i = 0; i < parameters.size(); ++i) {
+                    for (size_t j = 0; j < parameters[i].identifiers.size(); ++j) {
+                        paramStr += parameters[i].identifiers[j];
+                        if (j < parameters[i].identifiers.size() - 1) paramStr += ", ";
+                    }
+                    if (i < parameters.size() - 1) paramStr += "; ";
+                }
+                paramStr += ")";
+            }
+            return "FunctionDeclaration: " + name + paramStr + " : " + returnTypeName;
         }
 };
 

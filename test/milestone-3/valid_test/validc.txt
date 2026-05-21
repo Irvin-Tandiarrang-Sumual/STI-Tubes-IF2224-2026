@@ -1,0 +1,4 @@
+program TestFungsi;
+function Cetak(pesan: string; x, y: integer): integer;
+begin end;
+begin end.

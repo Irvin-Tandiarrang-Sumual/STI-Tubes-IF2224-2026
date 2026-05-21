@@ -63,7 +63,19 @@ std::vector<ASTExpressionNode*> ASTBuilder::buildIndexList(const CSTNodes* node)
         }
 
         if (child->isTerminal()) {
-            // lbrack, rbrack, dan comma hanya pemisah sintaksis.
+            TokenType t = child->getToken().type;
+            
+            if (t == TokenType::comma || t == TokenType::lbrack || t == TokenType::rbrack) {
+                continue;
+            }
+            
+            if (t == TokenType::intcon) {
+                indices.push_back(new ASTLiteralExpressionNode(std::stoi(tokenText(child))));
+            } else if (t == TokenType::realcon) {
+                indices.push_back(new ASTLiteralExpressionNode(std::stod(tokenText(child))));
+            } else if (t == TokenType::ident) {
+                indices.push_back(new ASTVariableExpressionNode(tokenText(child), std::vector<ASTVariableComponent>{}));
+            }
             continue;
         }
 
@@ -76,6 +88,11 @@ std::vector<ASTExpressionNode*> ASTBuilder::buildIndexList(const CSTNodes* node)
             auto nestedIndices = buildIndexList(child);
             for (auto* indexExpr : nestedIndices) {
                 indices.push_back(indexExpr);
+            }
+        } else {
+            ASTExpressionNode* expr = buildExpression(child); 
+            if (expr != nullptr) {
+                indices.push_back(expr);
             }
         }
     }
