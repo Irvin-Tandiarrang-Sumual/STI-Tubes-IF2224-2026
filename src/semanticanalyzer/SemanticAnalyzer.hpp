@@ -876,8 +876,17 @@ class SemanticAnalyzer : public ASTVisitor {
         std::any visitAssignmentStatementNode(ASTAssignmentStatementNode* node) override {
             DataType targetType = std::any_cast<DataType>(node->target->accept(this));
             DataType valueType = std::any_cast<DataType>(node->value->accept(this));
-            ASTTypeNode* targetTypeNode = getStoredTypeNode(node->target->symbolRefIndex_);
-            ASTTypeNode* valueTypeNode = dynamic_cast<ASTVariableExpressionNode*>(node->value) != nullptr ? getStoredTypeNode(node->value->symbolRefIndex_) : nullptr;
+            ASTTypeNode* targetTypeNode = nullptr;
+            if (node->target->components.empty()) {
+                targetTypeNode = getStoredTypeNode(node->target->symbolRefIndex_);
+            }
+
+            ASTTypeNode* valueTypeNode = nullptr;
+            if (auto* valueVar = dynamic_cast<ASTVariableExpressionNode*>(node->value)) {
+                if (valueVar->components.empty()) {
+                    valueTypeNode = getStoredTypeNode(valueVar->symbolRefIndex_);
+                }
+            }
 
             validateAssignmentCompatibility(node->target, node->value, targetTypeNode, valueTypeNode, targetType, valueType);
             node->evalType_ = DataType::VOID;
