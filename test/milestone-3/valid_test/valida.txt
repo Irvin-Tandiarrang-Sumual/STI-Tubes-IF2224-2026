@@ -1,0 +1,6 @@
+program TestArray;
+var arr: array[1..10] of integer;
+begin
+    arr := 5;
+    arr[1] := 5;
+end.

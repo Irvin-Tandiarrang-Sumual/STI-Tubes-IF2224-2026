@@ -10,7 +10,7 @@ void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<ASTDecl
     // Iterasi melalui anak-anak: ident + eql + constant + semicolon pattern
     const auto& children = node->getChildren();
 
-    int i = 0;
+    size_t i = 0;
     // Skip first child (constsy token)
     if (i < children.size() && children[i]->isTerminal() &&
         children[i]->getToken().type == TokenType::constsy) {
@@ -56,7 +56,7 @@ void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<ASTDecla
     }
 
     const auto& children = node->getChildren();
-    int i = 0;
+    size_t i = 0;
 
     if (i < children.size() && children[i]->isTerminal() &&
         children[i]->getToken().type == TokenType::typesy) {
@@ -100,7 +100,7 @@ void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<ASTDeclar
     }
 
     const auto& children = node->getChildren();
-    int i = 0;
+    size_t i = 0;
 
     // Skip first child (varsy token)
     if (i < children.size() && children[i]->isTerminal() &&
@@ -174,7 +174,7 @@ ASTDeclarationNode* ASTBuilder::buildProcedureDeclaration(const CSTNodes* node) 
     }
 
     const auto& children = node->getChildren();
-    int i = 0;
+    size_t i = 0;
 
     if (i < children.size() && children[i]->isTerminal() &&
         children[i]->getToken().type == TokenType::proceduresy) {
@@ -230,7 +230,7 @@ ASTDeclarationNode* ASTBuilder::buildFunctionDeclaration(const CSTNodes* node) {
     }
 
     const auto& children = node->getChildren();
-    int i = 0;
+    size_t i = 0;
 
     if (i < children.size() && children[i]->isTerminal() &&
         children[i]->getToken().type == TokenType::functionsy) {
