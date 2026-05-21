@@ -8,6 +8,8 @@ TARGET = main
 SRC = $(wildcard *.cpp) \
       $(wildcard lexer/*.cpp) \
       $(wildcard reader/*.cpp) \
+      $(wildcard symboltable/*.cpp) \
+      $(wildcard semanticanalyzer/*.cpp) \
       $(wildcard writer/*.cpp) \
       $(wildcard cst/*.cpp) \
       $(wildcard parser/*.cpp) \

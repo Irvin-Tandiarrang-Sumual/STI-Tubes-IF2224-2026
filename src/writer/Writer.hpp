@@ -22,6 +22,8 @@ class Writer {
 
         // print AST tree
         void writeASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        void writeDecoratedASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        std::string formatDecoratedNode(const ASTNode* node) const;
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);
         
@@ -39,6 +41,8 @@ class Writer {
         // AST output helpers (accept an AST root pointer)
         void writeASTToFile(const ASTNode* rootAst) const;
         void printAST(const ASTNode* rootAst) const;
+        void writeDecoratedASTToFile(const ASTNode* rootAst) const;
+        void printDecoratedAST(const ASTNode* rootAst) const;
 
         // semantic
 
