@@ -7,7 +7,7 @@
 #include <string>
 #include <variant>
 #include <type_traits>
-
+#include "../symboltable/DataType.hpp"
 inline std::string astVariantToString(const std::variant<int, double, char, bool, std::string>& value) {
     return std::visit([](auto&& arg) -> std::string {
         using T = std::decay_t<decltype(arg)>;
@@ -24,11 +24,17 @@ inline std::string astVariantToString(const std::variant<int, double, char, bool
         }
     }, value);
 }
+
 class ASTNode {
     public:
         CodeLocation location_;
         std::vector<ASTNode*> children_;
         ASTNode* parent_ = nullptr;
+
+        // buat decorated
+        DataType evalType_;
+        int symbolRefIndex_ = -1;
+        int lexicalLevel_ = 0;
         virtual ~ASTNode() {
             for (ASTNode* child : children_) {
                 delete child;
