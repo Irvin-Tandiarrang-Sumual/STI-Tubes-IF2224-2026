@@ -43,6 +43,8 @@ class Writer {
         void printAST(const ASTNode* rootAst) const;
         void writeDecoratedASTToFile(const ASTNode* rootAst) const;
         void printDecoratedAST(const ASTNode* rootAst) const;
+        void writeDecoratedASTWithTablesToFile(const ASTNode* rootAst, const std::string& tablesText) const;
+        void printDecoratedASTWithTables(const ASTNode* rootAst, const std::string& tablesText) const;
 
         // semantic
 

@@ -35,4 +35,9 @@ class SymbolTable {
         int lookup(const std::string& name);
 
         IdentifierTableEntry& getIdentifier(int index);
+
+        std::string dumpTab() const;
+        std::string dumpBTab() const;
+        std::string dumpATab() const;
+        std::string dumpTables() const;
 };

@@ -86,3 +86,25 @@ int SymbolTable::lookup(const std::string& name) {
 IdentifierTableEntry& SymbolTable::getIdentifier(int index) {
     return tab_.get(index);
 }
+
+std::string SymbolTable::dumpTab() const {
+    return tab_.toString("tab");
+}
+
+std::string SymbolTable::dumpBTab() const {
+    return btab_.toString("btab");
+}
+
+std::string SymbolTable::dumpATab() const {
+    return atab_.toString("atab");
+}
+
+std::string SymbolTable::dumpTables() const {
+    std::string result;
+    result += dumpTab();
+    result += "\n";
+    result += dumpBTab();
+    result += "\n";
+    result += dumpATab();
+    return result;
+}

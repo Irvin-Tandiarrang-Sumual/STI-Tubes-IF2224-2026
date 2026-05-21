@@ -329,6 +329,10 @@ class SemanticAnalyzer : public ASTVisitor {
             initializePredefinedIdentifiers();
         }
 
+        std::string dumpTables() const {
+            return symbolTable.dumpTables();
+        }
+
         // root
         std::any visitProgramNode(ASTProgramNode* node) override {
             // tar printout di luar

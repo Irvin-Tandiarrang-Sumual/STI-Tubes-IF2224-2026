@@ -205,6 +205,35 @@ void Writer::writeDecoratedASTToFile(const ASTNode* rootAst) const {
     std::cout << "Decorated AST berhasil disimpan di: " << filename << "\n";
 }
 
+void Writer::printDecoratedASTWithTables(const ASTNode* rootAst, const std::string& tablesText) const {
+    printDecoratedAST(rootAst);
+    std::cout << "\n=== Symbol Tables ===\n";
+    std::cout << tablesText << std::endl;
+}
+
+void Writer::writeDecoratedASTWithTablesToFile(const ASTNode* rootAst, const std::string& tablesText) const {
+    if (rootAst == nullptr) {
+        std::cerr << "ERROR: root AST kosong.\n";
+        return;
+    }
+
+    std::ofstream fOut(filename, std::ios::out | std::ios::binary);
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
+        return;
+    }
+
+    writeDecoratedASTRecursive(fOut, rootAst, "", true, 0);
+    fOut << "\n=== Symbol Tables ===\n";
+    fOut << tablesText;
+    if (!tablesText.empty() && tablesText.back() != '\n') {
+        fOut << '\n';
+    }
+
+    fOut.close();
+    std::cout << "Semantic report berhasil disimpan di: " << filename << "\n";
+}
+
 void Writer::printCST() const {
     if (root == nullptr) {
         std::cerr << "ERROR: root parse tree kosong.\n";
