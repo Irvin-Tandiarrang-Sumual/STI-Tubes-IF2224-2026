@@ -140,8 +140,8 @@ struct ArrayTableEntry{
 };
 
 struct BlockTableEntry {
-    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parameterSize, int variableSize)
-        : blockIndex(blockIndex), last(last), latestParameter(latestParameter), parameterSize(parameterSize), variableSize(variableSize) {}
+    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parentBlock, int parameterSize, int variableSize)
+        : blockIndex(blockIndex), last(last), latestParameter(latestParameter), parentBlock(parentBlock), parameterSize(parameterSize), variableSize(variableSize) {}
     // Indeks entri block (setiap block mewakili
     // prosedur, fungsi, atau record type definition).
     int blockIndex;
@@ -153,6 +153,8 @@ struct BlockTableEntry {
 
     // Pointer/indeks ke parameter terakhir dari prosedur/fungsi pada block tersebut. Jika block adalah record, nilainya 0.
     int latestParameter;
+
+    int parentBlock;
 
     // Total ukuran parameter block  (dalam byte/unit memori).
     int parameterSize;
