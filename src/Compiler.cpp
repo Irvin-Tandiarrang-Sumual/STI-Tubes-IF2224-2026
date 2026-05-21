@@ -81,8 +81,11 @@ void Compiler::semantic() {
     }
 
     SemanticAnalyzer semanticAnalyzer;
-    semanticAnalyzer.visitProgramNode(astRoot);
+    semanticAnalyzer.analyze(astRoot);
     std::string tablesText = semanticAnalyzer.dumpTables();
+
+    const auto& semanticErrors = semanticAnalyzer.getErrors();
+
 
     const std::string baseName = inputPath.stem().string();
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-ast.txt");
@@ -96,5 +99,13 @@ void Compiler::semantic() {
     writer.printDecoratedASTWithTables(astRoot, tablesText);
     writer.writeDecoratedASTWithTablesToFile(astRoot, tablesText);
 
+    if (!semanticErrors.empty()) {
+        std::cout << "\n=== Semantic Errors ===\n";
+        for (const auto& err : semanticErrors) {
+            std::cout << err << "\n";
+        }
+        std::cout << "=======================\n\n";
+    }
+    
     delete astRoot;
 }

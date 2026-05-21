@@ -18,12 +18,39 @@ class SemanticAnalyzer : public ASTVisitor {
     private:
         SymbolTable symbolTable;
         int currentLevel = 0;
+        std::vector<std::string> errors_;
         std::unordered_map<std::string, ASTTypeNode*> namedTypeDefinitions_;
         std::unordered_map<int, ASTTypeNode*> identifierTypeNodes_;
         std::unordered_map<int, std::unordered_set<std::string>> predeclaredSubprogramNames_;
 
         using RangeBound = std::variant<int, char, bool>;
         std::unordered_map<const ASTRangeType*, std::pair<RangeBound, RangeBound>> rangeBounds_;
+
+        void reportError(const std::string& message) {
+            errors_.push_back(message);
+        }
+
+        void reportError(const ASTNode* node, const std::string& message) {
+            if (node == nullptr) {
+                errors_.push_back(message);
+                return;
+            }
+
+            const auto line = node->location_.line;
+            const auto col = node->location_.col;
+            errors_.push_back("[line " + std::to_string(line) + ", col " + std::to_string(col) + "] " + message);
+        }
+
+        void safeVisitNode(ASTNode* node) {
+            if (node == nullptr) {
+                return;
+            }
+            try {
+                node->accept(this);
+            } catch (const std::exception& ex) {
+                reportError(node, ex.what());
+            }
+        }
 
         DataType mapStringToDataType(const std::string& typeStr) {
             std::string lowerStr = typeStr;
@@ -368,6 +395,19 @@ class SemanticAnalyzer : public ASTVisitor {
             initializePredefinedIdentifiers();
         }
 
+        void analyze(ASTProgramNode* root) {
+            errors_.clear();
+            safeVisitNode(root);
+        }
+
+        const std::vector<std::string>& getErrors() const {
+            return errors_;
+        }
+
+        bool hasErrors() const {
+            return !errors_.empty();
+        }
+
         std::string dumpTables() const {
             return symbolTable.dumpTables();
         }
@@ -389,16 +429,20 @@ class SemanticAnalyzer : public ASTVisitor {
             node->lexicalLevel_ = currentLevel;
             node->evalType_ = DataType::VOID;
 
-            if (node->declarations != nullptr) node->declarations->accept(this);
-            if (node->mainBlock != nullptr) node->mainBlock->accept(this);
+            safeVisitNode(node->declarations);
+            safeVisitNode(node->mainBlock);
             return {};
         }
 
         std::any visitDeclarationsNode(ASTDeclarationsNode* node) override {
-            predeclareSubprograms(node->declarations);
+            try {
+                predeclareSubprograms(node->declarations);
+            } catch (const std::exception& ex) {
+                reportError(node, ex.what());
+            }
 
             for (auto* decl : node->declarations) {
-                if (decl != nullptr) decl->accept(this);
+                safeVisitNode(decl);
             }
 
             predeclaredSubprogramNames_.erase(currentLevel);
@@ -630,7 +674,11 @@ class SemanticAnalyzer : public ASTVisitor {
             currentLevel++;
             symbolTable.enterBlock();
 
-            predeclareSubprograms(node->localDeclarations);
+            try {
+                predeclareSubprograms(node->localDeclarations);
+            } catch (const std::exception& ex) {
+                reportError(ex.what());
+            }
 
             for (const auto& paramGroup : node->parameters) {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
@@ -643,10 +691,10 @@ class SemanticAnalyzer : public ASTVisitor {
             }
 
             for (auto* localDecl : node->localDeclarations) {
-                if (localDecl != nullptr) localDecl->accept(this);
+                safeVisitNode(localDecl);
             }
 
-            if (node->body != nullptr) node->body->accept(this);
+            safeVisitNode(node->body);
 
             predeclaredSubprogramNames_.erase(currentLevel);
             symbolTable.exitBlock();
@@ -676,7 +724,11 @@ class SemanticAnalyzer : public ASTVisitor {
             currentLevel++;
             symbolTable.enterBlock();
 
-            predeclareSubprograms(node->localDeclarations);
+            try {
+                predeclareSubprograms(node->localDeclarations);
+            } catch (const std::exception& ex) {
+                reportError(ex.what());
+            }
 
             for (const auto& paramGroup : node->parameters) {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
@@ -689,10 +741,10 @@ class SemanticAnalyzer : public ASTVisitor {
             }
 
             for (auto* localDecl : node->localDeclarations) {
-                if (localDecl != nullptr) localDecl->accept(this);
+                safeVisitNode(localDecl);
             }
 
-            if (node->body != nullptr) node->body->accept(this);
+            safeVisitNode(node->body);
 
             predeclaredSubprogramNames_.erase(currentLevel);
             symbolTable.exitBlock();
@@ -861,9 +913,7 @@ class SemanticAnalyzer : public ASTVisitor {
             }
 
             for (auto* argument : node->arguments) {
-                if (argument != nullptr) {
-                    argument->accept(this);
-                }
+                safeVisitNode(argument);
             }
 
             node->symbolRefIndex_ = symbolIdx;
@@ -899,15 +949,15 @@ class SemanticAnalyzer : public ASTVisitor {
             if (condType != DataType::BOOLEAN) {
                 throw std::runtime_error("Semantic Error: Kondisi di dalam IF-Statement harus menghasilkan tipe Boolean.");
             }
-            if (node->thenBranch != nullptr) node->thenBranch->accept(this);
-            if (node->elseBranch != nullptr) node->elseBranch->accept(this);
+            safeVisitNode(node->thenBranch);
+            safeVisitNode(node->elseBranch);
             node->evalType_ = DataType::VOID;
             return {};
         }
 
         std::any visitBlockStatementNode(ASTBlockStatementNode* node) override {
             for (auto* stmt : node->statements) {
-                if (stmt != nullptr) stmt->accept(this);
+                safeVisitNode(stmt);
             }
             node->evalType_ = DataType::VOID;
             return DataType::VOID;
@@ -918,14 +968,14 @@ class SemanticAnalyzer : public ASTVisitor {
             if (condType != DataType::BOOLEAN) {
                 throw std::runtime_error("Semantic Error: Kondisi di dalam WHILE-Statement harus menghasilkan tipe Boolean.");
             }
-            if (node->body != nullptr) node->body->accept(this);
+            safeVisitNode(node->body);
             node->evalType_ = DataType::VOID;
             return DataType::VOID;
         }
 
         std::any visitRepeatStatementNode(ASTRepeatStatementNode* node) override {
             for (auto* stmt : node->body) {
-                if (stmt != nullptr) stmt->accept(this);
+                safeVisitNode(stmt);
             }
 
             DataType condType = std::any_cast<DataType>(node->condition->accept(this));
@@ -953,7 +1003,7 @@ class SemanticAnalyzer : public ASTVisitor {
                 throw std::runtime_error("Semantic Error: Batas FOR-Statement harus bertipe Integer.");
             }
 
-            if (node->body != nullptr) node->body->accept(this);
+            safeVisitNode(node->body);
             node->symbolRefIndex_ = iteratorIdx;
             node->lexicalLevel_ = iteratorEntry.level;
             node->evalType_ = DataType::VOID;
@@ -973,9 +1023,7 @@ class SemanticAnalyzer : public ASTVisitor {
                         throw std::runtime_error("Semantic Error: Konstanta pada CASE-Statement harus bertipe sama dengan ekspresi kondisi.");
                     }
                 }
-                if (branch.body != nullptr) {
-                    branch.body->accept(this);
-                }
+                safeVisitNode(branch.body);
             }
 
             node->evalType_ = DataType::VOID;
@@ -994,9 +1042,7 @@ class SemanticAnalyzer : public ASTVisitor {
 
             IdentifierTableEntry& entry = symbolTable.getIdentifier(symbolIdx);
             for (auto* argument : node->callExpr->arguments) {
-                if (argument != nullptr) {
-                    argument->accept(this);
-                }
+                safeVisitNode(argument);
             }
 
             if (entry.type != DataType::VOID) {
