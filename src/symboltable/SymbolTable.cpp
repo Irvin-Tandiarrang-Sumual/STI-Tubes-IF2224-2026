@@ -1,6 +1,6 @@
 #include "SymbolTable.hpp"
 SymbolTable::SymbolTable() {
-    btab_.insert(BlockTableEntry(0, 0, 0, 0, 0));
+    btab_.insert(BlockTableEntry(0, 0, 0, -1, 0, 0));
 }
 
 void SymbolTable::enterBlock() {
@@ -10,7 +10,7 @@ void SymbolTable::enterBlock() {
 
     // Bikin blok baru di btab
     int newBlockIdx = btab_.size();
-    btab_.insert(BlockTableEntry(newBlockIdx, 0, 0, 0, 0));
+    btab_.insert(BlockTableEntry(newBlockIdx, 0, 0, currentBlockIdx_, 0, 0));
     currentBlockIdx_ = newBlockIdx;
     
     // reset di blok skrg
@@ -62,25 +62,26 @@ int SymbolTable::insertVariable(const std::string& name, DataType type, int ref)
 }
 
 int SymbolTable::lookup(const std::string& name) {
-    // naik
     int blockIdx = currentBlockIdx_;
-    
+
     while (blockIdx >= 0) {
         BlockTableEntry& block = btab_.get(blockIdx);
         int currentIdIdx = block.last;
-        
+
         while (currentIdIdx > 0) {
             IdentifierTableEntry& id = tab_.get(currentIdIdx);
+
             if (id.name == name) {
                 return currentIdIdx;
             }
+
             currentIdIdx = id.linkIndex;
         }
-        
-        blockIdx--; 
+
+        blockIdx = block.parentBlock;
     }
-    
-    return -1; // not found
+
+    return -1;
 }
 
 IdentifierTableEntry& SymbolTable::getIdentifier(int index) {
