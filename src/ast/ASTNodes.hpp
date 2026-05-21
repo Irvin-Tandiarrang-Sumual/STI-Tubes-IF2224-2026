@@ -32,7 +32,7 @@ class ASTNode {
         ASTNode* parent_ = nullptr;
 
         // buat decorated
-        DataType evalType_;
+        DataType evalType_ = DataType::VOID;
         int symbolRefIndex_ = -1;
         int lexicalLevel_ = 0;
         virtual ~ASTNode() {
@@ -67,7 +67,7 @@ class ASTPrimitiveType : public ASTTypeNode {
         ASTPrimitiveType(std::string type) : type(type) {}
 
         std::any accept(ASTVisitor *visitor) override {
-            return visitor->visit(this);
+            return visitor->visitPrimitiveType(this);
         }
 
         std::string toString() const override {
