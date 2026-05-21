@@ -1,0 +1,8 @@
+program TestVar2;
+
+var
+    x : integer;
+    x : real;
+
+begin
+end.

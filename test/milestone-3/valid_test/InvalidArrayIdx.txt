@@ -1,0 +1,12 @@
+{* ga boleh real *}
+program TestInvalidArrayIdx;
+
+type
+    IntArray = array[1..10] of integer;
+
+var
+    A : IntArray;
+
+begin
+    A[3.14] := 5;
+end.
