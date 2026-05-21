@@ -35,7 +35,7 @@ void SymbolTable::exitBlock() {
     offsetHistory_.pop_back();
 }
 
-int SymbolTable::insertVariable(const std::string& name, DataType type, int ref = 0) {
+int SymbolTable::insertVariable(const std::string& name, DataType type, int ref) {
     BlockTableEntry& currentBlock = btab_.get(currentBlockIdx_);
     int previousLink = currentBlock.last;
 

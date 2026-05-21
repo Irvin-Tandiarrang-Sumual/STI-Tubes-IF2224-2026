@@ -1,9 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include "DataType.hpp"
 struct IdentifierTableEntry {
-    explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address);
+    explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address)
+        : name(std::move(name)), index(0), linkIndex(linkIndex), type(type), reference(reference), normal(normal), level(level), address(address), typeName("") {}
     // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
     std::string name;
 
@@ -69,8 +72,10 @@ struct IdentifierTableEntry {
 };
 
 struct ArrayTableEntry{
-    explicit ArrayTableEntry(int arrayIndex, DataType indexType, DataType elementType, int compositeTypeReference,
-                            int low, int high, int elementSize, int size);
+        explicit ArrayTableEntry(int arrayIndex, DataType indexType, DataType elementType, int compositeTypeReference,
+                                                        int low, int high, int elementSize, int size)
+                : arrayIndex(arrayIndex), indexType(indexType), elementType(elementType), compositeTypeReference(compositeTypeReference),
+                    low(low), high(high), elementSize(elementSize), size(size), typeName("") {}
     // Indeks entri array
     int arrayIndex;
 
@@ -135,7 +140,8 @@ struct ArrayTableEntry{
 };
 
 struct BlockTableEntry {
-    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parameterSize, int variableSize);
+    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parameterSize, int variableSize)
+        : blockIndex(blockIndex), last(last), latestParameter(latestParameter), parameterSize(parameterSize), variableSize(variableSize) {}
     // Indeks entri block (setiap block mewakili
     // prosedur, fungsi, atau record type definition).
     int blockIndex;
