@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <variant>
 #include <any>
 
@@ -19,6 +20,7 @@ class SemanticAnalyzer : public ASTVisitor {
         int currentLevel = 0;
         std::unordered_map<std::string, ASTTypeNode*> namedTypeDefinitions_;
         std::unordered_map<int, ASTTypeNode*> identifierTypeNodes_;
+        std::unordered_map<int, std::unordered_set<std::string>> predeclaredSubprogramNames_;
 
         using RangeBound = std::variant<int, char, bool>;
         std::unordered_map<const ASTRangeType*, std::pair<RangeBound, RangeBound>> rangeBounds_;
@@ -105,6 +107,43 @@ class SemanticAnalyzer : public ASTVisitor {
 
         void rememberIdentifierType(int symbolIndex, ASTTypeNode* typeNode) {
             identifierTypeNodes_[symbolIndex] = resolveTypeNode(typeNode);
+        }
+
+        void predeclareSubprograms(const std::vector<ASTDeclarationNode*>& declarations) {
+            auto& namesInScope = predeclaredSubprogramNames_[currentLevel];
+
+            for (auto* decl : declarations) {
+                if (decl == nullptr) {
+                    continue;
+                }
+
+                if (auto* procedureDecl = dynamic_cast<ASTProcedureDeclarationNode*>(decl)) {
+                    if (namesInScope.find(procedureDecl->name) != namesInScope.end()) {
+                        throw std::runtime_error("Semantic Error: Prosedur '" + procedureDecl->name + "' sudah dideklarasikan di scope ini!");
+                    }
+
+                    int existingIdx = symbolTable.lookup(procedureDecl->name);
+                    if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+                        throw std::runtime_error("Semantic Error: Prosedur '" + procedureDecl->name + "' sudah dideklarasikan di scope ini!");
+                    }
+
+                    symbolTable.insertVariable(procedureDecl->name, DataType::VOID);
+                    namesInScope.insert(procedureDecl->name);
+                } else if (auto* functionDecl = dynamic_cast<ASTFunctionDeclarationNode*>(decl)) {
+                    if (namesInScope.find(functionDecl->name) != namesInScope.end()) {
+                        throw std::runtime_error("Semantic Error: Fungsi '" + functionDecl->name + "' sudah dideklarasikan di scope ini!");
+                    }
+
+                    int existingIdx = symbolTable.lookup(functionDecl->name);
+                    if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+                        throw std::runtime_error("Semantic Error: Fungsi '" + functionDecl->name + "' sudah dideklarasikan di scope ini!");
+                    }
+
+                    DataType returnType = resolveTypeNameKind(functionDecl->returnTypeName);
+                    symbolTable.insertVariable(functionDecl->name, returnType);
+                    namesInScope.insert(functionDecl->name);
+                }
+            }
         }
 
         bool isNumericKind(DataType type) const {
@@ -337,16 +376,32 @@ class SemanticAnalyzer : public ASTVisitor {
         std::any visitProgramNode(ASTProgramNode* node) override {
             // tar printout di luar
             std::cout << "Menganalisis Program: " << node->programName << std::endl;
+
+            int existingIdx = symbolTable.lookup(node->programName);
+            if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+                throw std::runtime_error("Semantic Error: Program '" + node->programName + "' sudah dideklarasikan di scope ini!");
+            }
+
+            int programIdx = symbolTable.insertVariable(node->programName, DataType::VOID);
+            symbolTable.getIdentifier(programIdx).typeName = node->programName;
+
+            node->symbolRefIndex_ = programIdx;
+            node->lexicalLevel_ = currentLevel;
+            node->evalType_ = DataType::VOID;
+
             if (node->declarations != nullptr) node->declarations->accept(this);
             if (node->mainBlock != nullptr) node->mainBlock->accept(this);
-            node->evalType_ = DataType::VOID;
             return {};
         }
 
         std::any visitDeclarationsNode(ASTDeclarationsNode* node) override {
+            predeclareSubprograms(node->declarations);
+
             for (auto* decl : node->declarations) {
                 if (decl != nullptr) decl->accept(this);
             }
+
+            predeclaredSubprogramNames_.erase(currentLevel);
             node->evalType_ = DataType::VOID;
             return {};
         }
@@ -557,11 +612,16 @@ class SemanticAnalyzer : public ASTVisitor {
         // subprogram
         std::any visitProcedureDeclarationNode(ASTProcedureDeclarationNode* node) override {
             int existingIdx = symbolTable.lookup(node->name);
-            if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+            const bool isPredeclared = predeclaredSubprogramNames_[currentLevel].find(node->name) != predeclaredSubprogramNames_[currentLevel].end();
+            if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel && !isPredeclared) {
                 throw std::runtime_error("Semantic Error: Prosedur '" + node->name + "' sudah dideklarasikan di scope ini!");
             }
 
-            int procIdx = symbolTable.insertVariable(node->name, DataType::VOID);
+            int procIdx = existingIdx;
+            if (procIdx == -1 || symbolTable.getIdentifier(procIdx).level != currentLevel) {
+                procIdx = symbolTable.insertVariable(node->name, DataType::VOID);
+                predeclaredSubprogramNames_[currentLevel].insert(node->name);
+            }
             symbolTable.getIdentifier(procIdx).typeName = node->name;
             node->symbolRefIndex_ = procIdx;
             node->lexicalLevel_ = currentLevel;
@@ -569,6 +629,8 @@ class SemanticAnalyzer : public ASTVisitor {
 
             currentLevel++;
             symbolTable.enterBlock();
+
+            predeclareSubprograms(node->localDeclarations);
 
             for (const auto& paramGroup : node->parameters) {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
@@ -586,6 +648,7 @@ class SemanticAnalyzer : public ASTVisitor {
 
             if (node->body != nullptr) node->body->accept(this);
 
+            predeclaredSubprogramNames_.erase(currentLevel);
             symbolTable.exitBlock();
             currentLevel--;
             return {};
@@ -595,11 +658,16 @@ class SemanticAnalyzer : public ASTVisitor {
             DataType returnType = resolveTypeNameKind(node->returnTypeName);
 
             int existingIdx = symbolTable.lookup(node->name);
-            if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+            const bool isPredeclared = predeclaredSubprogramNames_[currentLevel].find(node->name) != predeclaredSubprogramNames_[currentLevel].end();
+            if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel && !isPredeclared) {
                 throw std::runtime_error("Semantic Error: Fungsi '" + node->name + "' sudah dideklarasikan di scope ini!");
             }
 
-            int funcIdx = symbolTable.insertVariable(node->name, returnType);
+            int funcIdx = existingIdx;
+            if (funcIdx == -1 || symbolTable.getIdentifier(funcIdx).level != currentLevel) {
+                funcIdx = symbolTable.insertVariable(node->name, returnType);
+                predeclaredSubprogramNames_[currentLevel].insert(node->name);
+            }
             symbolTable.getIdentifier(funcIdx).typeName = node->name;
             node->symbolRefIndex_ = funcIdx;
             node->lexicalLevel_ = currentLevel;
@@ -607,6 +675,8 @@ class SemanticAnalyzer : public ASTVisitor {
 
             currentLevel++;
             symbolTable.enterBlock();
+
+            predeclareSubprograms(node->localDeclarations);
 
             for (const auto& paramGroup : node->parameters) {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
@@ -624,6 +694,7 @@ class SemanticAnalyzer : public ASTVisitor {
 
             if (node->body != nullptr) node->body->accept(this);
 
+            predeclaredSubprogramNames_.erase(currentLevel);
             symbolTable.exitBlock();
             currentLevel--;
             return {};
