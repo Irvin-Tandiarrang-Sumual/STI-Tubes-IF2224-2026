@@ -8,7 +8,7 @@ ASTBlockStatementNode* ASTBuilder::buildCompoundStatement(const CSTNodes* node) 
 	// Struktur: beginsy + <statement-list> + endsy
 	const CSTNodes* stmtListNode = node->firstChildOf(NonTerminal::STATEMENT_LIST);
 	auto stmts = buildStatementList(stmtListNode);
-	return new ASTBlockStatementNode(std::move(stmts));
+	return new ASTBlockStatementNode(std::move(stmts), node->getLocation());
 }
 
 std::vector<ASTStatementNode*> ASTBuilder::buildStatementList(const CSTNodes* node) {
@@ -35,12 +35,12 @@ ASTStatementNode* ASTBuilder::buildStatement(const CSTNodes* node) {
 	const auto& children = node->getChildren();
 	// Empty statement -> ASTEmptyStatementNode
 	if (children.empty()) {
-		return new ASTEmptyStatementNode();
+		return new ASTEmptyStatementNode(node->getLocation());
 	}
 
 	const CSTNodes* inner = children[0];
 	if (inner == nullptr) {
-		return new ASTEmptyStatementNode();
+		return new ASTEmptyStatementNode(node->getLocation());
 	}
 
 	if (!inner->isTerminal()) {
@@ -60,12 +60,12 @@ ASTStatementNode* ASTBuilder::buildStatement(const CSTNodes* node) {
 		} else if (nt == NonTerminal::PROCEDURE_OR_FUNCTION_CALL) {
 			auto callExpr = buildProcedureOrFunctionCall(inner);
 			if (callExpr != nullptr) {
-				return new ASTCallStatementNode(std::move(callExpr));
+				return new ASTCallStatementNode(std::move(callExpr), inner->getLocation());
 			}
 		}
 	}
 
-	return new ASTEmptyStatementNode();
+	return new ASTEmptyStatementNode(node->getLocation());
 }
 
 ASTAssignmentStatementNode* ASTBuilder::buildAssignmentStatement(const CSTNodes* node) {
@@ -79,7 +79,7 @@ ASTAssignmentStatementNode* ASTBuilder::buildAssignmentStatement(const CSTNodes*
 	if (target == nullptr || value == nullptr) {
 		return nullptr;
 	}
-	return new ASTAssignmentStatementNode(std::move(target), std::move(value));
+	return new ASTAssignmentStatementNode(std::move(target), std::move(value), node->getLocation());
 }
 
 ASTStatementNode* ASTBuilder::buildIfStatement(const CSTNodes* node) {
@@ -98,7 +98,7 @@ ASTStatementNode* ASTBuilder::buildIfStatement(const CSTNodes* node) {
 		elseBranch = buildStatement(children[5]);
 	}
 
-	return new ASTIfStatementNode(std::move(condition), std::move(thenBranch), std::move(elseBranch));
+	return new ASTIfStatementNode(std::move(condition), std::move(thenBranch), std::move(elseBranch), node->getLocation());
 }
 
 ASTCaseStatementNode* ASTBuilder::buildCaseStatement(const CSTNodes* node) {
@@ -111,7 +111,7 @@ ASTCaseStatementNode* ASTBuilder::buildCaseStatement(const CSTNodes* node) {
 	auto condition = buildExpression(children[1]);
 	std::vector<ASTCaseBranchNode> branches;
 	collectCaseBranches(children[3], branches);
-	return new ASTCaseStatementNode(std::move(condition), std::move(branches));
+	return new ASTCaseStatementNode(std::move(condition), std::move(branches), node->getLocation());
 }
 
 void ASTBuilder::collectCaseBranches(const CSTNodes* node, std::vector<ASTCaseBranchNode>& out) {
@@ -177,7 +177,7 @@ ASTWhileStatementNode* ASTBuilder::buildWhileStatement(const CSTNodes* node) {
 
 	auto condition = buildExpression(children[1]);
 	auto body = buildCompoundStatement(children[3]);
-	return new ASTWhileStatementNode(std::move(condition), std::move(body));
+	return new ASTWhileStatementNode(std::move(condition), std::move(body), node->getLocation());
 }
 
 ASTRepeatStatementNode* ASTBuilder::buildRepeatStatement(const CSTNodes* node) {
@@ -187,7 +187,7 @@ ASTRepeatStatementNode* ASTBuilder::buildRepeatStatement(const CSTNodes* node) {
 
 	auto body = buildStatementList(children[1]);
 	auto condition = buildExpression(children[3]);
-	return new ASTRepeatStatementNode(std::move(body), std::move(condition));
+	return new ASTRepeatStatementNode(std::move(body), std::move(condition), node->getLocation());
 }
 
 ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
@@ -205,7 +205,7 @@ ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
 	auto endVal = buildExpression(children[5]);
 	auto body = buildCompoundStatement(children[7]);
 
-	return new ASTForStatementNode(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body));
+	return new ASTForStatementNode(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body), node->getLocation());
 }
 
 ASTCallExpressionNode* ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* node) {
@@ -229,5 +229,5 @@ ASTCallExpressionNode* ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* 
 		}
 	}
 
-	return new ASTCallExpressionNode(callee, std::move(args));
+	return new ASTCallExpressionNode(callee, std::move(args), node->getLocation());
 }

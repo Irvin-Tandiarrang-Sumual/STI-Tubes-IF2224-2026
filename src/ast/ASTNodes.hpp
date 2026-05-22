@@ -181,8 +181,8 @@ class ASTRecordFieldNode {
 class ASTRecordTypeNode : public ASTTypeNode {
     public:
         std::vector<ASTRecordFieldNode> fields;
-        ASTRecordTypeNode(std::vector<ASTRecordFieldNode> fields) 
-            : fields(std::move(fields)) {
+        ASTRecordTypeNode(std::vector<ASTRecordFieldNode> fields, CodeLocation location = {})
+            : ASTTypeNode(location), fields(std::move(fields)) {
             for (auto& field : this->fields) {
                 if (field.type != nullptr) children_.push_back(field.type);
             }

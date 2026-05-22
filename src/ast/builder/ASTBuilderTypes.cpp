@@ -67,15 +67,15 @@ ASTTypeNode* ASTBuilder::buildType(const CSTNodes* node) {
 // Mengubah ident type menjadi primitive type atau named type.
 ASTTypeNode* ASTBuilder::buildTypeFromIdentifier(const std::string& name, const CSTNodes* source) {
 	ASTTypeNode* result;
+	const CodeLocation location = source != nullptr ? source->getLocation() : CodeLocation{};
 
 	if (isPrimitiveTypeName(name)) {
-		result = new ASTPrimitiveType(toLowerCopy(name));
+		result = new ASTPrimitiveType(toLowerCopy(name), location);
 	} else {
-		result = new ASTNamedTypeNode(name);
+		result = new ASTNamedTypeNode(name, location);
 	}
 
 	if (result != nullptr && source != nullptr) {
-		result->location_ = source->getLocation();
 		result->isAnonymous = isPrimitiveTypeName(name);
 	}
 
@@ -104,8 +104,7 @@ ASTArrayTypeNode* ASTBuilder::buildArrayType(const CSTNodes* node) {
 	}
 
 	ASTTypeNode* elementType = buildType(elementNode);
-	auto result = new ASTArrayTypeNode(std::move(indexType), std::move(elementType));
-	result->location_ = node->getLocation();
+	auto result = new ASTArrayTypeNode(std::move(indexType), std::move(elementType), node->getLocation());
 	result->isAnonymous = true;
 	return result;
 }
@@ -124,8 +123,7 @@ ASTRangeType* ASTBuilder::buildRangeType(const CSTNodes* node) {
 
 	auto startConstant = buildConstant(startNode);
 	auto endConstant = buildConstant(endNode);
-	auto result = new ASTRangeType(std::move(startConstant), std::move(endConstant));
-	result->location_ = node->getLocation();
+	auto result = new ASTRangeType(std::move(startConstant), std::move(endConstant), node->getLocation());
 	result->isAnonymous = true;
 	return result;
 }
@@ -145,8 +143,7 @@ ASTEnumeratedTypeNode* ASTBuilder::buildEnumeratedType(const CSTNodes* node) {
 		}
 	}
 
-	auto result = new ASTEnumeratedTypeNode(std::move(elements));
-	result->location_ = node->getLocation();
+	auto result = new ASTEnumeratedTypeNode(std::move(elements), node->getLocation());
 	result->isAnonymous = true;
 	return result;
 }
@@ -159,8 +156,7 @@ ASTRecordTypeNode* ASTBuilder::buildRecordType(const CSTNodes* node) {
 
 	const CSTNodes* fieldListNode = node->childAt(1);
 	std::vector<ASTRecordFieldNode> fields = buildFieldList(fieldListNode);
-	auto result = new ASTRecordTypeNode(std::move(fields));
-	result->location_ = node->getLocation();
+	auto result = new ASTRecordTypeNode(std::move(fields), node->getLocation());
 	result->isAnonymous = true;
 	return result;
 }
