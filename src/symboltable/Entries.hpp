@@ -6,7 +6,7 @@
 #include "DataType.hpp"
 struct IdentifierTableEntry {
     explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address)
-        : name(std::move(name)), index(0), linkIndex(linkIndex), type(type), reference(reference), normal(normal), level(level), address(address), typeName("") {}
+        : name(std::move(name)), index(0), linkIndex(linkIndex), type(type), reference(reference), normal(normal), level(level), address(address), typeName(""), isConstant(false) {}
     // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
     std::string name;
 
@@ -40,6 +40,10 @@ struct IdentifierTableEntry {
 
     // kasus struct
     std::string typeName;
+
+    // Ngecek sebuah variabel itu constant atau nggak, kalau constant kan berarti gaboleh diubah
+    bool isConstant; 
+    std::vector<DataType> parameterTypes;
 
     // to string
     static std::string getHeader() {

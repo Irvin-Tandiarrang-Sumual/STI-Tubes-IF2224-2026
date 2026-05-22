@@ -1,0 +1,79 @@
+program FinalMilestoneThree;
+
+const
+  MAXLIMIT == 100;
+
+var
+  globalCount: integer;
+  isValid: boolean;
+  shadowTest: integer;
+
+{ Menguji Fungsi, Parameter, Local Scope }
+function MathMagic(x: integer; y: integer): integer;
+var
+  temp: integer;
+  shadowTest: boolean; 
+begin
+  shadowTest := true; 
+  temp := (x + y) * 2 - (x / 2);
+  
+  if temp > MAXLIMIT then
+    temp := MAXLIMIT;
+
+  MathMagic := temp;
+end;
+
+{ Menguji Prosedur, Control Flow }
+procedure LogicTester(threshold: integer);
+var
+  i: integer;
+begin
+  i := 1;
+  
+  { ATURAN REVISI: While WAJIB pakai begin..end }
+  while i < threshold do
+  begin
+    i := i + 1;
+  end;
+
+  if threshold == 10 then
+    writeln('Threshold is ten!');
+
+  { ATURAN REVISI: For WAJIB pakai begin..end }
+  for i := 1 to 3 do
+  begin
+    writeln('For Tick: ', i);
+  end;
+end;
+
+{ PROGRAM UTAMA }
+begin
+  { FASE 1: HAPPY PATH }
+  shadowTest := 10;
+  globalCount := MathMagic(15, 20);
+  
+  isValid := (globalCount <= MAXLIMIT) and (shadowTest == 10);
+  
+  LogicTester(10);
+  writeln('Final Count: ', globalCount);
+
+  { FASE 2: TORTURE }
+  
+  { Error 1: Assignment to Constant }
+  MAXLIMIT := 200;
+
+  { Error 2: Undeclared Variable }
+  ghostVariable := 50;
+
+  { Error 3: Type Mismatch dalam Assignment }
+  globalCount := true;
+
+  { Error 4: Invalid Binary Operation }
+  isValid := 10 + 'String';
+
+  { Error 5: Parameter Count Mismatch }
+  globalCount := MathMagic(5);
+
+  { Error 6: Parameter Type Mismatch }
+  LogicTester(isValid);
+end.

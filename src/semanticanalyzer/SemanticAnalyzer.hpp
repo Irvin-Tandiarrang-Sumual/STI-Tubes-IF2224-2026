@@ -429,8 +429,15 @@ class SemanticAnalyzer : public ASTVisitor {
             // additional
             symbolTable.insertVariable("writeln", DataType::VOID);
             symbolTable.insertVariable("println",  DataType::VOID);
-            symbolTable.insertVariable("true", DataType::BOOLEAN);
-            symbolTable.insertVariable("false", DataType::BOOLEAN);
+            // Kunci true & false biar gabisa diassign karena constant
+            int trueIdx = symbolTable.insertVariable("true", DataType::BOOLEAN);
+            IdentifierTableEntry& trueEntry = symbolTable.getIdentifier(trueIdx);
+            trueEntry.normal = true;
+            trueEntry.isConstant = true;
+            int falseIdx = symbolTable.insertVariable("false", DataType::BOOLEAN);
+            IdentifierTableEntry& falseEntry = symbolTable.getIdentifier(falseIdx);
+            falseEntry.normal = true;
+            falseEntry.isConstant = true;
         }
 
         // Sebuah type T2 adalah assignment-compatible dengan type T1
@@ -616,6 +623,7 @@ class SemanticAnalyzer : public ASTVisitor {
             int refIdx = symbolTable.insertVariable(node->name, constType);
             IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
             entry.normal = true;
+            entry.isConstant = true;
 
             node->symbolRefIndex_ = refIdx;
             node->lexicalLevel_ = currentLevel;
@@ -804,6 +812,7 @@ class SemanticAnalyzer : public ASTVisitor {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
                 ASTTypeNode* paramTypeNode = resolveTypeNode(paramGroup.type);
                 for (const auto& paramName : paramGroup.identifiers) {
+                    symbolTable.getIdentifier(procIdx).parameterTypes.push_back(paramType);
                     int paramIdx = symbolTable.insertVariable(paramName, paramType);
                     symbolTable.getIdentifier(paramIdx).normal = true;
                     rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
@@ -855,6 +864,7 @@ class SemanticAnalyzer : public ASTVisitor {
                 DataType paramType = std::any_cast<DataType>(paramGroup.type->accept(this));
                 ASTTypeNode* paramTypeNode = resolveTypeNode(paramGroup.type);
                 for (const auto& paramName : paramGroup.identifiers) {
+                    symbolTable.getIdentifier(funcIdx).parameterTypes.push_back(paramType);
                     int paramIdx = symbolTable.insertVariable(paramName, paramType);
                     symbolTable.getIdentifier(paramIdx).normal = true;
                     rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
@@ -1033,8 +1043,15 @@ class SemanticAnalyzer : public ASTVisitor {
                 throw std::runtime_error("Semantic Error: Prosedur '" + node->callee + "' tidak dapat digunakan sebagai ekspresi.");
             }
 
-            for (auto* argument : node->arguments) {
-                safeVisitNode(argument);
+            if (node->arguments.size() != entry.parameterTypes.size()) {
+                throw std::runtime_error("Semantic Error: Jumlah argumen untuk '" + node->callee + "' tidak sesuai. Diharapkan " + std::to_string(entry.parameterTypes.size()) + " argumen.");
+            }
+
+            for (size_t i = 0; i < node->arguments.size(); ++i) {
+                DataType argType = std::any_cast<DataType>(node->arguments[i]->accept(this));
+                if (argType != entry.parameterTypes[i]) {
+                    throw std::runtime_error("Semantic Error: Type Mismatch pada parameter ke-" + std::to_string(i + 1) + " saat memanggil '" + node->callee + "'.");
+                }
             }
 
             node->symbolRefIndex_ = symbolIdx;
@@ -1045,6 +1062,13 @@ class SemanticAnalyzer : public ASTVisitor {
 
         // statement validation
         std::any visitAssignmentStatementNode(ASTAssignmentStatementNode* node) override {
+            if (node->target->components.empty()) {
+                int symbolIdx = symbolTable.lookup(node->target->baseName);
+                if (symbolIdx != -1 && symbolTable.getIdentifier(symbolIdx).isConstant) {
+                    throw std::runtime_error("Semantic Error: Tidak dapat melakukan assignment pada konstanta '" + node->target->baseName + "'.");
+                }
+            }
+            
             DataType targetType = std::any_cast<DataType>(node->target->accept(this));
             DataType valueType = std::any_cast<DataType>(node->value->accept(this));
             ASTTypeNode* targetTypeNode = nullptr;
@@ -1162,8 +1186,24 @@ class SemanticAnalyzer : public ASTVisitor {
             }
 
             IdentifierTableEntry& entry = symbolTable.getIdentifier(symbolIdx);
-            for (auto* argument : node->callExpr->arguments) {
-                safeVisitNode(argument);
+
+            // Bypass buat writeln sama println
+            if (node->callExpr->callee == "writeln" || node->callExpr->callee == "println") {
+                for (auto* argument : node->callExpr->arguments) {
+                    safeVisitNode(argument);
+                }
+            } else {
+                // Ngecek jumlah argumen seharusnya
+                if (node->callExpr->arguments.size() != entry.parameterTypes.size()) {
+                    throw std::runtime_error("Semantic Error: Jumlah argumen untuk '" + node->callExpr->callee + "' tidak sesuai.");
+                }
+
+                for (size_t i = 0; i < node->callExpr->arguments.size(); ++i) {
+                    DataType argType = std::any_cast<DataType>(node->callExpr->arguments[i]->accept(this));
+                    if (argType != entry.parameterTypes[i]) {
+                        throw std::runtime_error("Semantic Error: Type Mismatch pada parameter ke-" + std::to_string(i + 1) + " saat memanggil prosedur.");
+                    }
+                }
             }
 
             if (entry.type != DataType::VOID) {
