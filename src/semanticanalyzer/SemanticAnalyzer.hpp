@@ -22,6 +22,7 @@ class SemanticAnalyzer : public ASTVisitor {
         std::unordered_map<std::string, ASTTypeNode*> namedTypeDefinitions_;
         std::unordered_map<int, ASTTypeNode*> identifierTypeNodes_;
         std::unordered_map<int, std::unordered_set<std::string>> predeclaredSubprogramNames_;
+        std::unordered_map<const ASTArrayTypeNode*, int> arrayTypeEntries_;
 
         using RangeBound = std::variant<int, char, bool>;
         std::unordered_map<const ASTRangeType*, std::pair<RangeBound, RangeBound>> rangeBounds_;
@@ -134,6 +135,118 @@ class SemanticAnalyzer : public ASTVisitor {
 
         void rememberIdentifierType(int symbolIndex, ASTTypeNode* typeNode) {
             identifierTypeNodes_[symbolIndex] = resolveTypeNode(typeNode);
+        }
+
+        int literalToInt(const ASTLiteralExpressionNode* literal) const {
+            if (literal == nullptr) {
+                return 0;
+            }
+
+            return std::visit([](const auto& value) -> int {
+                using T = std::decay_t<decltype(value)>;
+                if constexpr (std::is_same_v<T, bool>) {
+                    return value ? 1 : 0;
+                } else if constexpr (std::is_same_v<T, std::string>) {
+                    return 0;
+                } else {
+                    return static_cast<int>(value);
+                }
+            }, literal->value);
+        }
+
+        bool extractRangeBounds(const ASTRangeType* range, int& low, int& high) const {
+            if (range == nullptr) {
+                return false;
+            }
+
+            auto it = rangeBounds_.find(range);
+            if (it != rangeBounds_.end()) {
+                low = std::visit([](const auto& value) -> int {
+                    using T = std::decay_t<decltype(value)>;
+                    if constexpr (std::is_same_v<T, bool>) {
+                        return value ? 1 : 0;
+                    } else {
+                        return static_cast<int>(value);
+                    }
+                }, it->second.first);
+                high = std::visit([](const auto& value) -> int {
+                    using T = std::decay_t<decltype(value)>;
+                    if constexpr (std::is_same_v<T, bool>) {
+                        return value ? 1 : 0;
+                    } else {
+                        return static_cast<int>(value);
+                    }
+                }, it->second.second);
+                return true;
+            }
+
+            auto* startLit = dynamic_cast<ASTLiteralExpressionNode*>(range->startConstant);
+            auto* endLit = dynamic_cast<ASTLiteralExpressionNode*>(range->endConstant);
+            if (startLit == nullptr || endLit == nullptr) {
+                return false;
+            }
+
+            low = literalToInt(startLit);
+            high = literalToInt(endLit);
+            return true;
+        }
+
+        int estimateTypeStorageSize(ASTTypeNode* typeNode) {
+            ASTTypeNode* resolved = resolveTypeNode(typeNode);
+            if (resolved == nullptr) {
+                return 4;
+            }
+
+            if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolved)) {
+                int arrayRef = ensureArrayTypeEntry(arrayType);
+                if (arrayRef >= 0) {
+                    return symbolTable.getArrayEntry(arrayRef).size;
+                }
+                return 4;
+            }
+
+            return 4;
+        }
+
+        int ensureArrayTypeEntry(ASTArrayTypeNode* node) {
+            if (node == nullptr) {
+                return -1;
+            }
+
+            auto it = arrayTypeEntries_.find(node);
+            if (it != arrayTypeEntries_.end()) {
+                return it->second;
+            }
+
+            ASTTypeNode* indexTypeNode = resolveTypeNode(node->indexType);
+            ASTTypeNode* elementTypeNode = resolveTypeNode(node->elementType);
+
+            DataType indexKind = resolveTypeKind(indexTypeNode);
+            if (!isOrdinalKind(indexKind) || indexKind == DataType::REAL) {
+                throw std::runtime_error("Semantic Error: Index type dari Array tidak boleh bertipe Real.");
+            }
+
+            int low = 0;
+            int high = 0;
+            if (!extractRangeBounds(dynamic_cast<ASTRangeType*>(indexTypeNode), low, high)) {
+                low = 0;
+                high = 0;
+            }
+
+            int compositeRef = 0;
+            int elementSize = estimateTypeStorageSize(elementTypeNode);
+            if (auto* nestedArray = dynamic_cast<ASTArrayTypeNode*>(resolveTypeNode(node->elementType))) {
+                compositeRef = ensureArrayTypeEntry(nestedArray);
+                if (compositeRef >= 0) {
+                    elementSize = symbolTable.getArrayEntry(compositeRef).size;
+                }
+            }
+
+            DataType elementKind = resolveTypeKind(elementTypeNode);
+            int totalSize = (high - low + 1) * elementSize;
+            int arrayRef = symbolTable.insertArray(indexKind, elementKind, compositeRef, low, high, elementSize, totalSize);
+            arrayTypeEntries_[node] = arrayRef;
+            return arrayRef;
         }
 
         void predeclareSubprograms(const std::vector<ASTDeclarationNode*>& declarations) {
@@ -457,13 +570,18 @@ class SemanticAnalyzer : public ASTVisitor {
             }
 
             DataType typeKind = std::any_cast<DataType>(node->typeDefinition->accept(this));
+            int typeReference = 0;
+
+            if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolveTypeNode(node->typeDefinition))) {
+                typeReference = ensureArrayTypeEntry(arrayType);
+            }
 
             int existingIdx = symbolTable.lookup(node->name);
             if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
                 throw std::runtime_error("Semantic Error: Tipe '" + node->name + "' sudah dideklarasikan di scope ini!");
             }
 
-            int refIdx = symbolTable.insertVariable(node->name, typeKind);
+            int refIdx = symbolTable.insertVariable(node->name, typeKind, typeReference);
             IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
             entry.typeName = node->name;
 
@@ -526,7 +644,14 @@ class SemanticAnalyzer : public ASTVisitor {
                 throw std::runtime_error("Semantic Error: Variabel '" + varName + "' sudah dideklarasikan di scope ini!");
             }
 
-            int refIdx = symbolTable.insertVariable(varName, varType);
+            int arrayRef = 0;
+            if (varType == DataType::ARRAY) {
+                if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolvedTypeNode)) {
+                    arrayRef = ensureArrayTypeEntry(arrayType);
+                }
+            }
+
+            int refIdx = symbolTable.insertVariable(varName, varType, arrayRef);
             
             symbolTable.getIdentifier(refIdx).typeName = registeredTypeName;
             rememberIdentifierType(refIdx, resolvedTypeNode != nullptr ? resolvedTypeNode : node->type);
@@ -608,15 +733,7 @@ class SemanticAnalyzer : public ASTVisitor {
         }
 
         std::any visitArrayTypeNode(ASTArrayTypeNode* node) override {
-            DataType indexType = std::any_cast<DataType>(node->indexType->accept(this));
-            
-            // Array: Index type harus berupa simple type dan bukan Real
-            if (!isOrdinalKind(indexType) || indexType == DataType::REAL) {
-                throw std::runtime_error("Semantic Error: Index type dari Array tidak boleh bertipe Real.");
-            }
-
-            DataType elemType = std::any_cast<DataType>(node->elementType->accept(this));
-            (void)elemType;
+            ensureArrayTypeEntry(node);
             node->isAnonymous = true;
             node->evalType_ = DataType::ARRAY;
             return DataType::ARRAY;
@@ -673,7 +790,8 @@ class SemanticAnalyzer : public ASTVisitor {
 
             currentLevel++;
             symbolTable.enterBlock();
-
+            int newBlockIdx = symbolTable.getCurrentBlockIdx(); // cari indeks block yg aktif
+            symbolTable.getIdentifier(procIdx).reference = newBlockIdx; // set ref subprogram
             try {
                 predeclareSubprograms(node->localDeclarations);
             } catch (const std::exception& ex) {
@@ -723,7 +841,8 @@ class SemanticAnalyzer : public ASTVisitor {
 
             currentLevel++;
             symbolTable.enterBlock();
-
+            int newBlockIdx = symbolTable.getCurrentBlockIdx(); // cari indeks block yg aktif
+            symbolTable.getIdentifier(funcIdx).reference = newBlockIdx; // set ref subprogram
             try {
                 predeclareSubprograms(node->localDeclarations);
             } catch (const std::exception& ex) {
