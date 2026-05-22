@@ -438,7 +438,7 @@ class ASTIfStatementNode : public ASTStatementNode {
 };
 
 // While Statement
-// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <compound-statement> + semicolon
+// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <compound-statement>
 // Semantic Rule : while-stmt = new ASTWhileStatementNode(condition, body)
 class ASTWhileStatementNode : public ASTStatementNode {
     public:
@@ -484,7 +484,7 @@ class ASTRepeatStatementNode : public ASTStatementNode {
 };
 
 // For Statement
-// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <compound-statement> + semicolon
+// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <compound-statement>
 // Semantic Rule : for-stmt = new ASTForStatementNode(iteratorName, startVal, endVal, isDownTo, body)
 class ASTForStatementNode : public ASTStatementNode {
     public:

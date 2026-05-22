@@ -171,13 +171,13 @@ ASTWhileStatementNode* ASTBuilder::buildWhileStatement(const CSTNodes* node) {
 		return nullptr;
 	}
 	const auto& children = node->getChildren();
-	if (children.size() < 5) {
+	if (children.size() < 4) {
 		return nullptr;
 	}
 
 	auto condition = buildExpression(children[1]);
-	auto body = buildCompoundStatement(children[3]);
-	return new ASTWhileStatementNode(std::move(condition), std::move(body), node->getLocation());
+	ASTBlockStatementNode* body = buildCompoundStatement(children[3]);
+	return new ASTWhileStatementNode(condition, body, node->getLocation());
 }
 
 ASTRepeatStatementNode* ASTBuilder::buildRepeatStatement(const CSTNodes* node) {
@@ -195,7 +195,7 @@ ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
 		return nullptr;
 	}
 	const auto& children = node->getChildren();
-	if (children.size() < 9) {
+	if (children.size() < 8) {
 		return nullptr;
 	}
 
@@ -203,9 +203,9 @@ ASTForStatementNode* ASTBuilder::buildForStatement(const CSTNodes* node) {
 	auto startVal = buildExpression(children[3]);
 	bool isDownTo = (children[4]->isTerminal() && children[4]->getToken().type == TokenType::downtosy);
 	auto endVal = buildExpression(children[5]);
-	auto body = buildCompoundStatement(children[7]);
+	ASTBlockStatementNode* body = buildCompoundStatement(children[7]);
 
-	return new ASTForStatementNode(iteratorName, std::move(startVal), std::move(endVal), isDownTo, std::move(body), node->getLocation());
+	return new ASTForStatementNode(iteratorName, startVal, endVal, isDownTo, body, node->getLocation());
 }
 
 ASTCallExpressionNode* ASTBuilder::buildProcedureOrFunctionCall(const CSTNodes* node) {
