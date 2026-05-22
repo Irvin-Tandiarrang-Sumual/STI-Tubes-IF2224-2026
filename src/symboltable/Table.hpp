@@ -21,9 +21,11 @@ class Table {
             std::stringstream ss;
             ss << tableName << " :\n";
             
-            ss << T::getHeader() << "\n";
+            const std::string header = T::getHeader();
+            ss << header << "\n";
             
-            ss << std::string(60, '-') << "\n"; 
+            const std::size_t separatorWidth = header.size() > 60 ? header.size() : 60;
+            ss << std::string(separatorWidth, '-') << "\n"; 
             
             for (size_t i = 0; i < entries_.size(); ++i) {
                 ss << entries_[i].toString() << "\n";
@@ -31,7 +33,7 @@ class Table {
             return ss.str();
         }
 
-        int size() {
+        int size() const {
             return entries_.size();
         }
 };
