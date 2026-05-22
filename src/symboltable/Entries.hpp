@@ -46,7 +46,7 @@ struct IdentifierTableEntry {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5)  << "idx"
-            << std::setw(12) << "id"
+            << std::setw(16) << "id"
             << std::setw(6)  << "type"
             << std::setw(6)  << "ref"
             << std::setw(6)  << "nrm"
@@ -60,7 +60,7 @@ struct IdentifierTableEntry {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5)  << index
-            << std::setw(12) << name
+            << std::setw(16) << name
             << std::setw(6)  << static_cast<int>(type)
             << std::setw(6)  << reference
             << std::setw(6)  << (normal ? 1 : 0)
