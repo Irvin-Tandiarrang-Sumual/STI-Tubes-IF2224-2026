@@ -429,6 +429,8 @@ class SemanticAnalyzer : public ASTVisitor {
             // additional
             symbolTable.insertVariable("writeln", DataType::VOID);
             symbolTable.insertVariable("println",  DataType::VOID);
+            symbolTable.insertVariable("true", DataType::BOOLEAN);
+            symbolTable.insertVariable("false", DataType::BOOLEAN);
         }
 
         // Sebuah type T2 adalah assignment-compatible dengan type T1
