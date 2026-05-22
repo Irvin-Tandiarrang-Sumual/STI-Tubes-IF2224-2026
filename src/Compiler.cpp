@@ -1,4 +1,5 @@
 #include "Compiler.hpp"
+#include "semanticanalyzer/SemanticAnalyzer.hpp"
 
 
 Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
@@ -75,6 +76,16 @@ void Compiler::semantic() {
     ASTBuilder builder;
 
     ASTProgramNode* astRoot = builder.build(cstRoot_);
+    if (astRoot == nullptr) {
+        throw std::runtime_error("Semantic error: AST root tidak dapat dibangun.");
+    }
+
+    SemanticAnalyzer semanticAnalyzer;
+    semanticAnalyzer.analyze(astRoot);
+    std::string tablesText = semanticAnalyzer.dumpTables();
+
+    const auto& semanticErrors = semanticAnalyzer.getErrors();
+
 
     const std::string baseName = inputPath.stem().string();
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-ast.txt");
@@ -85,8 +96,16 @@ void Compiler::semantic() {
 
     Writer writer(fullPath.string(), cstRoot_, cstErrors_);
 
-    writer.printAST(astRoot);
-    writer.writeASTToFile(astRoot);
+    writer.printDecoratedASTWithTables(astRoot, tablesText);
+    writer.writeDecoratedASTWithTablesToFile(astRoot, tablesText);
 
+    if (!semanticErrors.empty()) {
+        std::cout << "\n=== Semantic Errors ===\n";
+        for (const auto& err : semanticErrors) {
+            std::cout << err << "\n";
+        }
+        std::cout << "=======================\n\n";
+    }
+    
     delete astRoot;
 }

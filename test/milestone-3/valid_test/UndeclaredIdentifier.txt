@@ -1,0 +1,5 @@
+program TestUndeclared;
+
+begin
+    x := 5;
+end.

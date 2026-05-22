@@ -1,0 +1,22 @@
+program TestMultiArray;
+
+var
+    { * Harus memicu atab idx 0 * }
+    arrGlobal : array[1..5] of integer;
+    x : integer;
+
+procedure ProsesLokal;
+var
+    { * Harus memicu atab idx 1 & btab idx 1 * }
+    arrLokal : array[1..10] of integer;
+    y : integer;
+begin
+    y := 50;
+    arrLokal[1] := y;
+    arrGlobal[1] := x;
+end;
+
+begin
+    x := 10;
+    ProsesLokal();
+end.

@@ -12,7 +12,7 @@ ASTExpressionNode* ASTBuilder::buildExpression(const CSTNodes* node) {
         const CSTNodes* opNode = children[1]->childAt(0); 
         std::string opString = operatorText(opNode->getToken().type);
         auto right = buildSimpleExpression(children[2]);
-        return new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
+        return new ASTBinaryExpressionNode(opString, std::move(left), std::move(right), opNode->getLocation());
     }
 
     return left;
@@ -37,7 +37,7 @@ ASTExpressionNode* ASTBuilder::buildSimpleExpression(const CSTNodes* node) {
     auto left = buildTerm(children[i++]);
 
     if (hasLeadingSign) {
-        left = new ASTUnaryExpressionNode(leadingSign, std::move(left));
+        left = new ASTUnaryExpressionNode(leadingSign, std::move(left), children[0]->getLocation());
     }
 
     // Looping Left-Associative untuk <additive-operator> <term>
@@ -45,7 +45,7 @@ ASTExpressionNode* ASTBuilder::buildSimpleExpression(const CSTNodes* node) {
         const CSTNodes* opNode = children[i++]->childAt(0);
         std::string opString = operatorText(opNode->getToken().type);
         auto right = buildTerm(children[i++]);
-        left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
+        left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right), opNode->getLocation());
     }
 
     return left;
@@ -63,7 +63,7 @@ ASTExpressionNode* ASTBuilder::buildTerm(const CSTNodes* node) {
         const CSTNodes* opNode = children[i++]->childAt(0);
         std::string opString = operatorText(opNode->getToken().type);
         auto right = buildFactor(children[i++]);
-        left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right));
+        left = new ASTBinaryExpressionNode(opString, std::move(left), std::move(right), opNode->getLocation());
     }
 
     return left;
@@ -77,7 +77,7 @@ ASTExpressionNode* ASTBuilder::buildFactor(const CSTNodes* node) {
     if (child->isTerminal()) {
         TokenType type = child->getToken().type;
         if (type == TokenType::notsy) {
-            return new ASTUnaryExpressionNode("not", buildFactor(node->childAt(1)));
+            return new ASTUnaryExpressionNode("not", buildFactor(node->childAt(1)), child->getLocation());
         } else if (type == TokenType::lparent) {
             // Parenthesized expression: langsung ekstrak isi di dalam kurungnya
             return buildExpression(node->childAt(1));
@@ -117,7 +117,7 @@ ASTExpressionNode* ASTBuilder::buildConstant(const CSTNodes* node) {
     auto expr = buildLiteralOrIdentifierExpression(valNode);
 
     if (hasSign) {
-        return new ASTUnaryExpressionNode(sign, std::move(expr));
+        return new ASTUnaryExpressionNode(sign, std::move(expr), valNode->getLocation());
     }
     return expr;
 }
@@ -129,7 +129,7 @@ ASTExpressionNode* ASTBuilder::buildLiteralOrIdentifierExpression(const CSTNodes
         case TokenType::intcon: {
             const std::string raw = tokenValueToString(token);
             try {
-                return new ASTLiteralExpressionNode(std::stoi(raw));
+                return new ASTLiteralExpressionNode(std::stoi(raw), tokenNode->getLocation());
             } catch (...) {
                 return nullptr;
             }
@@ -138,7 +138,7 @@ ASTExpressionNode* ASTBuilder::buildLiteralOrIdentifierExpression(const CSTNodes
         case TokenType::realcon: {
             const std::string raw = tokenValueToString(token);
             try {
-                return new ASTLiteralExpressionNode(std::stod(raw));
+                return new ASTLiteralExpressionNode(std::stod(raw), token.codeLocation);
             } catch (...) {
                 return nullptr;
             }
@@ -147,11 +147,11 @@ ASTExpressionNode* ASTBuilder::buildLiteralOrIdentifierExpression(const CSTNodes
         case TokenType::charcon: {
             std::string s = std::get<std::string>(token.value);
             char c = s.empty() ? '\0' : s[0];
-            return new ASTLiteralExpressionNode(c);
+            return new ASTLiteralExpressionNode(c, token.codeLocation);
         }
         
         case TokenType::string:
-            return new ASTLiteralExpressionNode(std::get<std::string>(token.value));
+            return new ASTLiteralExpressionNode(std::get<std::string>(token.value), token.codeLocation);
             
         case TokenType::ident: {
             std::string name = std::get<std::string>(token.value);
@@ -161,12 +161,12 @@ ASTExpressionNode* ASTBuilder::buildLiteralOrIdentifierExpression(const CSTNodes
             std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
             
             if (lowerName == "true") {
-                return new ASTLiteralExpressionNode(true);
+                return new ASTLiteralExpressionNode(true, token.codeLocation);
             } else if (lowerName == "false") {
-                return new ASTLiteralExpressionNode(false);
+                return new ASTLiteralExpressionNode(false, token.codeLocation);
             }
             
-            return new ASTVariableExpressionNode(name, std::vector<ASTVariableComponent>{});
+            return new ASTVariableExpressionNode(name, std::vector<ASTVariableComponent>{}, token.codeLocation);
         }
         
         default:

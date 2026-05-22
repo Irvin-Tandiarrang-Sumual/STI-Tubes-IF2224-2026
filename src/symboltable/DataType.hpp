@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 enum class DataType {
@@ -9,5 +11,6 @@ enum class DataType {
     RANGE,
     ENUMERATED,
     ARRAY,
-    RECORD
+    RECORD,
+    VOID
 };

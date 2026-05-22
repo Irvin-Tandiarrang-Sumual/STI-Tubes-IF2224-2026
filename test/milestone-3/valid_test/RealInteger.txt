@@ -1,0 +1,11 @@
+{* invalid *}
+program RealInteger;
+
+var
+    x : integer;
+    y : real;
+
+begin
+    x := 10;
+    y := x;
+end.

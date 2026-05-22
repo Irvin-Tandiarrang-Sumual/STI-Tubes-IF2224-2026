@@ -1,0 +1,68 @@
+program TortureTest;
+
+var
+  globalInt: integer;
+  globalBool: boolean;
+  shadowVar: integer;
+  
+  { EDGE CASE 1: Redeclaration (Harus error) }
+  { globalInt: string; } 
+
+{ Uji Fungsi, Parameter, dan Scope Lokal }
+function Calculate(a: integer; b: integer): integer;
+var
+  result: integer;
+  shadowVar: boolean; { EDGE CASE 2: Shadowing (Harus sukses) }
+begin
+  { Harusnya mengubah shadowVar lokal (boolean), bukan global (integer) }
+  shadowVar := true; 
+  result := a + b;
+  
+  { EDGE CASE 3: Type Mismatch dalam Assignment (Harus error) }
+  { result := shadowVar; } 
+  
+  Calculate := result;
+end;
+
+{ Uji Prosedur dan Control Flow }
+procedure TestControlFlow(limit: integer);
+var
+  i: integer;
+begin
+  for i := 1 to limit do
+  begin
+    if i > 5 then
+      writeln('Greater', i)
+    else
+      writeln('Less or equal');
+  end;
+end;
+
+{ --- PROGRAM UTAMA --- }
+begin
+  { 1. HAPPY PATH: Operasi Normal }
+  shadowVar := 99;
+  globalInt := Calculate(10, 20);
+  globalBool := (globalInt > 15);
+  TestControlFlow(10);
+  writeln('Test complete: ', globalInt);
+
+  { ========================================== }
+  { 2. TORTURE PATH: SEMANTIC ERRORS          }
+  { ========================================== }
+  
+  { EDGE CASE 4: Undeclared Variable }
+  ghostVar := 100;
+
+  { EDGE CASE 5: Type Mismatch (Target vs Value) }
+  globalInt := true; 
+
+  { EDGE CASE 6: Invalid Binary Operation }
+  globalInt := 10 + 'Hello'; 
+
+  { EDGE CASE 7: Parameter Count Mismatch (Kurang Argumen) }
+  globalInt := Calculate(5); 
+
+  { EDGE CASE 8: Parameter Type Mismatch }
+  globalInt := Calculate(10, true);
+end.

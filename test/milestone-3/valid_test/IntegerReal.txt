@@ -1,0 +1,10 @@
+program TestIntegerReal;
+
+var
+    x : integer;
+    y : real;
+
+begin
+    x := 10;
+    y := x;
+end.

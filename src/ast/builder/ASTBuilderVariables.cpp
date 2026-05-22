@@ -22,7 +22,7 @@ ASTVariableExpressionNode* ASTBuilder::buildVariable(const CSTNodes* node) {
         }
     }
 
-    return new ASTVariableExpressionNode(tokenText(baseNameNode), std::move(components));
+    return new ASTVariableExpressionNode(tokenText(baseNameNode), std::move(components), baseNameNode->getLocation());
 }
 
 ASTVariableComponent ASTBuilder::buildComponentVariable(const CSTNodes* node) {
@@ -70,11 +70,11 @@ std::vector<ASTExpressionNode*> ASTBuilder::buildIndexList(const CSTNodes* node)
             }
             
             if (t == TokenType::intcon) {
-                indices.push_back(new ASTLiteralExpressionNode(std::stoi(tokenText(child))));
+                indices.push_back(new ASTLiteralExpressionNode(std::stoi(tokenText(child)), child->getLocation()));
             } else if (t == TokenType::realcon) {
-                indices.push_back(new ASTLiteralExpressionNode(std::stod(tokenText(child))));
+                indices.push_back(new ASTLiteralExpressionNode(std::stod(tokenText(child)), child->getLocation()));
             } else if (t == TokenType::ident) {
-                indices.push_back(new ASTVariableExpressionNode(tokenText(child), std::vector<ASTVariableComponent>{}));
+                indices.push_back(new ASTVariableExpressionNode(tokenText(child), std::vector<ASTVariableComponent>{}, child->getLocation()));
             }
             continue;
         }

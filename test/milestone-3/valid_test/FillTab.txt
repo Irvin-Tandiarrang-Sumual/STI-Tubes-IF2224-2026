@@ -1,0 +1,23 @@
+program TestSimbolTabel;
+
+var
+    {* micu pengisian ke atab *}
+    tabelNilai : array[1..3] of integer;
+    i : integer;
+
+{* micu pengisian ke BTAB (Blok Prosedur) *}
+procedure HitungOtomatis;
+begin
+    for i := 1 to 3 do
+    begin
+        tabelNilai[i] := i * 25;
+    end;
+end;
+
+{* Blok Utama idx btab 0 (global) *}
+begin
+    HitungOtomatis();
+
+    if 5 > 3 then
+        writeln(3);
+end.

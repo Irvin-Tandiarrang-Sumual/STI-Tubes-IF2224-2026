@@ -11,11 +11,11 @@ ASTProgramNode* ASTBuilder::buildProgram(const CSTNodes* node){
     buildDeclarationPart(node->firstChildOf(NonTerminal::DECLARATION_PART),declarations
     );
 
-    ASTDeclarationsNode* declarationsNode = new ASTDeclarationsNode(std::move(declarations));
+    ASTDeclarationsNode* declarationsNode = new ASTDeclarationsNode(std::move(declarations), node->getLocation());
 
     ASTBlockStatementNode* mainBlock = buildCompoundStatement(node->firstChildOf(NonTerminal::COMPOUND_STATEMENT));
 
-    return new ASTProgramNode(programName, declarationsNode, mainBlock
+    return new ASTProgramNode(programName, declarationsNode, mainBlock, node->getLocation()
     );
 }
 

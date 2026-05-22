@@ -1,0 +1,35 @@
+program TestNestedArray;
+
+var
+    {* Blok Global (Level 0) *}
+    {* Memicu atab idx 0 *}
+    arrGlobal : array[1..5] of integer;
+
+procedure BlokLuar;
+var
+    {* Blok Prosedur Luar (Level 1) *}
+    {* Memicu atab idx 1 *}
+    arrLuar : array[1..10] of integer;
+
+    procedure BlokDalam;
+    var
+        {* Blok Prosedur Dalam / Nested (Level 2) *}
+        {* Array ini BARU dialokasikan saat BlokDalam dibaca *}
+        {* Memicu atab idx 2 *}
+        arrDalam : array[1..20] of integer;
+    begin
+        { * Mengisi array terdalam * }
+        arrDalam[1] := 99;
+        { * Mencoba akses scope di atasnya (Cek Semantic Scope) * }
+        arrLuar[1] := arrDalam[1];
+    end;
+
+begin
+    {* Memanggil blok nested *}
+    BlokDalam();
+end;
+
+begin
+    {* Jalankan Prosedur Utama *}
+    BlokLuar();
+end.

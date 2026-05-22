@@ -1,0 +1,9 @@
+program TestInvalidBoolArit;
+
+var
+    a : boolean;
+
+begin
+    a := true;
+    writeln(a + 1);
+end.

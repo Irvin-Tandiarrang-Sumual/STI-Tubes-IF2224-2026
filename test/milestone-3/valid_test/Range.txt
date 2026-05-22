@@ -1,0 +1,11 @@
+program TestRange;
+
+type
+    Score = 0..100;
+
+var
+    s : Score;
+
+begin
+    s := 90;
+end.

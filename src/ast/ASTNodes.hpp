@@ -7,7 +7,7 @@
 #include <string>
 #include <variant>
 #include <type_traits>
-
+#include "../symboltable/DataType.hpp"
 inline std::string astVariantToString(const std::variant<int, double, char, bool, std::string>& value) {
     return std::visit([](auto&& arg) -> std::string {
         using T = std::decay_t<decltype(arg)>;
@@ -24,11 +24,19 @@ inline std::string astVariantToString(const std::variant<int, double, char, bool
         }
     }, value);
 }
+
 class ASTNode {
     public:
         CodeLocation location_;
         std::vector<ASTNode*> children_;
         ASTNode* parent_ = nullptr;
+
+        ASTNode(CodeLocation location = {}) : location_(location) {}
+
+        // buat decorated
+        DataType evalType_ = DataType::VOID;
+        int symbolRefIndex_ = -1;
+        int lexicalLevel_ = 0;
         virtual ~ASTNode() {
             for (ASTNode* child : children_) {
                 delete child;
@@ -44,11 +52,21 @@ class ASTNode {
 
 class ASTTypeNode : public ASTNode {
     public:
+        ASTTypeNode(CodeLocation location = {}) : ASTNode(location) {}
         bool isAnonymous = false;
 };
-class ASTExpressionNode : public ASTNode {};
-class ASTStatementNode : public ASTNode {};
-class ASTDeclarationNode : public ASTNode {};
+class ASTExpressionNode : public ASTNode {
+    public:
+        ASTExpressionNode(CodeLocation location = {}) : ASTNode(location) {}
+};
+class ASTStatementNode : public ASTNode {
+    public:
+        ASTStatementNode(CodeLocation location = {}) : ASTNode(location) {}
+};
+class ASTDeclarationNode : public ASTNode {
+    public:
+        ASTDeclarationNode(CodeLocation location = {}) : ASTNode(location) {}
+};
 
 
 // type
@@ -58,10 +76,10 @@ class ASTDeclarationNode : public ASTNode {};
 class ASTPrimitiveType : public ASTTypeNode {
     public:
         std::string type;
-        ASTPrimitiveType(std::string type) : type(type) {}
+        ASTPrimitiveType(std::string type, CodeLocation location = {}) : ASTTypeNode(location), type(std::move(type)) {}
 
         std::any accept(ASTVisitor *visitor) override {
-            return visitor->visit(this);
+            return visitor->visitPrimitiveType(this);
         }
 
         std::string toString() const override {
@@ -72,7 +90,7 @@ class ASTPrimitiveType : public ASTTypeNode {
 class ASTNamedTypeNode : public ASTTypeNode {
     public:
         std::string typeName;
-        ASTNamedTypeNode(std::string typeName) : typeName(std::move(typeName)) {}
+        ASTNamedTypeNode(std::string typeName, CodeLocation location = {}) : ASTTypeNode(location), typeName(std::move(typeName)) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitNamedTypeNode(this);
@@ -91,8 +109,8 @@ class ASTRangeType : public ASTTypeNode {
     public:
         ASTExpressionNode* startConstant;
         ASTExpressionNode* endConstant;
-        ASTRangeType(ASTExpressionNode* startConstant, ASTExpressionNode* endConstant)
-            : startConstant(startConstant), endConstant(endConstant) {
+        ASTRangeType(ASTExpressionNode* startConstant, ASTExpressionNode* endConstant, CodeLocation location = {})
+            : ASTTypeNode(location), startConstant(startConstant), endConstant(endConstant) {
             if (startConstant != nullptr) children_.push_back(startConstant);
             if (endConstant != nullptr) children_.push_back(endConstant);
         }
@@ -113,8 +131,8 @@ class ASTArrayTypeNode : public ASTTypeNode {
     public:
         ASTTypeNode* indexType;
         ASTTypeNode* elementType;
-        ASTArrayTypeNode(ASTTypeNode* index, ASTTypeNode* element)
-            : indexType(index), elementType(element) {
+        ASTArrayTypeNode(ASTTypeNode* index, ASTTypeNode* element, CodeLocation location = {})
+            : ASTTypeNode(location), indexType(index), elementType(element) {
             if (indexType != nullptr) children_.push_back(indexType);
             if (elementType != nullptr) children_.push_back(elementType);
         }
@@ -134,8 +152,8 @@ class ASTArrayTypeNode : public ASTTypeNode {
 class ASTEnumeratedTypeNode : public ASTTypeNode {
     public:
         std::vector<std::string> elements;
-        ASTEnumeratedTypeNode(std::vector<std::string> elements)
-            : elements(std::move(elements)) {}
+        ASTEnumeratedTypeNode(std::vector<std::string> elements, CodeLocation location = {})
+            : ASTTypeNode(location), elements(std::move(elements)) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitEnumeratedTypeNode(this);
@@ -163,8 +181,8 @@ class ASTRecordFieldNode {
 class ASTRecordTypeNode : public ASTTypeNode {
     public:
         std::vector<ASTRecordFieldNode> fields;
-        ASTRecordTypeNode(std::vector<ASTRecordFieldNode> fields) 
-            : fields(std::move(fields)) {
+        ASTRecordTypeNode(std::vector<ASTRecordFieldNode> fields, CodeLocation location = {})
+            : ASTTypeNode(location), fields(std::move(fields)) {
             for (auto& field : this->fields) {
                 if (field.type != nullptr) children_.push_back(field.type);
             }
@@ -197,8 +215,8 @@ class ASTRecordTypeNode : public ASTTypeNode {
 class ASTLiteralExpressionNode : public ASTExpressionNode {
     public:
         std::variant<int, double, char, bool, std::string> value;
-        ASTLiteralExpressionNode(std::variant<int, double, char, bool, std::string> value) 
-            : value(value) {}
+        ASTLiteralExpressionNode(std::variant<int, double, char, bool, std::string> value, CodeLocation location = {}) 
+            : ASTExpressionNode(location), value(std::move(value)) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitLiteralExpressionNode(this);
@@ -239,8 +257,8 @@ class ASTVariableExpressionNode : public ASTExpressionNode {
     public:
         std::string baseName;
         std::vector<ASTVariableComponent> components;
-        ASTVariableExpressionNode(std::string baseName, std::vector<ASTVariableComponent> components)
-            : baseName(std::move(baseName)), components(std::move(components)) {
+        ASTVariableExpressionNode(std::string baseName, std::vector<ASTVariableComponent> components, CodeLocation location = {})
+            : ASTExpressionNode(location), baseName(std::move(baseName)), components(std::move(components)) {
             for (auto& component : this->components) {
                 for (auto* index : component.indices) {
                     if (index != nullptr) children_.push_back(index);
@@ -272,8 +290,8 @@ class ASTUnaryExpressionNode : public ASTExpressionNode {
     public:
         std::string op;
         ASTExpressionNode* operand;
-        ASTUnaryExpressionNode(std::string op, ASTExpressionNode* operand)
-            : op(std::move(op)), operand(operand) {
+        ASTUnaryExpressionNode(std::string op, ASTExpressionNode* operand, CodeLocation location = {})
+            : ASTExpressionNode(location), op(std::move(op)), operand(operand) {
             if (operand != nullptr) children_.push_back(operand);
         }
 
@@ -294,8 +312,8 @@ class ASTBinaryExpressionNode : public ASTExpressionNode {
         std::string op;
         ASTExpressionNode* lhs;
         ASTExpressionNode* rhs;
-        ASTBinaryExpressionNode(std::string op, ASTExpressionNode* lhs, ASTExpressionNode* rhs)
-            : op(std::move(op)), lhs(lhs), rhs(rhs) {
+        ASTBinaryExpressionNode(std::string op, ASTExpressionNode* lhs, ASTExpressionNode* rhs, CodeLocation location = {})
+            : ASTExpressionNode(location), op(std::move(op)), lhs(lhs), rhs(rhs) {
             if (lhs != nullptr) children_.push_back(lhs);
             if (rhs != nullptr) children_.push_back(rhs);
         }
@@ -316,8 +334,8 @@ class ASTCallExpressionNode : public ASTExpressionNode {
     public:
         std::string callee;
         std::vector<ASTExpressionNode*> arguments;
-        ASTCallExpressionNode(std::string callee, std::vector<ASTExpressionNode*> arguments)
-            : callee(std::move(callee)), arguments(std::move(arguments)) {
+        ASTCallExpressionNode(std::string callee, std::vector<ASTExpressionNode*> arguments, CodeLocation location = {})
+            : ASTExpressionNode(location), callee(std::move(callee)), arguments(std::move(arguments)) {
             for (auto* arg : this->arguments) {
                 if (arg != nullptr) children_.push_back(arg);
             }
@@ -340,7 +358,7 @@ class ASTCallExpressionNode : public ASTExpressionNode {
 // Semantic Rule : empty-stmt = new ASTEmptyStatementNode()
 class ASTEmptyStatementNode : public ASTStatementNode {
     public:
-        ASTEmptyStatementNode() = default;
+        ASTEmptyStatementNode(CodeLocation location = {}) : ASTStatementNode(location) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitEmptyStatementNode(this);
@@ -357,8 +375,8 @@ class ASTEmptyStatementNode : public ASTStatementNode {
 class ASTBlockStatementNode : public ASTStatementNode {
     public:
         std::vector<ASTStatementNode*> statements;
-        ASTBlockStatementNode(std::vector<ASTStatementNode*> statements) 
-            : statements(std::move(statements)) {
+        ASTBlockStatementNode(std::vector<ASTStatementNode*> statements, CodeLocation location = {}) 
+            : ASTStatementNode(location), statements(std::move(statements)) {
             for (auto* statement : this->statements) {
                 if (statement != nullptr) children_.push_back(statement);
             }
@@ -380,8 +398,8 @@ class ASTAssignmentStatementNode : public ASTStatementNode {
     public:
         ASTVariableExpressionNode* target;
         ASTExpressionNode* value;
-        ASTAssignmentStatementNode(ASTVariableExpressionNode* target, ASTExpressionNode* value)
-            : target(target), value(value) {
+        ASTAssignmentStatementNode(ASTVariableExpressionNode* target, ASTExpressionNode* value, CodeLocation location = {})
+            : ASTStatementNode(location), target(target), value(value) {
             if (target != nullptr) children_.push_back(target);
             if (value != nullptr) children_.push_back(value);
         }
@@ -403,8 +421,8 @@ class ASTIfStatementNode : public ASTStatementNode {
         ASTExpressionNode* condition;
         ASTStatementNode* thenBranch;
         ASTStatementNode* elseBranch;
-        ASTIfStatementNode(ASTExpressionNode* condition, ASTStatementNode* thenBranch, ASTStatementNode* elseBranch = nullptr)
-            : condition(condition), thenBranch(thenBranch), elseBranch(elseBranch) {
+        ASTIfStatementNode(ASTExpressionNode* condition, ASTStatementNode* thenBranch, ASTStatementNode* elseBranch = nullptr, CodeLocation location = {})
+            : ASTStatementNode(location), condition(condition), thenBranch(thenBranch), elseBranch(elseBranch) {
             if (condition != nullptr) children_.push_back(condition);
             if (thenBranch != nullptr) children_.push_back(thenBranch);
             if (elseBranch != nullptr) children_.push_back(elseBranch);
@@ -420,14 +438,14 @@ class ASTIfStatementNode : public ASTStatementNode {
 };
 
 // While Statement
-// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <compound-statement> + semicolon
+// Production Rule : <while-statement> -> whilesy + <expression> + dosy + <compound-statement>
 // Semantic Rule : while-stmt = new ASTWhileStatementNode(condition, body)
 class ASTWhileStatementNode : public ASTStatementNode {
     public:
         ASTExpressionNode* condition;
         ASTBlockStatementNode* body;
-        ASTWhileStatementNode(ASTExpressionNode* condition, ASTBlockStatementNode* body)
-            : condition(condition), body(body) {
+        ASTWhileStatementNode(ASTExpressionNode* condition, ASTBlockStatementNode* body, CodeLocation location = {})
+            : ASTStatementNode(location), condition(condition), body(body) {
             if (condition != nullptr) children_.push_back(condition);
             if (body != nullptr) children_.push_back(body);
         }
@@ -448,8 +466,8 @@ class ASTRepeatStatementNode : public ASTStatementNode {
     public:
         std::vector<ASTStatementNode*> body;
         ASTExpressionNode* condition;
-        ASTRepeatStatementNode(std::vector<ASTStatementNode*> body, ASTExpressionNode* condition)
-            : body(std::move(body)), condition(condition) {
+        ASTRepeatStatementNode(std::vector<ASTStatementNode*> body, ASTExpressionNode* condition, CodeLocation location = {})
+            : ASTStatementNode(location), body(std::move(body)), condition(condition) {
             for (auto* statement : this->body) {
                 if (statement != nullptr) children_.push_back(statement);
             }
@@ -466,7 +484,7 @@ class ASTRepeatStatementNode : public ASTStatementNode {
 };
 
 // For Statement
-// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <compound-statement> + semicolon
+// Production Rule : <for-statement> -> forsy + ident + becomes + <expression> + (tosy | downtosy) + <expression> + dosy + <compound-statement>
 // Semantic Rule : for-stmt = new ASTForStatementNode(iteratorName, startVal, endVal, isDownTo, body)
 class ASTForStatementNode : public ASTStatementNode {
     public:
@@ -475,8 +493,8 @@ class ASTForStatementNode : public ASTStatementNode {
         ASTExpressionNode* endVal;
         bool isDownTo;
         ASTBlockStatementNode* body;
-        ASTForStatementNode(std::string iteratorName, ASTExpressionNode* startVal, ASTExpressionNode* endVal, bool isDownTo, ASTBlockStatementNode* body)
-            : iteratorName(std::move(iteratorName)), startVal(startVal), endVal(endVal), isDownTo(isDownTo), body(body) {
+        ASTForStatementNode(std::string iteratorName, ASTExpressionNode* startVal, ASTExpressionNode* endVal, bool isDownTo, ASTBlockStatementNode* body, CodeLocation location = {})
+            : ASTStatementNode(location), iteratorName(std::move(iteratorName)), startVal(startVal), endVal(endVal), isDownTo(isDownTo), body(body) {
             if (startVal != nullptr) children_.push_back(startVal);
             if (endVal != nullptr) children_.push_back(endVal);
             if (body != nullptr) children_.push_back(body);
@@ -513,8 +531,8 @@ class ASTCaseStatementNode : public ASTStatementNode {
     public:
         ASTExpressionNode* condition;
         std::vector<ASTCaseBranchNode> branches;
-        ASTCaseStatementNode(ASTExpressionNode* condition, std::vector<ASTCaseBranchNode> branches)
-            : condition(condition), branches(std::move(branches)) {
+        ASTCaseStatementNode(ASTExpressionNode* condition, std::vector<ASTCaseBranchNode> branches, CodeLocation location = {})
+            : ASTStatementNode(location), condition(condition), branches(std::move(branches)) {
             if (condition != nullptr) children_.push_back(condition);
             for (auto& branch : this->branches) {
                 for (auto* constant : branch.constants) {
@@ -539,8 +557,8 @@ class ASTCaseStatementNode : public ASTStatementNode {
 class ASTCallStatementNode : public ASTStatementNode {
     public:
         ASTCallExpressionNode* callExpr;
-        ASTCallStatementNode(ASTCallExpressionNode* callExpr) 
-            : callExpr(callExpr) {
+        ASTCallStatementNode(ASTCallExpressionNode* callExpr, CodeLocation location = {}) 
+            : ASTStatementNode(location), callExpr(callExpr) {
             if (callExpr != nullptr) children_.push_back(callExpr);
         }
 
@@ -559,8 +577,8 @@ class ASTDeclarationsNode : public ASTNode {
 public:
     std::vector<ASTDeclarationNode*> declarations;
 
-    ASTDeclarationsNode(std::vector<ASTDeclarationNode*> declarations)
-        : declarations(std::move(declarations)) {
+    ASTDeclarationsNode(std::vector<ASTDeclarationNode*> declarations, CodeLocation location = {})
+        : ASTNode(location), declarations(std::move(declarations)) {
 
         for (ASTDeclarationNode* declaration : this->declarations) {
             if (declaration != nullptr) {
@@ -586,8 +604,8 @@ class ASTConstDeclarationNode : public ASTDeclarationNode {
     public:
         std::string name;
         ASTExpressionNode* value;
-        ASTConstDeclarationNode(std::string name, ASTExpressionNode* value)
-            : name(std::move(name)), value(value) {
+        ASTConstDeclarationNode(std::string name, ASTExpressionNode* value, CodeLocation location = {})
+            : ASTDeclarationNode(location), name(std::move(name)), value(value) {
             if (value != nullptr) children_.push_back(value);
         }
 
@@ -607,8 +625,8 @@ class ASTTypeDeclarationNode : public ASTDeclarationNode {
     public:
         std::string name;
         ASTTypeNode* typeDefinition;
-        ASTTypeDeclarationNode(std::string name, ASTTypeNode* typeDefinition)
-            : name(std::move(name)), typeDefinition(typeDefinition) {
+        ASTTypeDeclarationNode(std::string name, ASTTypeNode* typeDefinition, CodeLocation location = {})
+            : ASTDeclarationNode(location), name(std::move(name)), typeDefinition(typeDefinition) {
             if (typeDefinition != nullptr) children_.push_back(typeDefinition);
         }
 
@@ -629,8 +647,8 @@ class ASTVarDeclarationNode : public ASTDeclarationNode {
         std::string identifiers;
         ASTTypeNode* type;
 
-        ASTVarDeclarationNode(std::string name, ASTTypeNode* type)
-            : identifiers(std::move(name)), type(type) {}
+        ASTVarDeclarationNode(std::string name, ASTTypeNode* type, CodeLocation location = {})
+            : ASTDeclarationNode(location), identifiers(std::move(name)), type(type) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitVarDeclarationNode(this);
@@ -678,8 +696,8 @@ class ASTSubprogramDeclarationNode : public ASTDeclarationNode {
         std::vector<ASTDeclarationNode*> localDeclarations;
         ASTBlockStatementNode* body;
 
-        ASTSubprogramDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body)
-            : name(std::move(name)), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(body) {
+        ASTSubprogramDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body, CodeLocation location = {})
+            : ASTDeclarationNode(location), name(std::move(name)), parameters(std::move(parameters)), localDeclarations(std::move(localDeclarations)), body(body) {
             for (auto& parameter : this->parameters) {
                 if (parameter.type != nullptr) children_.push_back(parameter.type);
             }
@@ -712,8 +730,8 @@ class ASTProcedureDeclarationNode : public ASTSubprogramDeclarationNode {
 class ASTFunctionDeclarationNode : public ASTSubprogramDeclarationNode {
     public:
         std::string returnTypeName;
-        ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body)
-            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), body), returnTypeName(std::move(returnTypeName)) {}
+        ASTFunctionDeclarationNode(std::string name, std::vector<ASTParameterGroup> parameters, std::string returnTypeName, std::vector<ASTDeclarationNode*> localDeclarations, ASTBlockStatementNode* body, CodeLocation location = {})
+            : ASTSubprogramDeclarationNode(name, std::move(parameters), std::move(localDeclarations), body, location), returnTypeName(std::move(returnTypeName)) {}
 
         std::any accept(ASTVisitor *visitor) override {
             return visitor->visitFunctionDeclarationNode(this);
@@ -746,8 +764,8 @@ class ASTProgramNode : public ASTNode {
         ASTDeclarationsNode* declarations;
         ASTBlockStatementNode* mainBlock;
 
-        ASTProgramNode(std::string programName, ASTDeclarationsNode* declarations, ASTBlockStatementNode* mainBlock)
-            : programName(std::move(programName)), declarations(std::move(declarations)), mainBlock(mainBlock) {
+        ASTProgramNode(std::string programName, ASTDeclarationsNode* declarations, ASTBlockStatementNode* mainBlock, CodeLocation location = {})
+            : ASTNode(location), programName(std::move(programName)), declarations(std::move(declarations)), mainBlock(mainBlock) {
             if (declarations != nullptr) {
                 declarations->parent_ = this;
                 children_.push_back(declarations);

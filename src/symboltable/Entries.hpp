@@ -1,9 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include "DataType.hpp"
 struct IdentifierTableEntry {
-    explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address);
+    explicit IdentifierTableEntry(std::string name, int linkIndex, DataType type, int reference, bool normal, int level, int address)
+        : name(std::move(name)), index(0), linkIndex(linkIndex), type(type), reference(reference), normal(normal), level(level), address(address), typeName("") {}
     // Nama identifier (misalnya nama variabel, konstanta, tipe, prosedur, fungsi).
     std::string name;
 
@@ -35,12 +38,15 @@ struct IdentifierTableEntry {
     //nilai konstanta, offset field record, alamat prosedur, atau ukuran/penanda lain.
     int address;
 
+    // kasus struct
+    std::string typeName;
+
     // to string
-    static::std::string getHeader() {
+    static std::string getHeader() {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5)  << "idx"
-            << std::setw(12) << "id"
+            << std::setw(16) << "id"
             << std::setw(6)  << "type"
             << std::setw(6)  << "ref"
             << std::setw(6)  << "nrm"
@@ -54,7 +60,7 @@ struct IdentifierTableEntry {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5)  << index
-            << std::setw(12) << name
+            << std::setw(16) << name
             << std::setw(6)  << static_cast<int>(type)
             << std::setw(6)  << reference
             << std::setw(6)  << (normal ? 1 : 0)
@@ -66,8 +72,10 @@ struct IdentifierTableEntry {
 };
 
 struct ArrayTableEntry{
-    explicit ArrayTableEntry(int arrayIndex, DataType indexType, DataType elementType, int compositeTypeReference,
-                            int low, int high, int elementSize, int size);
+        explicit ArrayTableEntry(int arrayIndex, DataType indexType, DataType elementType, int compositeTypeReference,
+                                                        int low, int high, int elementSize, int size)
+                : arrayIndex(arrayIndex), indexType(indexType), elementType(elementType), compositeTypeReference(compositeTypeReference),
+                    low(low), high(high), elementSize(elementSize), size(size), typeName("") {}
     // Indeks entri array
     int arrayIndex;
 
@@ -97,9 +105,12 @@ struct ArrayTableEntry{
     // total ukuran array
     int size;
 
+    // kasus struct
+    std::string typeName;
+
     // to string
 
-    static::std::string getHeader() {
+    static std::string getHeader() {
         std::stringstream ss;
         ss << std::left 
             << std::setw(5) << "idx"
@@ -129,7 +140,8 @@ struct ArrayTableEntry{
 };
 
 struct BlockTableEntry {
-    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parameterSize, int variableSize);
+    explicit BlockTableEntry(int blockIndex, int last, int latestParameter, int parentBlock, int parameterSize, int variableSize)
+        : blockIndex(blockIndex), last(last), latestParameter(latestParameter), parentBlock(parentBlock), parameterSize(parameterSize), variableSize(variableSize) {}
     // Indeks entri block (setiap block mewakili
     // prosedur, fungsi, atau record type definition).
     int blockIndex;
@@ -141,6 +153,8 @@ struct BlockTableEntry {
 
     // Pointer/indeks ke parameter terakhir dari prosedur/fungsi pada block tersebut. Jika block adalah record, nilainya 0.
     int latestParameter;
+
+    int parentBlock;
 
     // Total ukuran parameter block  (dalam byte/unit memori).
     int parameterSize;

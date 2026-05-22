@@ -33,7 +33,7 @@ void ASTBuilder::buildConstDeclaration(const CSTNodes* node, std::vector<ASTDecl
                     const CSTNodes* constantNode = children[i];
                     auto value = buildConstant(constantNode);
                     if (value != nullptr) {
-                        out.push_back(new ASTConstDeclarationNode(name, std::move(value)));
+                        out.push_back(new ASTConstDeclarationNode(name, std::move(value), identNode->getLocation()));
                     }
                     i++;
                 }
@@ -78,7 +78,7 @@ void ASTBuilder::buildTypeDeclaration(const CSTNodes* node, std::vector<ASTDecla
                     const CSTNodes* typeNode = children[i];
                     auto typeDefinition = buildType(typeNode);
                     if (typeDefinition != nullptr) {
-                        out.push_back(new ASTTypeDeclarationNode(name, std::move(typeDefinition)));
+                        out.push_back(new ASTTypeDeclarationNode(name, std::move(typeDefinition), identNode->getLocation()));
                     }
                     i++;
                 }
@@ -127,7 +127,7 @@ void ASTBuilder::buildVarDeclaration(const CSTNodes* node, std::vector<ASTDeclar
                         ASTTypeNode* singleType = buildType(typeNode);
 
                         if (singleType != nullptr) {
-                            out.push_back(new ASTVarDeclarationNode(identifier, singleType));
+                            out.push_back(new ASTVarDeclarationNode(identifier, singleType, children[i - 2]->getLocation()));
                         }
                     }
                 }
@@ -218,7 +218,8 @@ ASTDeclarationNode* ASTBuilder::buildProcedureDeclaration(const CSTNodes* node) 
         name,
         std::move(parameters),
         std::move(localDeclarations),
-        std::move(body)
+        std::move(body),
+        node->getLocation()
     );
 }
 
@@ -286,6 +287,7 @@ ASTDeclarationNode* ASTBuilder::buildFunctionDeclaration(const CSTNodes* node) {
         std::move(parameters),
         returnTypeName,
         std::move(localDeclarations),
-        std::move(body)
+        std::move(body),
+        node->getLocation()
     );
 }

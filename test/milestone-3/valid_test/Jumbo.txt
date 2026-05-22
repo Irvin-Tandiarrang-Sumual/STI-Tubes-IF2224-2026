@@ -1,0 +1,98 @@
+program ArionMegaTest;
+
+const
+    MAXSIZE == 10;
+    PIAPPROX == 3;
+
+var
+    arrGlobal : array[1..10] of integer;
+    globalCounter : integer;
+    statusReady : boolean;
+    systemChar : char;
+
+procedure KelolaDataSistem(factor : integer);
+var
+    arrLuar : array[1..5] of integer;
+    i : integer;
+    pesanLuar : string;
+
+    function HitungFaktorialRekursif(n : integer) : integer;
+    begin
+        if n <= 1 then
+            HitungFaktorialRekursif := 1
+        else
+            HitungFaktorialRekursif := n * HitungFaktorialRekursif(n - 1);
+    end;
+
+    procedure ProsesArrayLokal(indeks : integer);
+    var
+        arrDalam : array[1..5] of integer;
+        nilaiHitung : integer;
+    begin
+        nilaiHitung := HitungFaktorialRekursif(indeks);
+        arrDalam[indeks] := nilaiHitung;
+        arrLuar[indeks] := arrDalam[indeks] * factor;
+        arrGlobal[indeks] := arrLuar[indeks] + globalCounter;
+    end;
+
+begin
+    pesanLuar := 'Memproses data pada BlokLuar...';
+    writeln(pesanLuar);
+
+    i := 1;
+
+    while i <= 5 do
+    begin
+        ProsesArrayLokal(i);
+        i := i + 1;
+    end;
+end;
+
+function ValidasiLogikaSistem(mode : char; opsi : boolean) : boolean;
+var
+    hasil : boolean;
+begin
+    if (mode == 'A') and (opsi == true) then
+        hasil := true
+    else
+        if (mode == 'B') or (globalCounter > 5) then
+            hasil := true
+        else
+            hasil := false;
+
+    ValidasiLogikaSistem := hasil;
+end;
+
+procedure CetakLogArray;
+var
+    k : integer;
+begin
+    writeln('Isi arrGlobal:');
+
+    for k := 1 to 5 do
+    begin
+        writeln(arrGlobal[k]);
+    end;
+end;
+
+begin
+    globalCounter := 2;
+    statusReady := true;
+    systemChar := 'A';
+
+
+    if statusReady and (globalCounter < MAXSIZE) then
+        writeln('Sistem siap. Menjalankan subprogram berjenjang...')
+    else
+        writeln('Error: Kondisi awal sistem tidak valid.');
+
+    if statusReady and (globalCounter < MAXSIZE) then
+        if ValidasiLogikaSistem(systemChar, statusReady) then
+            KelolaDataSistem(3)
+        else
+            writeln('Validasi sistem gagal!')
+    else
+        writeln('Error: Kondisi awal sistem tidak valid.');
+
+    writeln('--- Arion Mega Test Selesai Tanpa Error ---');
+end.
