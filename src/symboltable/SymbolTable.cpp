@@ -61,6 +61,13 @@ int SymbolTable::insertVariable(const std::string& name, DataType type, int ref)
     return newIdx;
 }
 
+int SymbolTable::insertArray(DataType indexType, DataType elementType, int compositeTypeReference,
+                             int low, int high, int elementSize, int size) {
+    int newIdx = atab_.size();
+    atab_.insert(ArrayTableEntry(newIdx, indexType, elementType, compositeTypeReference, low, high, elementSize, size));
+    return newIdx;
+}
+
 int SymbolTable::lookup(const std::string& name) {
     int blockIdx = currentBlockIdx_;
 
@@ -88,6 +95,10 @@ IdentifierTableEntry& SymbolTable::getIdentifier(int index) {
     return tab_.get(index);
 }
 
+ArrayTableEntry& SymbolTable::getArrayEntry(int index) {
+    return atab_.get(index);
+}
+
 std::string SymbolTable::dumpTab() const {
     return tab_.toString("tab");
 }
@@ -108,4 +119,8 @@ std::string SymbolTable::dumpTables() const {
     result += "\n";
     result += dumpATab();
     return result;
+}
+
+int SymbolTable::getCurrentBlockIdx() const {
+    return currentBlockIdx_;
 }
