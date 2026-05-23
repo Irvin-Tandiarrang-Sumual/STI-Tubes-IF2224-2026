@@ -1,11 +1,11 @@
 program NestedArray;
 
 type
-    Person = record
-        age : integer;
+    Person == record
+        age : integer
     end;
 
-    People = array[1..5] of Person;
+    People == array[1..5] of Person;
 
 var
     p : People;
