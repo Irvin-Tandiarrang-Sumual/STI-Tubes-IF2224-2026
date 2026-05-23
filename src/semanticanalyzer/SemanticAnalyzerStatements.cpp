@@ -28,6 +28,9 @@ std::any SemanticAnalyzer::visitAssignmentStatementNode(ASTAssignmentStatementNo
 }
 
 std::any SemanticAnalyzer::visitIfStatementNode(ASTIfStatementNode* node) {
+    if (node == nullptr) {
+        return DataType::VOID;
+    }
     DataType condType = std::any_cast<DataType>(node->condition->accept(this));
     // Ekspresi di dalam IF-Statement HARUS bertipe Boolean
     if (condType != DataType::BOOLEAN) {
@@ -36,7 +39,8 @@ std::any SemanticAnalyzer::visitIfStatementNode(ASTIfStatementNode* node) {
     safeVisitNode(node->thenBranch);
     safeVisitNode(node->elseBranch);
     node->evalType_ = DataType::VOID;
-    return {};
+    node->lexicalLevel_ = currentLevel;
+    return DataType::VOID;
 }
 
 std::any SemanticAnalyzer::visitBlockStatementNode(ASTBlockStatementNode* node) {
