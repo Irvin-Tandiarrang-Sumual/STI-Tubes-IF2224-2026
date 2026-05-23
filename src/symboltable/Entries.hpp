@@ -195,8 +195,8 @@ struct ArrayTableEntry{
 
         for (const auto& entry : entries) {
             grow(widths[0], std::to_string(entry.arrayIndex));
-            grow(widths[1], std::to_string(static_cast<int>(entry.indexType)));
-            grow(widths[2], std::to_string(static_cast<int>(entry.elementType)));
+            grow(widths[1], IdentifierTableEntry::dataTypeToString(entry.indexType));
+            grow(widths[2], IdentifierTableEntry::dataTypeToString(entry.elementType));
             grow(widths[3], std::to_string(entry.compositeTypeReference));
             grow(widths[4], std::to_string(entry.low));
             grow(widths[5], std::to_string(entry.high));
@@ -229,8 +229,8 @@ struct ArrayTableEntry{
         std::stringstream ss;
         ss << std::left 
             << std::setw(static_cast<int>(widths[0]) + 1) << arrayIndex
-            << std::setw(static_cast<int>(widths[1]) + 1) << static_cast<int>(indexType)
-            << std::setw(static_cast<int>(widths[2]) + 1) << static_cast<int>(elementType)
+            << std::setw(static_cast<int>(widths[1]) + 1) << IdentifierTableEntry::dataTypeToString(indexType)
+            << std::setw(static_cast<int>(widths[2]) + 1) << IdentifierTableEntry::dataTypeToString(elementType)
             << std::setw(static_cast<int>(widths[3]) + 1) << compositeTypeReference
             << std::setw(static_cast<int>(widths[4]) + 1) << low
             << std::setw(static_cast<int>(widths[5]) + 1) << high
