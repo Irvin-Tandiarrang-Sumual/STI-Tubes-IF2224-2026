@@ -29,7 +29,7 @@ class SymbolTable {
 
         // regist symbol
 
-        int insertVariable(const std::string& name, DataType type, int ref = 0);
+        int insertVariable(const std::string& name, DataType type, int ref = 0, int storageSize = -1);
         int insertArray(DataType indexType, DataType elementType, int compositeTypeReference,
                 int low, int high, int elementSize, int size);
         void setCurrentBlockParameterSize(int parameterSize);
