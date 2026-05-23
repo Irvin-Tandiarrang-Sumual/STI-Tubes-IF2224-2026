@@ -36,6 +36,7 @@ std::any SemanticAnalyzer::visitTypeDeclarationNode(ASTTypeDeclarationNode* node
     int refIdx = symbolTable.insertVariable(node->name, typeKind, typeReference);
     IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
     entry.typeName = node->name;
+    entry.obj = "type";
 
     if (auto* recordType = dynamic_cast<ASTRecordTypeNode*>(node->typeDefinition)) {
         recordType->isAnonymous = false;
@@ -67,6 +68,7 @@ std::any SemanticAnalyzer::visitConstDeclarationNode(ASTConstDeclarationNode* no
     IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
     entry.normal = true;
     entry.isConstant = true;
+    entry.obj = "constant";
 
     node->symbolRefIndex_ = refIdx;
     node->lexicalLevel_ = currentLevel;
@@ -107,6 +109,7 @@ std::any SemanticAnalyzer::visitVarDeclarationNode(ASTVarDeclarationNode* node) 
     int refIdx = symbolTable.insertVariable(varName, varType, arrayRef);
     
     symbolTable.getIdentifier(refIdx).typeName = registeredTypeName;
+    symbolTable.getIdentifier(refIdx).obj = "variabel";
     rememberIdentifierType(refIdx, resolvedTypeNode != nullptr ? resolvedTypeNode : node->type);
 
     node->symbolRefIndex_ = refIdx;
@@ -236,6 +239,7 @@ std::any SemanticAnalyzer::visitProcedureDeclarationNode(ASTProcedureDeclaration
         predeclaredSubprogramNames_[currentLevel].insert(node->name);
     }
     symbolTable.getIdentifier(procIdx).typeName = node->name;
+    symbolTable.getIdentifier(procIdx).obj = "procedure";
     node->symbolRefIndex_ = procIdx;
     node->lexicalLevel_ = currentLevel;
     node->evalType_ = DataType::VOID;
@@ -257,6 +261,7 @@ std::any SemanticAnalyzer::visitProcedureDeclarationNode(ASTProcedureDeclaration
             symbolTable.getIdentifier(procIdx).parameterTypes.push_back(paramType);
             int paramIdx = symbolTable.insertVariable(paramName, paramType);
             symbolTable.getIdentifier(paramIdx).normal = true;
+            symbolTable.getIdentifier(paramIdx).obj = "parameter";
             rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
         }
     }
@@ -288,6 +293,7 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
         predeclaredSubprogramNames_[currentLevel].insert(node->name);
     }
     symbolTable.getIdentifier(funcIdx).typeName = node->name;
+    symbolTable.getIdentifier(funcIdx).obj = "function";
     node->symbolRefIndex_ = funcIdx;
     node->lexicalLevel_ = currentLevel;
     node->evalType_ = returnType;
@@ -309,6 +315,7 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
             symbolTable.getIdentifier(funcIdx).parameterTypes.push_back(paramType);
             int paramIdx = symbolTable.insertVariable(paramName, paramType);
             symbolTable.getIdentifier(paramIdx).normal = true;
+            symbolTable.getIdentifier(paramIdx).obj = "parameter";
             rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
         }
     }

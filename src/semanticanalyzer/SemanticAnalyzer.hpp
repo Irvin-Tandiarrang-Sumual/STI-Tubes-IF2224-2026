@@ -47,6 +47,7 @@ private:
     void reportWarning(const ASTNode* node, const std::string& message);
 
     void safeVisitNode(ASTNode* node);
+    void setIdentifierObject(int symbolIndex, const std::string& objectClass);
 
     DataType mapStringToDataType(const std::string& typeStr);
     ASTTypeNode* resolveTypeNode(ASTTypeNode* node);

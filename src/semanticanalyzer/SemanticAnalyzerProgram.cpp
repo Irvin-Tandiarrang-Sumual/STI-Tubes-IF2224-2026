@@ -2,7 +2,7 @@
 
 void SemanticAnalyzer::initializePredefinedIdentifiers() {
     // dummy
-    symbolTable.insertVariable("<dummy>", DataType::VOID);
+    setIdentifierObject(symbolTable.insertVariable("<dummy>", DataType::VOID), "keyword");
 
     // (idx : 1-27)
     std::vector<std::string> keywords = {
@@ -12,27 +12,29 @@ void SemanticAnalyzer::initializePredefinedIdentifiers() {
         "type", "until", "var", "while"
     };
     for (const auto& kw : keywords) {
-        symbolTable.insertVariable(kw, DataType::VOID);
+        setIdentifierObject(symbolTable.insertVariable(kw, DataType::VOID), "keyword");
     }
 
     // predefined Types (Indeks 28 - 32)
-    symbolTable.insertVariable("integer", DataType::INTEGER);
-    symbolTable.insertVariable("real",    DataType::REAL);
-    symbolTable.insertVariable("char",    DataType::CHAR);
-    symbolTable.insertVariable("boolean", DataType::BOOLEAN);
-    symbolTable.insertVariable("string",  DataType::STRING);
+    setIdentifierObject(symbolTable.insertVariable("integer", DataType::INTEGER), "type");
+    setIdentifierObject(symbolTable.insertVariable("real",    DataType::REAL), "type");
+    setIdentifierObject(symbolTable.insertVariable("char",    DataType::CHAR), "type");
+    setIdentifierObject(symbolTable.insertVariable("boolean", DataType::BOOLEAN), "type");
+    setIdentifierObject(symbolTable.insertVariable("string",  DataType::STRING), "type");
     // additional
-    symbolTable.insertVariable("writeln", DataType::VOID);
-    symbolTable.insertVariable("println",  DataType::VOID);
+    setIdentifierObject(symbolTable.insertVariable("writeln", DataType::VOID), "procedure");
+    setIdentifierObject(symbolTable.insertVariable("println",  DataType::VOID), "procedure");
     // Kunci true & false biar gabisa diassign karena constant
     int trueIdx = symbolTable.insertVariable("true", DataType::BOOLEAN);
     IdentifierTableEntry& trueEntry = symbolTable.getIdentifier(trueIdx);
     trueEntry.normal = true;
     trueEntry.isConstant = true;
+    trueEntry.obj = "constant";
     int falseIdx = symbolTable.insertVariable("false", DataType::BOOLEAN);
     IdentifierTableEntry& falseEntry = symbolTable.getIdentifier(falseIdx);
     falseEntry.normal = true;
     falseEntry.isConstant = true;
+    falseEntry.obj = "constant";
 }
 
 void SemanticAnalyzer::predeclareSubprograms(const std::vector<ASTDeclarationNode*>& declarations) {
@@ -53,7 +55,7 @@ void SemanticAnalyzer::predeclareSubprograms(const std::vector<ASTDeclarationNod
                 throw std::runtime_error("Semantic Error: Prosedur '" + procedureDecl->name + "' sudah dideklarasikan di scope ini!");
             }
 
-            symbolTable.insertVariable(procedureDecl->name, DataType::VOID);
+            setIdentifierObject(symbolTable.insertVariable(procedureDecl->name, DataType::VOID), "procedure");
             namesInScope.insert(procedureDecl->name);
         } else if (auto* functionDecl = dynamic_cast<ASTFunctionDeclarationNode*>(decl)) {
             if (namesInScope.find(functionDecl->name) != namesInScope.end()) {
@@ -66,7 +68,7 @@ void SemanticAnalyzer::predeclareSubprograms(const std::vector<ASTDeclarationNod
             }
 
             DataType returnType = resolveTypeNameKind(functionDecl->returnTypeName);
-            symbolTable.insertVariable(functionDecl->name, returnType);
+            setIdentifierObject(symbolTable.insertVariable(functionDecl->name, returnType), "function");
             namesInScope.insert(functionDecl->name);
         }
     }
@@ -83,6 +85,7 @@ std::any SemanticAnalyzer::visitProgramNode(ASTProgramNode* node) {
 
     int programIdx = symbolTable.insertVariable(node->programName, DataType::VOID);
     symbolTable.getIdentifier(programIdx).typeName = node->programName;
+    setIdentifierObject(programIdx, "program");
 
     node->symbolRefIndex_ = programIdx;
     node->lexicalLevel_ = currentLevel;

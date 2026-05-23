@@ -181,6 +181,10 @@ void SemanticAnalyzer::safeVisitNode(ASTNode* node) {
     }
 }
 
+void SemanticAnalyzer::setIdentifierObject(int symbolIndex, const std::string& objectClass) {
+    symbolTable.getIdentifier(symbolIndex).obj = objectClass;
+}
+
 DataType SemanticAnalyzer::mapStringToDataType(const std::string& typeStr) {
     std::string lowerStr = typeStr;
     for (auto &c : lowerStr) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
