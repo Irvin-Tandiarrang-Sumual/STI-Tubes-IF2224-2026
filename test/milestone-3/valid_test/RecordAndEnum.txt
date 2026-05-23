@@ -1,0 +1,39 @@
+program ArionRecordEnumCaseTest;
+
+type
+    {* 1. Registrasi Enum: Menciptakan konstanta bernilai 0, 1, 2 di tabel tab *}
+    StatusKaryawan == (Magang, Kontrak, Tetap);
+
+    {* 2. Registrasi Record: Membuka Blok Baru di btab *}
+    DetailKaryawan == record
+        idNum     : integer;
+        statusJob : StatusKaryawan;
+        gajiPokok : integer
+    end;
+
+var
+    staf : DetailKaryawan;
+    opsi : integer;
+
+begin
+    {* Pengisian Data Record *}
+    staf.idNum := 992;
+    staf.statusJob := Kontrak;
+    staf.gajiPokok := 5000;
+
+    {* Pengujian Case-Of dengan Enum & Integer *}
+    opsi := 1;
+    
+    {* Perbaikan: Menghapus bagian 'else' agar sesuai dengan aturan grammar Arion *}
+    case opsi of
+        1:
+            {* Percabangan Case di dalam Case berdasarkan nilai Enum *}
+            case staf.statusJob of
+                Magang:  writeln('Status: Magang. Berikan pelatihan tambahan.');
+                Kontrak: writeln('Status: Kontrak. Evaluasi performa bulan depan.');
+                Tetap:   writeln('Status: Tetap. Karyawan reguler.');
+            end;
+        2:
+            writeln(staf.gajiPokok);
+        end
+end.
