@@ -39,6 +39,36 @@ const std::vector<CSTNodes*>& CSTNodes::getChildren() const {
     return children_;
 }
 
+const CSTNodes* CSTNodes::childAt(std::size_t index) const {
+    if (index >= children_.size()) {
+        return nullptr;
+    }
+    return children_[index];
+}
+
+const CSTNodes* CSTNodes::firstChildOf(NonTerminal nt) const {
+    for (const CSTNodes* child : children_) {
+        if (child != nullptr &&
+            !child->isTerminal() &&
+            !child->isError() &&
+            child->getNonTerminal() == nt) {
+            return child;
+        }
+    }
+    return nullptr;
+}
+
+const CSTNodes* CSTNodes::firstTokenOf(TokenType type) const {
+    for (const CSTNodes* child : children_) {
+        if (child != nullptr &&
+            child->isTerminal() &&
+            child->getToken().type == type) {
+            return child;
+        }
+    }
+    return nullptr;
+}
+
 CSTNodes::~CSTNodes() {
     for (auto* child : children_) {
         delete child;

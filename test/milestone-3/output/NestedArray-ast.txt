@@ -1,0 +1,93 @@
+Program: NestedArray {type=VOID, tab_index=37, lev=0}
+  |
+  +-- Declarations {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- TypeDeclaration: Person {type=RECORD, tab_index=38, lev=0}
+  |   |   |
+  |   |   \-- RecordType(age) {type=RECORD, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |
+  |   +-- TypeDeclaration: People {type=ARRAY, tab_index=40, lev=0}
+  |   |   |
+  |   |   \-- ArrayType {type=ARRAY, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- RangeType {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Literal: 1 {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   \-- Literal: 5 {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- NamedType: Person {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   \-- VarDecl(name: 'p', type: 'People') {type=ARRAY, tab_index=41, lev=0}
+  |
+  \-- Block {type=VOID, tab_index=-1, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: p[].age {type=INTEGER, tab_index=41, lev=0}
+      |   |   |
+      |   |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+      |   |
+      |   \-- Literal: 20 {type=INTEGER, tab_index=-1, lev=0}
+      |
+      \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+
+=== Symbol Tables ===
+tab :
+idx id          obj       type    ref nrm lev adr link 
+------------------------------------------------------------
+0   <dummy>     keyword   void    0   1   0   0   0    
+1   and         keyword   void    0   1   0   4   0    
+2   array       keyword   void    0   1   0   8   1    
+3   begin       keyword   void    0   1   0   12  2    
+4   case        keyword   void    0   1   0   16  3    
+5   const       keyword   void    0   1   0   20  4    
+6   div         keyword   void    0   1   0   24  5    
+7   downto      keyword   void    0   1   0   28  6    
+8   do          keyword   void    0   1   0   32  7    
+9   else        keyword   void    0   1   0   36  8    
+10  end         keyword   void    0   1   0   40  9    
+11  for         keyword   void    0   1   0   44  10   
+12  function    keyword   void    0   1   0   48  11   
+13  if          keyword   void    0   1   0   52  12   
+14  mod         keyword   void    0   1   0   56  13   
+15  not         keyword   void    0   1   0   60  14   
+16  of          keyword   void    0   1   0   64  15   
+17  or          keyword   void    0   1   0   68  16   
+18  procedure   keyword   void    0   1   0   72  17   
+19  program     keyword   void    0   1   0   76  18   
+20  record      keyword   void    0   1   0   80  19   
+21  repeat      keyword   void    0   1   0   84  20   
+22  then        keyword   void    0   1   0   88  21   
+23  to          keyword   void    0   1   0   92  22   
+24  type        keyword   void    0   1   0   96  23   
+25  until       keyword   void    0   1   0   100 24   
+26  var         keyword   void    0   1   0   104 25   
+27  while       keyword   void    0   1   0   108 26   
+28  integer     type      integer 0   1   0   112 27   
+29  real        type      real    0   1   0   116 28   
+30  char        type      char    0   1   0   120 29   
+31  boolean     type      boolean 0   1   0   124 30   
+32  string      type      string  0   1   0   128 31   
+33  writeln     procedure void    0   1   0   132 32   
+34  println     procedure void    0   1   0   136 33   
+35  true        constant  boolean 0   1   0   140 34   
+36  false       constant  boolean 0   1   0   144 35   
+37  NestedArray program   void    0   1   0   148 36   
+38  Person      type      record  1   1   0   152 37   
+39  age         field     integer 0   1   1   0   0    
+40  People      type      array   0   1   0   156 38   
+41  p           variabel  array   0   1   0   176 40   
+
+btab :
+idx last lparam psize vsize 
+------------------------------------------------------------
+0   41   0      0     0     
+1   39   0      0     4     
+
+atab :
+idx inxtyp eltyp  ref low high elsz size 
+------------------------------------------------------------
+0   range  record 38  1   5    4    20   

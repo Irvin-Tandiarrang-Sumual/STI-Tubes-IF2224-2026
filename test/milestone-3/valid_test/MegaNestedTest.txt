@@ -1,0 +1,61 @@
+program ArionMegaNestedTest;
+
+type
+    {* 1. Enum Dasar *}
+    SkalaPrioritas == (Rendah, Normal, Penting, Kritis);
+    JenisAkses == (Baca, Tulis, Admin);
+
+    {* 2. Record Pertama: Menyimpan array dari enum *}
+    HakAkses == record
+        levelUser : JenisAkses;
+        fiturAktif : array[1..3] of boolean
+    end;
+
+    {* 3. Record Kedua (Nested): Mengandung record lain dan subrange *}
+    LogTugas == record
+        idTugas    : integer;
+        prioritas  : SkalaPrioritas;
+        otorisasi  : HakAkses;       {* Nested Record di dalam Record *}
+        durasiJam  : integer
+    end;
+
+    {* 4. Array dari Record *}
+    DaftarAntrean == array[1..5] of LogTugas;
+
+var
+    antreanUtama : DaftarAntrean;
+    opsiMenu     : integer;
+    idx          : integer;
+
+begin
+    {* Ekstrem Assignment: Mengakses Array -> Record -> Record -> Array *}
+    idx := 1;
+    antreanUtama[idx].idTugas := 999;
+    antreanUtama[idx].prioritas := Penting;
+    antreanUtama[idx].otorisasi.levelUser := Admin;
+    antreanUtama[idx].otorisasi.fiturAktif[2] := true;
+    antreanUtama[idx].durasiJam := 8;
+
+    opsiMenu := 2;
+
+    {* Ekstrem Case Statement Bersarang Tanpa Else *}
+    case opsiMenu of
+        1: 
+            writeln('Menu Ringkas');
+        2:
+            {* Evaluasi Enum dari Record yang berada di dalam Array *}
+            case antreanUtama[idx].prioritas of
+                Rendah, Normal: 
+                    writeln('Tugas Biasa');
+                Penting:
+                    {* Case tingkat 3: Mengecek enum di dalam nested record *}
+                    case antreanUtama[idx].otorisasi.levelUser of
+                        Baca:  writeln('Akses Terbatas');
+                        Tulis: writeln('Akses Menengah');
+                        Admin: writeln('Eksekusi Tugas Penting oleh Admin!')
+                    end;
+                Kritis:
+                    writeln('Darurat!')
+            end
+    end
+end.

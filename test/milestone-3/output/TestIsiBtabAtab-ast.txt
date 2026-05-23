@@ -1,0 +1,228 @@
+Program: ArionTableFillerTest {type=VOID, tab_index=37, lev=0}
+  |
+  +-- Declarations {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- TypeDeclaration: BarisData {type=ARRAY, tab_index=40, lev=0}
+  |   |   |
+  |   |   \-- ArrayType {type=ARRAY, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- RangeType {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Literal: 1 {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   \-- Literal: 3 {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- PrimitiveType: integer {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- TypeDeclaration: MatriksData {type=ARRAY, tab_index=41, lev=0}
+  |   |   |
+  |   |   \-- ArrayType {type=ARRAY, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- RangeType {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Literal: 1 {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   \-- Literal: 4 {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- NamedType: BarisData {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'myMatrix', type: 'MatriksData') {type=ARRAY, tab_index=42, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'globalCounter', type: 'integer') {type=INTEGER, tab_index=43, lev=0}
+  |   |
+  |   +-- SubprogramDeclaration: HitungKalkulasiKompleks {type=VOID, tab_index=38, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: boolean {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: char {type=CHAR, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- VarDecl(name: 'lokalX', type: 'integer') {type=INTEGER, tab_index=48, lev=1}
+  |   |   |
+  |   |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Variable: lokalX {type=INTEGER, tab_index=48, lev=1}
+  |   |       |   |
+  |   |       |   \-- BinaryOp: + {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |       |
+  |   |       |       +-- Variable: p1 {type=INTEGER, tab_index=44, lev=1}
+  |   |       |       |
+  |   |       |       \-- Variable: p2 {type=INTEGER, tab_index=45, lev=1}
+  |   |       |
+  |   |       +-- If {type=VOID, tab_index=-1, lev=1}
+  |   |       |   |
+  |   |       |   +-- Variable: opsi {type=BOOLEAN, tab_index=46, lev=1}
+  |   |       |   |
+  |   |       |   +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |   |
+  |   |       |   |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+  |   |       |   |       |
+  |   |       |   |       \-- Variable: flag {type=CHAR, tab_index=47, lev=1}
+  |   |       |   |
+  |   |       |   \-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |   |       |       |
+  |   |       |       \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+  |   |       |           |
+  |   |       |           \-- Literal: Selesai {type=STRING, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   \-- FunctionDeclaration: PengecekanMatriks(m; batas) : boolean {type=BOOLEAN, tab_index=39, lev=0}
+  |       |
+  |       +-- NamedType: MatriksData {type=ARRAY, tab_index=-1, lev=0}
+  |       |
+  |       +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |       |
+  |       \-- Block {type=VOID, tab_index=-1, lev=0}
+  |           |
+  |           +-- If {type=VOID, tab_index=-1, lev=1}
+  |           |   |
+  |           |   +-- BinaryOp: > {type=BOOLEAN, tab_index=-1, lev=0}
+  |           |   |   |
+  |           |   |   +-- Variable: m[][] {type=INTEGER, tab_index=49, lev=1}
+  |           |   |   |   |
+  |           |   |   |   +-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |           |   |   |   |
+  |           |   |   |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |           |   |   |
+  |           |   |   \-- Variable: batas {type=INTEGER, tab_index=50, lev=1}
+  |           |   |
+  |           |   +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |           |   |   |
+  |           |   |   +-- Variable: PengecekanMatriks {type=BOOLEAN, tab_index=39, lev=0}
+  |           |   |   |
+  |           |   |   \-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+  |           |   |
+  |           |   \-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |           |       |
+  |           |       +-- Variable: PengecekanMatriks {type=BOOLEAN, tab_index=39, lev=0}
+  |           |       |
+  |           |       \-- Variable: false {type=BOOLEAN, tab_index=36, lev=0}
+  |           |
+  |           \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |
+  \-- Block {type=VOID, tab_index=-1, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: globalCounter {type=INTEGER, tab_index=43, lev=0}
+      |   |
+      |   \-- Literal: 10 {type=INTEGER, tab_index=-1, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: myMatrix[][] {type=INTEGER, tab_index=42, lev=0}
+      |   |   |
+      |   |   +-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+      |   |   |
+      |   |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+      |   |
+      |   \-- Literal: 5 {type=INTEGER, tab_index=-1, lev=0}
+      |
+      +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   \-- Call: HitungKalkulasiKompleks {type=VOID, tab_index=38, lev=0}
+      |       |
+      |       +-- Literal: 5 {type=INTEGER, tab_index=-1, lev=0}
+      |       |
+      |       +-- Literal: 10 {type=INTEGER, tab_index=-1, lev=0}
+      |       |
+      |       +-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+      |       |
+      |       \-- Literal: A {type=CHAR, tab_index=-1, lev=0}
+      |
+      +-- If {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Call: PengecekanMatriks {type=BOOLEAN, tab_index=39, lev=0}
+      |   |   |
+      |   |   +-- Variable: myMatrix {type=ARRAY, tab_index=42, lev=0}
+      |   |   |
+      |   |   \-- Variable: globalCounter {type=INTEGER, tab_index=43, lev=0}
+      |   |
+      |   +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |   |
+      |   |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |   |       |
+      |   |       \-- Literal: Nilai matriks aman. {type=STRING, tab_index=-1, lev=0}
+      |   |
+      |   \-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |       |
+      |       \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |           |
+      |           \-- Literal: Nilai matriks di bawah batas. {type=STRING, tab_index=-1, lev=0}
+      |
+      \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+
+=== Symbol Tables ===
+tab :
+idx id                      obj       type    ref nrm lev adr link 
+-------------------------------------------------------------------
+0   <dummy>                 keyword   void    0   1   0   0   0    
+1   and                     keyword   void    0   1   0   4   0    
+2   array                   keyword   void    0   1   0   8   1    
+3   begin                   keyword   void    0   1   0   12  2    
+4   case                    keyword   void    0   1   0   16  3    
+5   const                   keyword   void    0   1   0   20  4    
+6   div                     keyword   void    0   1   0   24  5    
+7   downto                  keyword   void    0   1   0   28  6    
+8   do                      keyword   void    0   1   0   32  7    
+9   else                    keyword   void    0   1   0   36  8    
+10  end                     keyword   void    0   1   0   40  9    
+11  for                     keyword   void    0   1   0   44  10   
+12  function                keyword   void    0   1   0   48  11   
+13  if                      keyword   void    0   1   0   52  12   
+14  mod                     keyword   void    0   1   0   56  13   
+15  not                     keyword   void    0   1   0   60  14   
+16  of                      keyword   void    0   1   0   64  15   
+17  or                      keyword   void    0   1   0   68  16   
+18  procedure               keyword   void    0   1   0   72  17   
+19  program                 keyword   void    0   1   0   76  18   
+20  record                  keyword   void    0   1   0   80  19   
+21  repeat                  keyword   void    0   1   0   84  20   
+22  then                    keyword   void    0   1   0   88  21   
+23  to                      keyword   void    0   1   0   92  22   
+24  type                    keyword   void    0   1   0   96  23   
+25  until                   keyword   void    0   1   0   100 24   
+26  var                     keyword   void    0   1   0   104 25   
+27  while                   keyword   void    0   1   0   108 26   
+28  integer                 type      integer 0   1   0   112 27   
+29  real                    type      real    0   1   0   116 28   
+30  char                    type      char    0   1   0   120 29   
+31  boolean                 type      boolean 0   1   0   124 30   
+32  string                  type      string  0   1   0   128 31   
+33  writeln                 procedure void    0   1   0   132 32   
+34  println                 procedure void    0   1   0   136 33   
+35  true                    constant  boolean 0   1   0   140 34   
+36  false                   constant  boolean 0   1   0   144 35   
+37  ArionTableFillerTest    program   void    0   1   0   148 36   
+38  HitungKalkulasiKompleks procedure void    1   1   0   152 37   
+39  PengecekanMatriks       function  boolean 2   1   0   156 38   
+40  BarisData               type      array   0   1   0   160 39   
+41  MatriksData             type      array   1   1   0   172 40   
+42  myMatrix                variabel  array   1   1   0   220 41   
+43  globalCounter           variabel  integer 0   1   0   268 42   
+44  p1                      parameter integer 0   1   1   0   0    
+45  p2                      parameter integer 0   1   1   4   44   
+46  opsi                    parameter boolean 0   1   1   8   45   
+47  flag                    parameter char    0   1   1   9   46   
+48  lokalX                  variabel  integer 0   1   1   10  47   
+49  m                       parameter array   0   1   1   0   0    
+50  batas                   parameter integer 0   1   1   48  49   
+
+btab :
+idx last lparam psize vsize 
+------------------------------------------------------------
+0   43   0      0     0     
+1   48   47     10    14    
+2   50   50     52    52    
+
+atab :
+idx inxtyp eltyp   ref low high elsz size 
+------------------------------------------------------------
+0   range  integer 0   1   3    4    12   
+1   range  array   0   1   4    12   48   

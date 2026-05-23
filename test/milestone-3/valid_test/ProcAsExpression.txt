@@ -1,0 +1,9 @@
+program ProcAsExpression;
+
+procedure Hello;
+begin
+end;
+
+begin
+    writeln(Hello);
+end.

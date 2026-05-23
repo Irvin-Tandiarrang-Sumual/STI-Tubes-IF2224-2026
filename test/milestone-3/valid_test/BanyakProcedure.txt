@@ -1,0 +1,19 @@
+program TestBanyakProc;
+
+var
+    data : array[1..3] of integer;
+
+procedure SkenarioA;
+begin
+    data[1] := 100;
+end;
+
+procedure SkenarioB;
+begin
+    data[2] := 200;
+end;
+
+begin
+    SkenarioA();
+    SkenarioB();
+end.

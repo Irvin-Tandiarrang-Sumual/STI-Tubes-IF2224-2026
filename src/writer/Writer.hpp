@@ -7,6 +7,7 @@
 #include <filesystem>
 #include "../lexer/Token.hpp"
 #include "../cst/CSTNodes.hpp"
+#include "../ast/ASTNodes.hpp"
 
 
 class Writer {
@@ -16,8 +17,13 @@ class Writer {
         CSTNodes* root = nullptr;
         const std::vector<std::string> errorMessages_;
 
-        // print tree
-        void writeTreeRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        // print CST tree
+        void writeCSTRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+
+        // print AST tree
+        void writeASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        void writeDecoratedASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
+        std::string formatDecoratedNode(const ASTNode* node) const;
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);
         
@@ -25,10 +31,21 @@ class Writer {
         Writer(const std::string& filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages);
         ~Writer();
 
-        void writeToFile() const;
+        void writeTokenToFile() const;
 
-        void writeTreeToFile() const;
-        void printTree() const;
+
+        void writeCSTToFile() const;
+        void printCST() const;
         void printParserError() const;
+
+        // AST output helpers (accept an AST root pointer)
+        void writeASTToFile(const ASTNode* rootAst) const;
+        void printAST(const ASTNode* rootAst) const;
+        void writeDecoratedASTToFile(const ASTNode* rootAst) const;
+        void printDecoratedAST(const ASTNode* rootAst) const;
+        void writeDecoratedASTWithTablesToFile(const ASTNode* rootAst, const std::string& tablesText) const;
+        void printDecoratedASTWithTables(const ASTNode* rootAst, const std::string& tablesText) const;
+
+        // semantic
 
 };

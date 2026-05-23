@@ -1,0 +1,15 @@
+program ArionAtabAnonymousMultiDim;
+
+var
+    {* Array 2D Anonim langsung di variabel dengan tipe elemen 'real' *}
+    {* Ini akan memaksa kompilator membuat 2 entri di atab secara otomatis *}
+    matriksSederhana : array[1..3] of array[1..4] of real;
+    
+    {* Array 1D biasa sebagai pembanding di indeks berikutnya *}
+    vektorAngka : array[1..10] of integer;
+
+begin
+    matriksSederhana[1][1] := 1.23;
+    vektorAngka[1] := 10;
+    writeln('Test case array anonim selesai.');
+end.

@@ -1,10 +1,15 @@
 #include "Compiler.hpp"
+#include "semanticanalyzer/SemanticAnalyzer.hpp"
 
-#include <iostream>
 
 Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
-    : inputPath(path), outputDir(outputDir) {}
-Compiler::~Compiler() = default;
+    : inputPath(path), outputDir(outputDir), cstRoot_(nullptr) {}
+Compiler::~Compiler() {
+    if (cstRoot_ != nullptr) {
+        delete cstRoot_;
+        cstRoot_ = nullptr;
+    }
+}
 
 // sekaligus ngelakuin write kali yak :/
 void Compiler::lexer() {
@@ -31,7 +36,7 @@ void Compiler::lexer() {
     }
 
     Writer writer(fullPath.string(), tokens_);
-    writer.writeToFile();
+    writer.writeTokenToFile();
 }
 
 void Compiler::parser() {
@@ -42,6 +47,8 @@ void Compiler::parser() {
     std::cout << "Processing parser...\n";
     Parser parser(tokens_);
     CSTNodes* root = parser.parse();
+    // keep ownership of the CST root for later semantic analysis
+    cstRoot_ = root;
 
     const std::string baseName = inputPath.stem().string();
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-parse-tree.txt");
@@ -50,10 +57,65 @@ void Compiler::parser() {
         std::filesystem::create_directories(outputDir);
     }
 
-    Writer writer(fullPath.string(), root, parser.getErrors());
-    writer.printTree();
-    writer.writeTreeToFile();
+    cstErrors_ = parser.getErrors();
+
+    Writer writer(fullPath.string(), root, cstErrors_);
+    writer.printCST();
+    writer.writeCSTToFile();
     writer.printParserError();
 
-    delete root;
+}
+
+void Compiler::semantic() {
+    if (!cstErrors_.empty()) {
+        std::cout << "Terdapat Error pada Proses-Proses Sebelumnya, Semantic tidak dapat dilanjutkan\n";
+        return;
+    }
+
+    std::cout << "Processing Semantic Analysis...\n";
+    ASTBuilder builder;
+
+    ASTProgramNode* astRoot = builder.build(cstRoot_);
+    if (astRoot == nullptr) {
+        throw std::runtime_error("Semantic error: AST root tidak dapat dibangun.");
+    }
+
+    SemanticAnalyzer semanticAnalyzer;
+    semanticAnalyzer.analyze(astRoot);
+    std::string tablesText = semanticAnalyzer.dumpTables();
+
+    const auto& semanticErrors = semanticAnalyzer.getErrors();
+
+
+    const std::string baseName = inputPath.stem().string();
+    const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-ast.txt");
+
+    if (!std::filesystem::exists(outputDir)) {
+        std::filesystem::create_directories(outputDir);
+    }
+
+    Writer writer(fullPath.string(), cstRoot_, cstErrors_);
+
+    writer.printDecoratedASTWithTables(astRoot, tablesText);
+    writer.writeDecoratedASTWithTablesToFile(astRoot, tablesText);
+
+    if (!semanticErrors.empty()) {
+        std::cout << "\n=== Semantic Errors ===\n";
+        for (const auto& err : semanticErrors) {
+            std::cout << err << "\n";
+        }
+        std::cout << "=======================\n\n";
+    }
+
+    const auto& warnings = semanticAnalyzer.getWarnings();
+
+    if (!warnings.empty()) {
+        std::cout << "\n=== Semantic Warnings ===\n";
+        for (const std::string& warning : warnings) {
+            std::cout << warning << "\n";
+        }
+        std::cout << "==========================\n";
+    }
+    
+    delete astRoot;
 }

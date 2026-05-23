@@ -1,0 +1,11 @@
+program TestArray;
+
+type
+    IntArray == array[1..10] of integer;
+
+var
+    A : IntArray;
+
+begin
+    A[1] := 100;
+end.

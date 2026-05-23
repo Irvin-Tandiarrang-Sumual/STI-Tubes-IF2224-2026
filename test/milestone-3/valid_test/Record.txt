@@ -1,0 +1,17 @@
+program TestRecord;
+
+type
+    Person == record
+        age: integer;
+        initial: char
+    end;
+
+var
+    p : Person;
+
+begin
+    p.age := 20;
+    p.initial := 'A';
+    writeln(p.age);
+    writeln(p.initial);
+end.

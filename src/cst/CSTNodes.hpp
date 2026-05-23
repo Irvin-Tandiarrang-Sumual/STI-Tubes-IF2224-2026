@@ -28,6 +28,9 @@ class CSTNodes {
         const CodeLocation& getLocation() const;
         const std::vector<CSTNodes*>& getChildren() const;
         const std::string toString() const;
+        const CSTNodes* childAt(std::size_t index) const;
+        const CSTNodes* firstChildOf(NonTerminal nt) const;
+        const CSTNodes* firstTokenOf(TokenType type) const;
         ~CSTNodes();
         
 };

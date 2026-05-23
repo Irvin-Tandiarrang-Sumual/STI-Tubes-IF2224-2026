@@ -1,0 +1,9 @@
+program InvalidTypeFor;
+
+var
+    r : real;
+
+begin
+    for r := 1 to 10 do
+        writeln(r);
+end.

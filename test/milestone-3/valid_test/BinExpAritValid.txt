@@ -1,0 +1,11 @@
+program TestBinExpAritValid;
+
+var
+    a, b : integer;
+    c : real;
+
+begin
+    a := 10;
+    b := 5;
+    c := a + b * 2;
+end.
