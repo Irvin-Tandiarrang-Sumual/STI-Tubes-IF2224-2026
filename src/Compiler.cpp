@@ -106,6 +106,16 @@ void Compiler::semantic() {
         }
         std::cout << "=======================\n\n";
     }
+
+    const auto& warnings = semanticAnalyzer.getWarnings();
+
+    if (!warnings.empty()) {
+        std::cout << "\n=== Semantic Warnings ===\n";
+        for (const std::string& warning : warnings) {
+            std::cout << warning << "\n";
+        }
+        std::cout << "==========================\n";
+    }
     
     delete astRoot;
 }
