@@ -104,8 +104,8 @@ void Writer::writeASTRecursive(std::ostream& out, const ASTNode* node, const std
     if (depth == 0) {
         out << node->toString() << '\n';
     } else {
-        out << prefix;
-        out << (isLast ? "└── " : "├── ");
+        out << prefix << "|\n";
+        out << prefix << (isLast ? "\\-- " : "+-- ");
         out << node->toString() << '\n';
     }
 
@@ -114,8 +114,8 @@ void Writer::writeASTRecursive(std::ostream& out, const ASTNode* node, const std
         bool childIsLast = (i == children.size() - 1);
         std::string childPrefix = prefix;
 
-        if (depth == 0) childPrefix.clear();
-        else childPrefix += (isLast ? "    " : "│   ");
+        if (depth == 0) childPrefix = "  ";
+        else childPrefix += (isLast ? "    " : "|   ");
 
         writeASTRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
     }
@@ -140,8 +140,8 @@ void Writer::writeDecoratedASTRecursive(std::ostream& out, const ASTNode* node, 
     if (depth == 0) {
         out << formatDecoratedNode(node) << '\n';
     } else {
-        out << prefix;
-        out << (isLast ? "└── " : "├── ");
+        out << prefix << "|\n";
+        out << prefix << (isLast ? "\\-- " : "+-- ");
         out << formatDecoratedNode(node) << '\n';
     }
 
@@ -150,8 +150,8 @@ void Writer::writeDecoratedASTRecursive(std::ostream& out, const ASTNode* node, 
         bool childIsLast = (i == children.size() - 1);
         std::string childPrefix = prefix;
 
-        if (depth == 0) childPrefix.clear();
-        else childPrefix += (isLast ? "    " : "│   ");
+        if (depth == 0) childPrefix = "  ";
+        else childPrefix += (isLast ? "    " : "|   ");
 
         writeDecoratedASTRecursive(out, children[i], childPrefix, childIsLast, depth + 1);
     }
