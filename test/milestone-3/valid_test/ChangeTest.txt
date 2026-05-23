@@ -1,0 +1,61 @@
+program StressTestMilestoneThree;
+
+{ Menguji Konstanta dan Tipe Data Komposit }
+const
+  LIMIT == 50;
+
+type
+  MyArray == array[1..10] of integer;
+
+var
+  globalVal: integer;
+  myArr: MyArray;
+
+{ Menguji Shadowing dan Kompatibilitas Tipe }
+function ComplexLogic(a: integer; b: integer): integer;
+var
+  temp: integer;
+begin
+  temp := (a + b) div 2; { Memastikan 'div' bekerja untuk integer }
+  ComplexLogic := temp;
+end;
+
+{ Menguji Repeat-Until }
+procedure TestRepeat(n: integer);
+var
+  counter: integer;
+begin
+  counter := 0;
+  repeat
+    counter := counter + 1;
+    writeln('Counter: ', counter);
+  until counter == n;
+end;
+
+{ PROGRAM UTAMA }
+begin
+  { 1. Pengujian Array }
+  myArr[1] := 10;
+  globalVal := myArr[1] * 2;
+
+  { 2. Pengujian Procedure & Function }
+  TestRepeat(5);
+  globalVal := ComplexLogic(globalVal, 20);
+
+  { 3. Pengecekan Keamanan }
+  
+  { Error A: Type Mismatch (Coba isi integer dengan boolean) }
+  globalVal := true; 
+
+  { Error B: Assignment ke Konstanta }
+  LIMIT := 100;
+
+  { Error C: Array Index Out of Range (Jika kompilator kalian cukup pintar) }
+  myArr[11] := 99;
+
+  { Error D: Call Prosedur tanpa parameter }
+  TestRepeat(); 
+
+  { Error E: Parameter tipe salah }
+  ComplexLogic(true, false);
+end.
