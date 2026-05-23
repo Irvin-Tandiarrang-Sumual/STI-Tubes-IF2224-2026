@@ -15,6 +15,161 @@ void SemanticAnalyzer::reportError(const ASTNode* node, const std::string& messa
     errors_.push_back("[line " + std::to_string(line) + ", col " + std::to_string(col) + "] " + message);
 }
 
+void SemanticAnalyzer::reportWarning(const std::string& message) {
+    warnings_.push_back(message);
+}
+
+void SemanticAnalyzer::reportWarning(const ASTNode* node, const std::string& message) {
+    if (node == nullptr) {
+        reportWarning(message);
+        return;
+    }
+
+    const auto line = node->location_.line;
+    const auto col = node->location_.col;
+
+    warnings_.push_back(
+        "[line " + std::to_string(line) +
+        ", col " + std::to_string(col) + "] " +
+        "Warning: " + message
+    );
+}
+
+const std::vector<std::string>& SemanticAnalyzer::getWarnings() const {
+    return warnings_;
+}
+
+bool SemanticAnalyzer::extractConstantNumber(ASTExpressionNode* expression, double& outValue) {
+    if (expression == nullptr) {
+        return false;
+    }
+
+    auto* literal = dynamic_cast<ASTLiteralExpressionNode*>(expression);
+    if (literal == nullptr) {
+        return false;
+    }
+
+    if (std::holds_alternative<int>(literal->value)) {
+        outValue = static_cast<double>(std::get<int>(literal->value));
+        return true;
+    }
+
+    if (std::holds_alternative<double>(literal->value)) {
+        outValue = std::get<double>(literal->value);
+        return true;
+    }
+
+    return false;
+}
+
+bool SemanticAnalyzer::extractConstantBoolean(ASTExpressionNode* expression, bool& outValue) {
+    if (expression == nullptr) {
+        return false;
+    }
+
+    auto* literal = dynamic_cast<ASTLiteralExpressionNode*>(expression);
+    if (literal == nullptr) {
+        return false;
+    }
+
+    if (std::holds_alternative<bool>(literal->value)) {
+        outValue = std::get<bool>(literal->value);
+        return true;
+    }
+
+    return false;
+}
+
+SemanticAnalyzer::ConstantBoolResult SemanticAnalyzer::evaluateConstantBoolean(ASTExpressionNode* expression) {
+    if (expression == nullptr) {
+        return ConstantBoolResult::Unknown;
+    }
+
+    bool boolValue = false;
+    if (extractConstantBoolean(expression, boolValue)) {
+        return boolValue ? ConstantBoolResult::AlwaysTrue : ConstantBoolResult::AlwaysFalse;
+    }
+
+    auto* unary = dynamic_cast<ASTUnaryExpressionNode*>(expression);
+    if (unary != nullptr && unary->op == "not") {
+        ConstantBoolResult operand = evaluateConstantBoolean(unary->operand);
+
+        if (operand == ConstantBoolResult::AlwaysTrue) {
+            return ConstantBoolResult::AlwaysFalse;
+        }
+
+        if (operand == ConstantBoolResult::AlwaysFalse) {
+            return ConstantBoolResult::AlwaysTrue;
+        }
+
+        return ConstantBoolResult::Unknown;
+    }
+
+    auto* binary = dynamic_cast<ASTBinaryExpressionNode*>(expression);
+    if (binary == nullptr) {
+        return ConstantBoolResult::Unknown;
+    }
+
+    const std::string& op = binary->op;
+
+    if (op == "and" || op == "or") {
+        ConstantBoolResult left = evaluateConstantBoolean(binary->lhs);
+        ConstantBoolResult right = evaluateConstantBoolean(binary->rhs);
+
+        if (op == "and") {
+            if (left == ConstantBoolResult::AlwaysFalse || right == ConstantBoolResult::AlwaysFalse) {
+                return ConstantBoolResult::AlwaysFalse;
+            }
+
+            if (left == ConstantBoolResult::AlwaysTrue && right == ConstantBoolResult::AlwaysTrue) {
+                return ConstantBoolResult::AlwaysTrue;
+            }
+        }
+
+        if (op == "or") {
+            if (left == ConstantBoolResult::AlwaysTrue || right == ConstantBoolResult::AlwaysTrue) {
+                return ConstantBoolResult::AlwaysTrue;
+            }
+
+            if (left == ConstantBoolResult::AlwaysFalse && right == ConstantBoolResult::AlwaysFalse) {
+                return ConstantBoolResult::AlwaysFalse;
+            }
+        }
+
+        return ConstantBoolResult::Unknown;
+    }
+
+    if (op == "==" || op == "<>" || op == ">" || op == ">=" || op == "<" || op == "<=") {
+        double leftNumber = 0;
+        double rightNumber = 0;
+
+        if (!extractConstantNumber(binary->lhs, leftNumber) ||
+            !extractConstantNumber(binary->rhs, rightNumber)) {
+            return ConstantBoolResult::Unknown;
+        }
+
+        bool result = false;
+
+        if (op == "==") {
+            result = leftNumber == rightNumber;
+        } else if (op == "<>") {
+            result = leftNumber != rightNumber;
+        } else if (op == ">") {
+            result = leftNumber > rightNumber;
+        } else if (op == ">=") {
+            result = leftNumber >= rightNumber;
+        } else if (op == "<") {
+            result = leftNumber < rightNumber;
+        } else if (op == "<=") {
+            result = leftNumber <= rightNumber;
+        }
+
+        return result ? ConstantBoolResult::AlwaysTrue : ConstantBoolResult::AlwaysFalse;
+    }
+
+    return ConstantBoolResult::Unknown;
+}
+
 void SemanticAnalyzer::safeVisitNode(ASTNode* node) {
     if (node == nullptr) {
         return;
@@ -346,6 +501,7 @@ SemanticAnalyzer::SemanticAnalyzer() {
 
 void SemanticAnalyzer::analyze(ASTProgramNode* root) {
     errors_.clear();
+    warnings_.clear();
     safeVisitNode(root);
 }
 

@@ -21,6 +21,17 @@ private:
     SymbolTable symbolTable;
     int currentLevel = 0;
     std::vector<std::string> errors_;
+
+    std::vector<std::string> warnings_;
+    enum class ConstantBoolResult {
+        Unknown,
+        AlwaysTrue,
+        AlwaysFalse
+    };
+    ConstantBoolResult evaluateConstantBoolean(ASTExpressionNode* expression);
+    bool extractConstantNumber(ASTExpressionNode* expression, double& outValue);
+    bool extractConstantBoolean(ASTExpressionNode* expression, bool& outValue);
+
     std::unordered_map<std::string, ASTTypeNode*> namedTypeDefinitions_;
     std::unordered_map<int, ASTTypeNode*> identifierTypeNodes_;
     std::unordered_map<int, std::unordered_set<std::string>> predeclaredSubprogramNames_;
@@ -31,6 +42,10 @@ private:
 
     void reportError(const std::string& message);
     void reportError(const ASTNode* node, const std::string& message);
+
+    void reportWarning(const std::string& message);
+    void reportWarning(const ASTNode* node, const std::string& message);
+
     void safeVisitNode(ASTNode* node);
 
     DataType mapStringToDataType(const std::string& typeStr);
@@ -59,6 +74,7 @@ public:
 
     void analyze(ASTProgramNode* root);
     const std::vector<std::string>& getErrors() const;
+    const std::vector<std::string>& getWarnings() const;
     bool hasErrors() const;
     std::string dumpTables() const;
 
