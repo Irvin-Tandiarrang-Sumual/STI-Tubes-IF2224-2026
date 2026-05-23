@@ -1,13 +1,10 @@
 program TestCase;
-
 var
-    x : integer;
-
+  x : integer;
 begin
-    x := 2;
-
-    case x of
-        1: writeln('one');
-        2: writeln('two');
-    end;
+  x := 2;
+  case x of
+     1: writeln('one');
+      2: writeln('two');
+  end;
 end.

@@ -1,0 +1,86 @@
+Program: TestNestedArray {type=VOID, ref=35, lev=0}
+├── Declarations {type=VOID, ref=-1, lev=0}
+│   ├── VarDecl(name: 'arrGlobal', type: 'ArrayType') {type=ARRAY, ref=37, lev=0}
+│   └── SubprogramDeclaration: BlokLuar {type=VOID, ref=36, lev=0}
+│       ├── VarDecl(name: 'arrLuar', type: 'ArrayType') {type=ARRAY, ref=39, lev=1}
+│       ├── SubprogramDeclaration: BlokDalam {type=VOID, ref=38, lev=1}
+│       │   ├── VarDecl(name: 'arrDalam', type: 'ArrayType') {type=ARRAY, ref=40, lev=2}
+│       │   └── Block {type=VOID, ref=-1, lev=0}
+│       │       ├── Assignment {type=VOID, ref=-1, lev=0}
+│       │       │   ├── Variable: arrDalam[] {type=INTEGER, ref=40, lev=2}
+│       │       │   │   └── Literal: 1 {type=INTEGER, ref=-1, lev=0}
+│       │       │   └── Literal: 99 {type=INTEGER, ref=-1, lev=0}
+│       │       ├── Assignment {type=VOID, ref=-1, lev=0}
+│       │       │   ├── Variable: arrLuar[] {type=INTEGER, ref=39, lev=1}
+│       │       │   │   └── Literal: 1 {type=INTEGER, ref=-1, lev=0}
+│       │       │   └── Variable: arrDalam[] {type=INTEGER, ref=40, lev=2}
+│       │       │       └── Literal: 1 {type=INTEGER, ref=-1, lev=0}
+│       │       └── EmptyStatement {type=VOID, ref=-1, lev=0}
+│       └── Block {type=VOID, ref=-1, lev=0}
+│           ├── CallStatement {type=VOID, ref=-1, lev=0}
+│           │   └── Call: BlokDalam {type=VOID, ref=38, lev=1}
+│           └── EmptyStatement {type=VOID, ref=-1, lev=0}
+└── Block {type=VOID, ref=-1, lev=0}
+    ├── CallStatement {type=VOID, ref=-1, lev=0}
+    │   └── Call: BlokLuar {type=VOID, ref=36, lev=0}
+    └── EmptyStatement {type=VOID, ref=-1, lev=0}
+
+=== Symbol Tables ===
+tab :
+idx  id              type  ref   nrm   lev   adr   link  
+------------------------------------------------------------
+0    <dummy>         9     0     1     0     0     0     
+1    and             9     0     1     0     4     0     
+2    array           9     0     1     0     8     1     
+3    begin           9     0     1     0     12    2     
+4    case            9     0     1     0     16    3     
+5    const           9     0     1     0     20    4     
+6    div             9     0     1     0     24    5     
+7    downto          9     0     1     0     28    6     
+8    do              9     0     1     0     32    7     
+9    else            9     0     1     0     36    8     
+10   end             9     0     1     0     40    9     
+11   for             9     0     1     0     44    10    
+12   function        9     0     1     0     48    11    
+13   if              9     0     1     0     52    12    
+14   mod             9     0     1     0     56    13    
+15   not             9     0     1     0     60    14    
+16   of              9     0     1     0     64    15    
+17   or              9     0     1     0     68    16    
+18   procedure       9     0     1     0     72    17    
+19   program         9     0     1     0     76    18    
+20   record          9     0     1     0     80    19    
+21   repeat          9     0     1     0     84    20    
+22   then            9     0     1     0     88    21    
+23   to              9     0     1     0     92    22    
+24   type            9     0     1     0     96    23    
+25   until           9     0     1     0     100   24    
+26   var             9     0     1     0     104   25    
+27   while           9     0     1     0     108   26    
+28   integer         1     0     1     0     112   27    
+29   real            0     0     1     0     116   28    
+30   char            2     0     1     0     120   29    
+31   boolean         3     0     1     0     124   30    
+32   string          4     0     1     0     128   31    
+33   writeln         9     0     1     0     132   32    
+34   println         9     0     1     0     136   33    
+35   TestNestedArray 9     0     1     0     140   34    
+36   BlokLuar        9     1     1     0     144   35    
+37   arrGlobal       7     0     1     0     148   36    
+38   BlokDalam       9     2     1     1     0     0     
+39   arrLuar         7     1     1     1     4     38    
+40   arrDalam        7     2     1     2     0     0     
+
+btab :
+idx  last    lparam    psize   vsize   
+------------------------------------------------------------
+0    37      0         0       0       
+1    39      0         0       8       
+2    40      0         0       4       
+
+atab :
+idx  inxtyp  eltyp   ref   low   high  elsz  size  
+------------------------------------------------------------
+0    5       1       0     1     5     4     20    
+1    5       1       0     1     10    4     40    
+2    5       1       0     1     20    4     80    
