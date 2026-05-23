@@ -1,0 +1,23 @@
+program ArionAtabShiftRefTest;
+
+type
+    {* 1. Array ini akan masuk ke atab indeks 0 *}
+    DaftarSkor == array[1..5] of integer;
+
+    {* 2. Array ini akan masuk ke atab indeks 1 *}
+    KomponenBaris == array[1..3] of real;
+    
+    {* 3. Array dari Array (Multi-dimensi) *}
+    {* Karena tipe elemennya adalah 'KomponenBaris' (yang ada di atab indeks 1), *}
+    {* Maka kolom 'ref' di atab indeks 2 SEHARUSNYA BERISI ANGKA 1! *}
+    MatriksUtama == array[1..4] of KomponenBaris;
+
+var
+    tabelGrid : MatriksUtama;
+    listNilai : DaftarSkor;
+
+begin
+    listNilai[1] := 100;
+    tabelGrid[1][1] := 9.99;
+    writeln('Test shift indeks atab selesai.');
+end.

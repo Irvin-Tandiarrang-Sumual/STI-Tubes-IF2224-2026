@@ -35,7 +35,7 @@ void SymbolTable::exitBlock() {
     offsetHistory_.pop_back();
 }
 
-int SymbolTable::insertVariable(const std::string& name, DataType type, int ref) {
+int SymbolTable::insertVariable(const std::string& name, DataType type, int ref, int storageSize) {
     BlockTableEntry& currentBlock = btab_.get(currentBlockIdx_);
     int previousLink = currentBlock.last;
 
@@ -55,8 +55,11 @@ int SymbolTable::insertVariable(const std::string& name, DataType type, int ref)
 
     currentBlock.last = newIdx;
 
-    // default 4 byte per variabel dasar
-    currentAddressOffset_ += 4;
+    if (storageSize < 0) {
+        storageSize = 4;
+    }
+
+    currentAddressOffset_ += storageSize;
 
     return newIdx;
 }

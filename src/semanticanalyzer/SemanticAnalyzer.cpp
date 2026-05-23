@@ -329,12 +329,31 @@ int SemanticAnalyzer::estimateTypeStorageSize(ASTTypeNode* typeNode) {
         return 4;
     }
 
+    if (auto* primitiveType = dynamic_cast<ASTPrimitiveType*>(resolved)) {
+        if (primitiveType->type == "real") {
+            return 8;
+        }
+        if (primitiveType->type == "char" || primitiveType->type == "boolean") {
+            return 1;
+        }
+        return 4;
+    }
+
     if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolved)) {
         int arrayRef = ensureArrayTypeEntry(arrayType);
         if (arrayRef >= 0) {
             return symbolTable.getArrayEntry(arrayRef).size;
         }
         return 4;
+    }
+
+    if (auto* recordType = dynamic_cast<ASTRecordTypeNode*>(resolved)) {
+        int totalSize = 0;
+        for (const auto& field : recordType->fields) {
+            int fieldSize = estimateTypeStorageSize(field.type);
+            totalSize += static_cast<int>(field.identifiers.size()) * fieldSize;
+        }
+        return totalSize > 0 ? totalSize : 4;
     }
 
     return 4;
@@ -371,6 +390,13 @@ int SemanticAnalyzer::ensureArrayTypeEntry(ASTArrayTypeNode* node) {
         compositeRef = ensureArrayTypeEntry(nestedArray);
         if (compositeRef >= 0) {
             elementSize = symbolTable.getArrayEntry(compositeRef).size;
+        }
+    } else if (dynamic_cast<ASTRecordTypeNode*>(elementTypeNode) != nullptr) {
+        if (auto* namedElementType = dynamic_cast<ASTNamedTypeNode*>(node->elementType)) {
+            int typeIdx = symbolTable.lookup(namedElementType->typeName);
+            if (typeIdx >= 0) {
+                compositeRef = typeIdx;
+            }
         }
     }
 

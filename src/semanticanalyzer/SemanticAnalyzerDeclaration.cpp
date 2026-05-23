@@ -24,19 +24,58 @@ std::any SemanticAnalyzer::visitTypeDeclarationNode(ASTTypeDeclarationNode* node
     DataType typeKind = std::any_cast<DataType>(node->typeDefinition->accept(this));
     int typeReference = 0;
 
-    if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolveTypeNode(node->typeDefinition))) {
-        typeReference = ensureArrayTypeEntry(arrayType);
-    }
-
     int existingIdx = symbolTable.lookup(node->name);
     if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
         throw std::runtime_error("Semantic Error: Tipe '" + node->name + "' sudah dideklarasikan di scope ini!");
     }
 
-    int refIdx = symbolTable.insertVariable(node->name, typeKind, typeReference);
+    int refIdx = symbolTable.insertVariable(node->name, typeKind, typeReference, estimateTypeStorageSize(node->typeDefinition));
     IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
     entry.typeName = node->name;
     entry.obj = "type";
+
+    ASTTypeNode* resolvedTypeNode = resolveTypeNode(node->typeDefinition);
+    if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolvedTypeNode)) {
+        typeReference = ensureArrayTypeEntry(arrayType);
+        entry.reference = typeReference;
+    } else if (auto* recordType = dynamic_cast<ASTRecordTypeNode*>(resolvedTypeNode)) {
+        currentLevel++;
+        symbolTable.enterBlock();
+        int recordBlockIdx = symbolTable.getCurrentBlockIdx();
+
+        for (const auto& field : recordType->fields) {
+            DataType fieldType = std::any_cast<DataType>(field.type->accept(this));
+            ASTTypeNode* fieldTypeNode = resolveTypeNode(field.type);
+
+            int fieldRef = 0;
+            if (fieldType == DataType::ARRAY) {
+                if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(fieldTypeNode)) {
+                    fieldRef = ensureArrayTypeEntry(arrayType);
+                }
+            } else if (fieldType == DataType::RECORD) {
+                if (auto* namedFieldType = dynamic_cast<ASTNamedTypeNode*>(field.type)) {
+                    int typeIdx = symbolTable.lookup(namedFieldType->typeName);
+                    if (typeIdx != -1) {
+                        fieldRef = symbolTable.getIdentifier(typeIdx).reference;
+                    }
+                }
+            }
+
+            for (const auto& identifier : field.identifiers) {
+                int fieldIdx = symbolTable.insertVariable(identifier, fieldType, fieldRef, estimateTypeStorageSize(field.type));
+                IdentifierTableEntry& fieldEntry = symbolTable.getIdentifier(fieldIdx);
+                fieldEntry.obj = "field";
+                fieldEntry.normal = true;
+                fieldEntry.typeName = field.type != nullptr ? field.type->toString() : "";
+                rememberIdentifierType(fieldIdx, fieldTypeNode != nullptr ? fieldTypeNode : field.type);
+            }
+        }
+
+        typeReference = recordBlockIdx;
+        symbolTable.exitBlock();
+        currentLevel--;
+        entry.reference = typeReference;
+    }
 
     if (auto* recordType = dynamic_cast<ASTRecordTypeNode*>(node->typeDefinition)) {
         recordType->isAnonymous = false;
@@ -64,7 +103,7 @@ std::any SemanticAnalyzer::visitConstDeclarationNode(ASTConstDeclarationNode* no
         throw std::runtime_error("Semantic Error: Konstanta '" + node->name + "' sudah dideklarasikan di scope ini!");
     }
 
-    int refIdx = symbolTable.insertVariable(node->name, constType);
+    int refIdx = symbolTable.insertVariable(node->name, constType, 0, 4);
     IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
     entry.normal = true;
     entry.isConstant = true;
@@ -104,9 +143,16 @@ std::any SemanticAnalyzer::visitVarDeclarationNode(ASTVarDeclarationNode* node) 
         if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolvedTypeNode)) {
             arrayRef = ensureArrayTypeEntry(arrayType);
         }
+    } else if (varType == DataType::RECORD) {
+        if (auto* namedTypeNode = dynamic_cast<ASTNamedTypeNode*>(resolvedTypeNode)) {
+            int typeIdx = symbolTable.lookup(namedTypeNode->typeName);
+            if (typeIdx != -1) {
+                arrayRef = symbolTable.getIdentifier(typeIdx).reference;
+            }
+        }
     }
 
-    int refIdx = symbolTable.insertVariable(varName, varType, arrayRef);
+    int refIdx = symbolTable.insertVariable(varName, varType, arrayRef, estimateTypeStorageSize(node->type != nullptr ? node->type : nullptr));
     
     symbolTable.getIdentifier(refIdx).typeName = registeredTypeName;
     symbolTable.getIdentifier(refIdx).obj = "variabel";
@@ -215,11 +261,25 @@ std::any SemanticAnalyzer::visitRecordTypeNode(ASTRecordTypeNode* node) {
 
 std::any SemanticAnalyzer::visitEnumeratedTypeNode(ASTEnumeratedTypeNode* node) {
     std::unordered_map<std::string, bool> seen;
-    for (const auto& element : node->elements) {
+    for (std::size_t i = 0; i < node->elements.size(); ++i) {
+        const auto& element = node->elements[i];
         if (seen.find(element) != seen.end()) {
             throw std::runtime_error("Semantic Error: Identifier enum '" + element + "' duplikat.");
         }
         seen[element] = true;
+
+        int existingIdx = symbolTable.lookup(element);
+        if (existingIdx != -1 && symbolTable.getIdentifier(existingIdx).level == currentLevel) {
+            throw std::runtime_error("Semantic Error: Identifier enum '" + element + "' sudah dideklarasikan di scope ini!");
+        }
+
+        int refIdx = symbolTable.insertVariable(element, DataType::ENUMERATED, 0, 4);
+        IdentifierTableEntry& entry = symbolTable.getIdentifier(refIdx);
+        entry.normal = true;
+        entry.isConstant = true;
+        entry.obj = "constant";
+        entry.address = static_cast<int>(i);
+        rememberIdentifierType(refIdx, node);
     }
     node->isAnonymous = true;
     node->evalType_ = DataType::ENUMERATED;
@@ -235,7 +295,7 @@ std::any SemanticAnalyzer::visitProcedureDeclarationNode(ASTProcedureDeclaration
 
     int procIdx = existingIdx;
     if (procIdx == -1 || symbolTable.getIdentifier(procIdx).level != currentLevel) {
-        procIdx = symbolTable.insertVariable(node->name, DataType::VOID);
+        procIdx = symbolTable.insertVariable(node->name, DataType::VOID, 0, 4);
         predeclaredSubprogramNames_[currentLevel].insert(node->name);
     }
     symbolTable.getIdentifier(procIdx).typeName = node->name;
@@ -259,7 +319,7 @@ std::any SemanticAnalyzer::visitProcedureDeclarationNode(ASTProcedureDeclaration
         ASTTypeNode* paramTypeNode = resolveTypeNode(paramGroup.type);
         for (const auto& paramName : paramGroup.identifiers) {
             symbolTable.getIdentifier(procIdx).parameterTypes.push_back(paramType);
-            int paramIdx = symbolTable.insertVariable(paramName, paramType);
+            int paramIdx = symbolTable.insertVariable(paramName, paramType, 0, estimateTypeStorageSize(paramGroup.type));
             symbolTable.getIdentifier(paramIdx).normal = true;
             symbolTable.getIdentifier(paramIdx).obj = "parameter";
             rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
@@ -303,7 +363,7 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
 
     int funcIdx = existingIdx;
     if (funcIdx == -1 || symbolTable.getIdentifier(funcIdx).level != currentLevel) {
-        funcIdx = symbolTable.insertVariable(node->name, returnType);
+        funcIdx = symbolTable.insertVariable(node->name, returnType, 0, 4);
         predeclaredSubprogramNames_[currentLevel].insert(node->name);
     }
     symbolTable.getIdentifier(funcIdx).typeName = node->name;
@@ -327,7 +387,7 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
         ASTTypeNode* paramTypeNode = resolveTypeNode(paramGroup.type);
         for (const auto& paramName : paramGroup.identifiers) {
             symbolTable.getIdentifier(funcIdx).parameterTypes.push_back(paramType);
-            int paramIdx = symbolTable.insertVariable(paramName, paramType);
+            int paramIdx = symbolTable.insertVariable(paramName, paramType, 0, estimateTypeStorageSize(paramGroup.type));
             symbolTable.getIdentifier(paramIdx).normal = true;
             symbolTable.getIdentifier(paramIdx).obj = "parameter";
             rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);

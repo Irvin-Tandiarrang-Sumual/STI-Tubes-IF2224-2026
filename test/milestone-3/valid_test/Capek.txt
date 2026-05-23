@@ -1,0 +1,71 @@
+program ArionUltimateEnterpriseTest;
+
+const
+    MaksGrup == 3;
+    MaksStaf == 2;
+    BonusAdmin == 1500;
+
+type
+    {* 1. Registrasi Dua Tipe Enum *}
+    DivisiKaryawan == (IT, Keuangan, HRD);
+    LevelPangkat   == (Junior, Senior, Manager);
+
+    {* 2. Record Tingkat Dalam (Sistem Kontrak) *}
+    SkemaKontrak == record
+        pangkat    : LevelPangkat;
+        isAktif    : boolean;
+        masaKerja  : integer
+    end;
+
+    {* 3. Record Tingkat Menengah (Detail Profil) Bersarang *}
+    ProfilKaryawan == record
+        idKaryawan : integer;
+        divisi     : DivisiKaryawan;
+        kontrak    : SkemaKontrak      {* Nested Record *}
+    end;
+
+    {* 4. Array Multi-Dimensi dari Record *}
+    {* Struktur: Array [Grup] -> Array [Staf] -> Struktur Record Profil *}
+    MatriksPerusahaan == array[1..3] of array[1..2] of ProfilKaryawan;
+
+var
+    korporasi   : MatriksPerusahaan;
+    grupIdx     : integer;
+    stafIdx     : integer;
+    totalGaji   : integer;
+
+begin
+    {* --- TAHAP 1: EKSTREM ASSIGNMENT & EVALUASI ALAMAT (ADR) --- *}
+    grupIdx := 2;
+    stafIdx := 1;
+
+    {* Akses Jalur Sutra: Array 2D -> Record -> Record -> Field *}
+    korporasi[grupIdx][stafIdx].idKaryawan := 777;
+    korporasi[grupIdx][stafIdx].divisi := IT;
+    korporasi[grupIdx][stafIdx].kontrak.pangkat := Senior;
+    korporasi[grupIdx][stafIdx].kontrak.isAktif := true;
+    korporasi[grupIdx][stafIdx].kontrak.masaKerja := 5;
+
+    totalGaji := 5000;
+
+    {* --- TAHAP 2: PENGUJIAN INTEGRASI NESTED CASE STATEMENT --- *}
+    {* Menguji Parser & Semantik terhadap scope Case bertingkat tanpa Else *}
+    case korporasi[grupIdx][stafIdx].divisi of
+        IT:
+                {* Case Tingkat 2: Mengecek pangkat di dalam nested record *}
+                case korporasi[grupIdx][stafIdx].kontrak.pangkat of
+                    Junior:
+                        totalGaji := totalGaji + 500;
+                    Senior:
+                            totalGaji := totalGaji + 2000;
+                    Manager:
+                        totalGaji := totalGaji + 5000
+                end;
+        Keuangan, HRD:
+                totalGaji := totalGaji + BonusAdmin;
+    end;
+
+    {* --- TAHAP 3: OUTPUT AKHIR --- *}
+    writeln('Proses Semantik Selesai. Total Gaji Terhitung:');
+    writeln(totalGaji);
+end.
