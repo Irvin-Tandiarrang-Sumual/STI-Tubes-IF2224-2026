@@ -64,7 +64,7 @@ CSTNodes* Parser::parseCaseBlock() {
 }
 
 /*
-    WHILE-STATEMENT : whilesy + EXPRESSION + dosy + COMPOUND-STATEMENT
+    WHILE-STATEMENT : whilesy + EXPRESSION + dosy + COMPOUND-STATEMENT + semicolon
 */
 CSTNodes* Parser::parseWhileStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::WHILE_STATEMENT, peek().codeLocation);
@@ -72,6 +72,7 @@ CSTNodes* Parser::parseWhileStatement() {
     node->addChild(parseExpression());
     node->addChild(expect(TokenType::dosy));
     node->addChild(parseCompoundStatement());
+    node->addChild(expect(TokenType::semicolon));
     return node;
 }
 
@@ -88,7 +89,7 @@ CSTNodes* Parser::parseRepeatStatement() {
 }
 
 /*
-    FOR-STATEMENT : forsy + ident + becomes + EXPRESSION + (tosy | downtosy) + EXPRESSION + dosy + COMPOUND-STATEMENT
+    FOR-STATEMENT : forsy + ident + becomes + EXPRESSION + (tosy | downtosy) + EXPRESSION + dosy + COMPOUND-STATEMENT + semicolon
 */
 CSTNodes* Parser::parseForStatement() {
     CSTNodes* node = new CSTNodes(NonTerminal::FOR_STATEMENT, peek().codeLocation);
@@ -106,5 +107,6 @@ CSTNodes* Parser::parseForStatement() {
     node->addChild(parseExpression());
     node->addChild(expect(TokenType::dosy));
     node->addChild(parseCompoundStatement());
+    node->addChild(expect(TokenType::semicolon));
     return node;
 }
