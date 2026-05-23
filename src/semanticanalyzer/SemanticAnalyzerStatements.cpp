@@ -52,12 +52,38 @@ std::any SemanticAnalyzer::visitWhileStatementNode(ASTWhileStatementNode* node) 
     if (condType != DataType::BOOLEAN) {
         throw std::runtime_error("Semantic Error: Kondisi di dalam WHILE-Statement harus menghasilkan tipe Boolean.");
     }
+    ConstantBoolResult constantCondition = evaluateConstantBoolean(node->condition);
+
+    if (constantCondition == ConstantBoolResult::AlwaysFalse) {
+        reportWarning(
+            node,
+            "Kondisi WHILE selalu false; body loop tidak akan pernah dijalankan."
+        );
+    } else if (constantCondition == ConstantBoolResult::AlwaysTrue) {
+        reportWarning(
+            node,
+            "Kondisi WHILE selalu true; kemungkinan infinite loop."
+        );
+    }
     safeVisitNode(node->body);
     node->evalType_ = DataType::VOID;
     return DataType::VOID;
 }
 
 std::any SemanticAnalyzer::visitRepeatStatementNode(ASTRepeatStatementNode* node) {
+    ConstantBoolResult constantCondition = evaluateConstantBoolean(node->condition);
+
+    if (constantCondition == ConstantBoolResult::AlwaysFalse) {
+        reportWarning(
+            node,
+            "Kondisi UNTIL selalu false; REPEAT kemungkinan menjadi infinite loop."
+        );
+    } else if (constantCondition == ConstantBoolResult::AlwaysTrue) {
+        reportWarning(
+            node,
+            "Kondisi UNTIL selalu true; REPEAT hanya akan berjalan satu kali."
+        );
+    }
     for (auto* stmt : node->body) {
         safeVisitNode(stmt);
     }
