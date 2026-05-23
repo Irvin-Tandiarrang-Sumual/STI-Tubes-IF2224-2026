@@ -21,7 +21,7 @@ CSTNodes* Parser::parseProcedureOrFunctionCall(){
     node->addChild(expect(TokenType::ident));
     node->addChild(expect(TokenType::lparent));
     if (checkMultiple({TokenType::plus, TokenType::minus, TokenType::ident,
-        TokenType::intcon, TokenType::charcon, TokenType::string, TokenType::lparent,
+        TokenType::intcon, TokenType::realcon, TokenType::charcon, TokenType::string, TokenType::lparent,
         TokenType::notsy})
     ) node->addChild(parseParameterList());
     node->addChild(expect(TokenType::rparent));
