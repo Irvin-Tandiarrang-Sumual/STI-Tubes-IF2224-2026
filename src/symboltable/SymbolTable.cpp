@@ -72,6 +72,10 @@ void SymbolTable::setCurrentBlockParameterSize(int parameterSize) {
     btab_.get(currentBlockIdx_).parameterSize = parameterSize;
 }
 
+void SymbolTable::setCurrentBlockLatestParameter(int latestParameter) {
+    btab_.get(currentBlockIdx_).latestParameter = latestParameter;
+}
+
 int SymbolTable::lookup(const std::string& name) {
     int blockIdx = currentBlockIdx_;
 
