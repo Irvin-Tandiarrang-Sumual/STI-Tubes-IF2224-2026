@@ -324,11 +324,23 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
         safeVisitNode(localDecl);
     }
 
+    functionStack_.push_back(node->name);
+
     safeVisitNode(node->body);
+    FlowResult flow = analyzeBlockFlow(node->body);
+
+    if (!flow.alwaysReturns) {
+        reportWarning(
+            node,
+            "Function '" + node->name + "' tidak mengembalikan nilai pada semua cabang kontrol."
+        );
+    }
+
+    functionStack_.pop_back();
 
     predeclaredSubprogramNames_.erase(currentLevel);
     symbolTable.exitBlock();
     currentLevel--;
-    return {};
+    return DataType::VOID;
 }
 

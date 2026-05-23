@@ -32,6 +32,18 @@ private:
     bool extractConstantNumber(ASTExpressionNode* expression, double& outValue);
     bool extractConstantBoolean(ASTExpressionNode* expression, bool& outValue);
 
+    struct FlowResult {
+        bool alwaysReturns = false;
+    };
+
+    std::vector<std::string> functionStack_;
+    bool isInsideFunction() const;
+    std::string currentFunctionName() const;
+    bool isFunctionReturnAssignment(ASTAssignmentStatementNode* node) const;
+    
+    FlowResult analyzeStatementFlow(ASTStatementNode* statement);
+    FlowResult analyzeBlockFlow(ASTBlockStatementNode* block);
+
     std::unordered_map<std::string, ASTTypeNode*> namedTypeDefinitions_;
     std::unordered_map<int, ASTTypeNode*> identifierTypeNodes_;
     std::unordered_map<int, std::unordered_set<std::string>> predeclaredSubprogramNames_;

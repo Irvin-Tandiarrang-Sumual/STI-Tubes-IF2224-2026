@@ -499,6 +499,91 @@ bool SemanticAnalyzer::areTypesCompatible(ASTTypeNode* lhsNode, ASTTypeNode* rhs
     return false;
 }
 
+bool SemanticAnalyzer::isInsideFunction() const {
+    return !functionStack_.empty();
+}
+
+std::string SemanticAnalyzer::currentFunctionName() const {
+    if (functionStack_.empty()) {
+        return "";
+    }
+
+    return functionStack_.back();
+}
+
+bool SemanticAnalyzer::isFunctionReturnAssignment(ASTAssignmentStatementNode* node) const {
+    if (node == nullptr || node->target == nullptr) {
+        return false;
+    }
+
+    if (!isInsideFunction()) {
+        return false;
+    }
+
+    return node->target->baseName == currentFunctionName();
+}
+
+SemanticAnalyzer::FlowResult SemanticAnalyzer::analyzeStatementFlow(ASTStatementNode* statement) {
+    if (statement == nullptr) {
+        return FlowResult{false};
+    }
+
+    if (auto* assign = dynamic_cast<ASTAssignmentStatementNode*>(statement)) {
+        if (isFunctionReturnAssignment(assign)) {
+            return FlowResult{true};
+        }
+
+        return FlowResult{false};
+    }
+
+    if (auto* block = dynamic_cast<ASTBlockStatementNode*>(statement)) {
+        return analyzeBlockFlow(block);
+    }
+
+    if (auto* ifStmt = dynamic_cast<ASTIfStatementNode*>(statement)) {
+        FlowResult thenFlow = analyzeStatementFlow(ifStmt->thenBranch);
+        FlowResult elseFlow = analyzeStatementFlow(ifStmt->elseBranch);
+
+        // IF dianggap always return hanya jika then dan else sama-sama return
+        if (ifStmt->elseBranch != nullptr &&
+            thenFlow.alwaysReturns &&
+            elseFlow.alwaysReturns) {
+            return FlowResult{true};
+        }
+
+        return FlowResult{false};
+    }
+
+    // while/repeat/for tidak dianggap pasti return
+    return FlowResult{false};
+}
+
+SemanticAnalyzer::FlowResult SemanticAnalyzer::analyzeBlockFlow(ASTBlockStatementNode* block) {
+    if (block == nullptr) {
+        return FlowResult{false};
+    }
+
+    bool alreadyReturned = false;
+
+    for (ASTStatementNode* statement : block->statements) {
+        if (alreadyReturned) {
+            reportWarning(
+                statement,
+                "Statement ini tidak akan pernah dijalankan karena statement sebelumnya sudah mengembalikan nilai function."
+            );
+            continue;
+        }
+
+        FlowResult statementFlow = analyzeStatementFlow(statement);
+
+        if (statementFlow.alwaysReturns) {
+            alreadyReturned = true;
+        }
+    }
+
+    return FlowResult{alreadyReturned};
+}
+
 SemanticAnalyzer::SemanticAnalyzer() {
     initializePredefinedIdentifiers();
 }
