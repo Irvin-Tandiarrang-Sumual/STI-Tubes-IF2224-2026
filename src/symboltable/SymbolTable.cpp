@@ -68,6 +68,10 @@ int SymbolTable::insertArray(DataType indexType, DataType elementType, int compo
     return newIdx;
 }
 
+void SymbolTable::setCurrentBlockParameterSize(int parameterSize) {
+    btab_.get(currentBlockIdx_).parameterSize = parameterSize;
+}
+
 int SymbolTable::lookup(const std::string& name) {
     int blockIdx = currentBlockIdx_;
 

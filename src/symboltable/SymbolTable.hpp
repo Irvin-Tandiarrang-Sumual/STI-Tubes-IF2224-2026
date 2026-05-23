@@ -32,6 +32,7 @@ class SymbolTable {
         int insertVariable(const std::string& name, DataType type, int ref = 0);
         int insertArray(DataType indexType, DataType elementType, int compositeTypeReference,
                 int low, int high, int elementSize, int size);
+        void setCurrentBlockParameterSize(int parameterSize);
 
 
         int lookup(const std::string& name);

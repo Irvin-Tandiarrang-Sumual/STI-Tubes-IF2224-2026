@@ -266,6 +266,12 @@ std::any SemanticAnalyzer::visitProcedureDeclarationNode(ASTProcedureDeclaration
         }
     }
 
+    int parameterSize = 0;
+    for (const auto& paramGroup : node->parameters) {
+        parameterSize += static_cast<int>(paramGroup.identifiers.size()) * estimateTypeStorageSize(paramGroup.type);
+    }
+    symbolTable.setCurrentBlockParameterSize(parameterSize);
+
     for (auto* localDecl : node->localDeclarations) {
         safeVisitNode(localDecl);
     }
@@ -319,6 +325,12 @@ std::any SemanticAnalyzer::visitFunctionDeclarationNode(ASTFunctionDeclarationNo
             rememberIdentifierType(paramIdx, paramTypeNode != nullptr ? paramTypeNode : paramGroup.type);
         }
     }
+
+    int parameterSize = 0;
+    for (const auto& paramGroup : node->parameters) {
+        parameterSize += static_cast<int>(paramGroup.identifiers.size()) * estimateTypeStorageSize(paramGroup.type);
+    }
+    symbolTable.setCurrentBlockParameterSize(parameterSize);
 
     for (auto* localDecl : node->localDeclarations) {
         safeVisitNode(localDecl);
