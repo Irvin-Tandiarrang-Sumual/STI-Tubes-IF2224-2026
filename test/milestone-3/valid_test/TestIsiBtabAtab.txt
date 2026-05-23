@@ -1,0 +1,53 @@
+program ArionTableFillerTest;
+
+type
+    {* Mendefinisikan tipe array 1 dimensi untuk memicu registrasi di atab *}
+    BarisData == array[1..3] of integer;
+    
+    {* Mendefinisikan Array dari Array (Multi-dimensi) *}
+    {* Ini akan memaksa kolom 'ref' di atab terisi dengan indeks dari tipe 'BarisData' *}
+    MatriksData == array[1..4] of BarisData;
+
+var
+    myMatrix : MatriksData;
+    globalCounter : integer;
+
+{* ------------------------------------------------------------------ *}
+{* Subprogram dengan banyak parameter untuk mengisi lparam & psize    *}
+{* ------------------------------------------------------------------ *}
+procedure HitungKalkulasiKompleks(p1 : integer; p2 : integer; opsi : boolean; flag : char);
+var
+    lokalX : integer;
+begin
+    lokalX := p1 + p2;
+    if opsi then
+        writeln(flag)
+    else
+        writeln('Selesai');
+end;
+
+function PengecekanMatriks(m : MatriksData; batas : integer) : boolean;
+begin
+    if m[1][1] > batas then
+        PengecekanMatriks := true
+    else
+        PengecekanMatriks := false;
+end;
+
+{* ====================================================================== *}
+{* MAIN PROGRAM BODY                                                      *}
+{* ====================================================================== *}
+begin
+    globalCounter := 10;
+    
+    {* Mengisi data matriks *}
+    myMatrix[1][1] := 5;
+    
+    {* Memanggil prosedur dengan parameter lengkap *}
+    HitungKalkulasiKompleks(5, 10, true, 'A');
+    
+    if PengecekanMatriks(myMatrix, globalCounter) then
+        writeln('Nilai matriks aman.')
+    else
+        writeln('Nilai matriks di bawah batas.');
+end.
