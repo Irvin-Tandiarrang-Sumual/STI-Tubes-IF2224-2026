@@ -21,14 +21,15 @@ class Table {
             std::stringstream ss;
             ss << tableName << " :\n";
             
-            const std::string header = T::getHeader();
+            const auto columnWidths = T::getColumnWidths(entries_);
+            const std::string header = T::getHeader(columnWidths);
             ss << header << "\n";
             
             const std::size_t separatorWidth = header.size() > 60 ? header.size() : 60;
             ss << std::string(separatorWidth, '-') << "\n"; 
             
             for (size_t i = 0; i < entries_.size(); ++i) {
-                ss << entries_[i].toString() << "\n";
+                ss << entries_[i].toString(columnWidths) << "\n";
             }
             return ss.str();
         }
