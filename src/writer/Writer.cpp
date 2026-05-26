@@ -128,7 +128,7 @@ std::string Writer::formatDecoratedNode(const ASTNode* node) const {
 
     std::string result = node->toString();
     result += " {type=" + dataTypeToString(node->evalType_);
-    result += ", ref=" + std::to_string(node->symbolRefIndex_);
+    result += ", tab_index=" + std::to_string(node->symbolRefIndex_);
     result += ", lev=" + std::to_string(node->lexicalLevel_);
     result += "}";
     return result;

@@ -1,0 +1,8 @@
+program TestTypes;
+type
+    Color == (Red, Green, Blue);
+var
+    c: Color;
+begin
+    writeln(c);
+end.

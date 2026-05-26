@@ -1,0 +1,446 @@
+Program: ArionMegaTest {type=VOID, tab_index=37, lev=0}
+  |
+  +-- Declarations {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- ConstDeclaration: MAXSIZE {type=INTEGER, tab_index=41, lev=0}
+  |   |   |
+  |   |   \-- Literal: 10 {type=INTEGER, tab_index=-1, lev=0}
+  |   |
+  |   +-- ConstDeclaration: PIAPPROX {type=INTEGER, tab_index=42, lev=0}
+  |   |   |
+  |   |   \-- Literal: 3 {type=INTEGER, tab_index=-1, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'arrGlobal', type: 'ArrayType') {type=ARRAY, tab_index=43, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'globalCounter', type: 'integer') {type=INTEGER, tab_index=44, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'statusReady', type: 'boolean') {type=BOOLEAN, tab_index=45, lev=0}
+  |   |
+  |   +-- VarDecl(name: 'systemChar', type: 'char') {type=CHAR, tab_index=46, lev=0}
+  |   |
+  |   +-- SubprogramDeclaration: KelolaDataSistem {type=VOID, tab_index=38, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- VarDecl(name: 'arrLuar', type: 'ArrayType') {type=ARRAY, tab_index=50, lev=1}
+  |   |   |
+  |   |   +-- VarDecl(name: 'i', type: 'integer') {type=INTEGER, tab_index=51, lev=1}
+  |   |   |
+  |   |   +-- VarDecl(name: 'pesanLuar', type: 'string') {type=STRING, tab_index=52, lev=1}
+  |   |   |
+  |   |   +-- FunctionDeclaration: HitungFaktorialRekursif(n) : integer {type=INTEGER, tab_index=47, lev=1}
+  |   |   |   |
+  |   |   |   +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |   |
+  |   |   |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |
+  |   |   |       +-- If {type=VOID, tab_index=-1, lev=2}
+  |   |   |       |   |
+  |   |   |       |   +-- BinaryOp: <= {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |   |       |   |   |
+  |   |   |       |   |   +-- Variable: n {type=INTEGER, tab_index=53, lev=2}
+  |   |   |       |   |   |
+  |   |   |       |   |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |   |   |
+  |   |   |       |   |   +-- Variable: HitungFaktorialRekursif {type=INTEGER, tab_index=47, lev=1}
+  |   |   |       |   |   |
+  |   |   |       |   |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   \-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |       |
+  |   |   |       |       +-- Variable: HitungFaktorialRekursif {type=INTEGER, tab_index=47, lev=1}
+  |   |   |       |       |
+  |   |   |       |       \-- BinaryOp: * {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |           |
+  |   |   |       |           +-- Variable: n {type=INTEGER, tab_index=53, lev=2}
+  |   |   |       |           |
+  |   |   |       |           \-- Call: HitungFaktorialRekursif {type=INTEGER, tab_index=47, lev=1}
+  |   |   |       |               |
+  |   |   |       |               \-- BinaryOp: - {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |                   |
+  |   |   |       |                   +-- Variable: n {type=INTEGER, tab_index=53, lev=2}
+  |   |   |       |                   |
+  |   |   |       |                   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |
+  |   |   |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- SubprogramDeclaration: ProsesArrayLokal {type=VOID, tab_index=48, lev=1}
+  |   |   |   |
+  |   |   |   +-- PrimitiveType: integer {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |   |
+  |   |   |   +-- VarDecl(name: 'arrDalam', type: 'ArrayType') {type=ARRAY, tab_index=55, lev=2}
+  |   |   |   |
+  |   |   |   +-- VarDecl(name: 'nilaiHitung', type: 'integer') {type=INTEGER, tab_index=56, lev=2}
+  |   |   |   |
+  |   |   |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |
+  |   |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   +-- Variable: nilaiHitung {type=INTEGER, tab_index=56, lev=2}
+  |   |   |       |   |
+  |   |   |       |   \-- Call: HitungFaktorialRekursif {type=INTEGER, tab_index=47, lev=1}
+  |   |   |       |       |
+  |   |   |       |       \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |
+  |   |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   +-- Variable: arrDalam[] {type=INTEGER, tab_index=55, lev=2}
+  |   |   |       |   |   |
+  |   |   |       |   |   \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |   |
+  |   |   |       |   \-- Variable: nilaiHitung {type=INTEGER, tab_index=56, lev=2}
+  |   |   |       |
+  |   |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   +-- Variable: arrLuar[] {type=INTEGER, tab_index=50, lev=1}
+  |   |   |       |   |   |
+  |   |   |       |   |   \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |   |
+  |   |   |       |   \-- BinaryOp: * {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |       |
+  |   |   |       |       +-- Variable: arrDalam[] {type=INTEGER, tab_index=55, lev=2}
+  |   |   |       |       |   |
+  |   |   |       |       |   \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |       |
+  |   |   |       |       \-- Variable: factor {type=INTEGER, tab_index=49, lev=1}
+  |   |   |       |
+  |   |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |   |       |   |
+  |   |   |       |   +-- Variable: arrGlobal[] {type=INTEGER, tab_index=43, lev=0}
+  |   |   |       |   |   |
+  |   |   |       |   |   \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |   |
+  |   |   |       |   \-- BinaryOp: + {type=INTEGER, tab_index=-1, lev=0}
+  |   |   |       |       |
+  |   |   |       |       +-- Variable: arrLuar[] {type=INTEGER, tab_index=50, lev=1}
+  |   |   |       |       |   |
+  |   |   |       |       |   \-- Variable: indeks {type=INTEGER, tab_index=54, lev=2}
+  |   |   |       |       |
+  |   |   |       |       \-- Variable: globalCounter {type=INTEGER, tab_index=44, lev=0}
+  |   |   |       |
+  |   |   |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |   |
+  |   |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Variable: pesanLuar {type=STRING, tab_index=52, lev=1}
+  |   |       |   |
+  |   |       |   \-- Literal: Memproses data pada BlokLuar... {type=STRING, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+  |   |       |       |
+  |   |       |       \-- Variable: pesanLuar {type=STRING, tab_index=52, lev=1}
+  |   |       |
+  |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Variable: i {type=INTEGER, tab_index=51, lev=1}
+  |   |       |   |
+  |   |       |   \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- While {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- BinaryOp: <= {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |   |   |
+  |   |       |   |   +-- Variable: i {type=INTEGER, tab_index=51, lev=1}
+  |   |       |   |   |
+  |   |       |   |   \-- Literal: 5 {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |       |       |
+  |   |       |       +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |   |       |       |   |
+  |   |       |       |   \-- Call: ProsesArrayLokal {type=VOID, tab_index=48, lev=1}
+  |   |       |       |       |
+  |   |       |       |       \-- Variable: i {type=INTEGER, tab_index=51, lev=1}
+  |   |       |       |
+  |   |       |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |       |   |
+  |   |       |       |   +-- Variable: i {type=INTEGER, tab_index=51, lev=1}
+  |   |       |       |   |
+  |   |       |       |   \-- BinaryOp: + {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |       |       |
+  |   |       |       |       +-- Variable: i {type=INTEGER, tab_index=51, lev=1}
+  |   |       |       |       |
+  |   |       |       |       \-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |       |
+  |   |       |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   +-- FunctionDeclaration: ValidasiLogikaSistem(mode; opsi) : boolean {type=BOOLEAN, tab_index=39, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: char {type=CHAR, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- PrimitiveType: boolean {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |   |
+  |   |   +-- VarDecl(name: 'hasil', type: 'boolean') {type=BOOLEAN, tab_index=59, lev=1}
+  |   |   |
+  |   |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |   |       |
+  |   |       +-- If {type=VOID, tab_index=-1, lev=1}
+  |   |       |   |
+  |   |       |   +-- BinaryOp: and {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |   |   |
+  |   |       |   |   +-- BinaryOp: == {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |   |   |   |
+  |   |       |   |   |   +-- Variable: mode {type=CHAR, tab_index=57, lev=1}
+  |   |       |   |   |   |
+  |   |       |   |   |   \-- Literal: A {type=CHAR, tab_index=-1, lev=0}
+  |   |       |   |   |
+  |   |       |   |   \-- BinaryOp: == {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |   |       |
+  |   |       |   |       +-- Variable: opsi {type=BOOLEAN, tab_index=58, lev=1}
+  |   |       |   |       |
+  |   |       |   |       \-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+  |   |       |   |
+  |   |       |   +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |   |
+  |   |       |   |   +-- Variable: hasil {type=BOOLEAN, tab_index=59, lev=1}
+  |   |       |   |   |
+  |   |       |   |   \-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+  |   |       |   |
+  |   |       |   \-- If {type=VOID, tab_index=-1, lev=1}
+  |   |       |       |
+  |   |       |       +-- BinaryOp: or {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |       |   |
+  |   |       |       |   +-- BinaryOp: == {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |       |   |   |
+  |   |       |       |   |   +-- Variable: mode {type=CHAR, tab_index=57, lev=1}
+  |   |       |       |   |   |
+  |   |       |       |   |   \-- Literal: B {type=CHAR, tab_index=-1, lev=0}
+  |   |       |       |   |
+  |   |       |       |   \-- BinaryOp: > {type=BOOLEAN, tab_index=-1, lev=0}
+  |   |       |       |       |
+  |   |       |       |       +-- Variable: globalCounter {type=INTEGER, tab_index=44, lev=0}
+  |   |       |       |       |
+  |   |       |       |       \-- Literal: 5 {type=INTEGER, tab_index=-1, lev=0}
+  |   |       |       |
+  |   |       |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |       |   |
+  |   |       |       |   +-- Variable: hasil {type=BOOLEAN, tab_index=59, lev=1}
+  |   |       |       |   |
+  |   |       |       |   \-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+  |   |       |       |
+  |   |       |       \-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |           |
+  |   |       |           +-- Variable: hasil {type=BOOLEAN, tab_index=59, lev=1}
+  |   |       |           |
+  |   |       |           \-- Variable: false {type=BOOLEAN, tab_index=36, lev=0}
+  |   |       |
+  |   |       +-- Assignment {type=VOID, tab_index=-1, lev=0}
+  |   |       |   |
+  |   |       |   +-- Variable: ValidasiLogikaSistem {type=BOOLEAN, tab_index=39, lev=0}
+  |   |       |   |
+  |   |       |   \-- Variable: hasil {type=BOOLEAN, tab_index=59, lev=1}
+  |   |       |
+  |   |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |   |
+  |   \-- SubprogramDeclaration: CetakLogArray {type=VOID, tab_index=40, lev=0}
+  |       |
+  |       +-- VarDecl(name: 'k', type: 'integer') {type=INTEGER, tab_index=60, lev=1}
+  |       |
+  |       \-- Block {type=VOID, tab_index=-1, lev=0}
+  |           |
+  |           +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |           |   |
+  |           |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+  |           |       |
+  |           |       \-- Literal: Isi arrGlobal: {type=STRING, tab_index=-1, lev=0}
+  |           |
+  |           +-- For: k {type=VOID, tab_index=60, lev=1}
+  |           |   |
+  |           |   +-- Literal: 1 {type=INTEGER, tab_index=-1, lev=0}
+  |           |   |
+  |           |   +-- Literal: 5 {type=INTEGER, tab_index=-1, lev=0}
+  |           |   |
+  |           |   \-- Block {type=VOID, tab_index=-1, lev=0}
+  |           |       |
+  |           |       +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+  |           |       |   |
+  |           |       |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+  |           |       |       |
+  |           |       |       \-- Variable: arrGlobal[] {type=INTEGER, tab_index=43, lev=0}
+  |           |       |           |
+  |           |       |           \-- Variable: k {type=INTEGER, tab_index=60, lev=1}
+  |           |       |
+  |           |       \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |           |
+  |           \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+  |
+  \-- Block {type=VOID, tab_index=-1, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: globalCounter {type=INTEGER, tab_index=44, lev=0}
+      |   |
+      |   \-- Literal: 2 {type=INTEGER, tab_index=-1, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: statusReady {type=BOOLEAN, tab_index=45, lev=0}
+      |   |
+      |   \-- Variable: true {type=BOOLEAN, tab_index=35, lev=0}
+      |
+      +-- Assignment {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- Variable: systemChar {type=CHAR, tab_index=46, lev=0}
+      |   |
+      |   \-- Literal: A {type=CHAR, tab_index=-1, lev=0}
+      |
+      +-- If {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- BinaryOp: and {type=BOOLEAN, tab_index=-1, lev=0}
+      |   |   |
+      |   |   +-- Variable: statusReady {type=BOOLEAN, tab_index=45, lev=0}
+      |   |   |
+      |   |   \-- BinaryOp: < {type=BOOLEAN, tab_index=-1, lev=0}
+      |   |       |
+      |   |       +-- Variable: globalCounter {type=INTEGER, tab_index=44, lev=0}
+      |   |       |
+      |   |       \-- Variable: MAXSIZE {type=INTEGER, tab_index=41, lev=0}
+      |   |
+      |   +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |   |
+      |   |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |   |       |
+      |   |       \-- Literal: Sistem siap. Menjalankan subprogram berjenjang... {type=STRING, tab_index=-1, lev=0}
+      |   |
+      |   \-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |       |
+      |       \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |           |
+      |           \-- Literal: Error: Kondisi awal sistem tidak valid. {type=STRING, tab_index=-1, lev=0}
+      |
+      +-- If {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   +-- BinaryOp: and {type=BOOLEAN, tab_index=-1, lev=0}
+      |   |   |
+      |   |   +-- Variable: statusReady {type=BOOLEAN, tab_index=45, lev=0}
+      |   |   |
+      |   |   \-- BinaryOp: < {type=BOOLEAN, tab_index=-1, lev=0}
+      |   |       |
+      |   |       +-- Variable: globalCounter {type=INTEGER, tab_index=44, lev=0}
+      |   |       |
+      |   |       \-- Variable: MAXSIZE {type=INTEGER, tab_index=41, lev=0}
+      |   |
+      |   +-- If {type=VOID, tab_index=-1, lev=0}
+      |   |   |
+      |   |   +-- Call: ValidasiLogikaSistem {type=BOOLEAN, tab_index=39, lev=0}
+      |   |   |   |
+      |   |   |   +-- Variable: systemChar {type=CHAR, tab_index=46, lev=0}
+      |   |   |   |
+      |   |   |   \-- Variable: statusReady {type=BOOLEAN, tab_index=45, lev=0}
+      |   |   |
+      |   |   +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |   |   |
+      |   |   |   \-- Call: KelolaDataSistem {type=VOID, tab_index=38, lev=0}
+      |   |   |       |
+      |   |   |       \-- Literal: 3 {type=INTEGER, tab_index=-1, lev=0}
+      |   |   |
+      |   |   \-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |       |
+      |   |       \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |   |           |
+      |   |           \-- Literal: Validasi sistem gagal! {type=STRING, tab_index=-1, lev=0}
+      |   |
+      |   \-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |       |
+      |       \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |           |
+      |           \-- Literal: Error: Kondisi awal sistem tidak valid. {type=STRING, tab_index=-1, lev=0}
+      |
+      +-- CallStatement {type=VOID, tab_index=-1, lev=0}
+      |   |
+      |   \-- Call: writeln {type=VOID, tab_index=33, lev=0}
+      |       |
+      |       \-- Literal: --- Arion Mega Test Selesai Tanpa Error --- {type=STRING, tab_index=-1, lev=0}
+      |
+      \-- EmptyStatement {type=VOID, tab_index=-1, lev=0}
+
+=== Symbol Tables ===
+tab :
+idx id                      obj       type    ref nrm lev adr link 
+-------------------------------------------------------------------
+0   <dummy>                 keyword   void    0   1   0   0   0    
+1   and                     keyword   void    0   1   0   4   0    
+2   array                   keyword   void    0   1   0   8   1    
+3   begin                   keyword   void    0   1   0   12  2    
+4   case                    keyword   void    0   1   0   16  3    
+5   const                   keyword   void    0   1   0   20  4    
+6   div                     keyword   void    0   1   0   24  5    
+7   downto                  keyword   void    0   1   0   28  6    
+8   do                      keyword   void    0   1   0   32  7    
+9   else                    keyword   void    0   1   0   36  8    
+10  end                     keyword   void    0   1   0   40  9    
+11  for                     keyword   void    0   1   0   44  10   
+12  function                keyword   void    0   1   0   48  11   
+13  if                      keyword   void    0   1   0   52  12   
+14  mod                     keyword   void    0   1   0   56  13   
+15  not                     keyword   void    0   1   0   60  14   
+16  of                      keyword   void    0   1   0   64  15   
+17  or                      keyword   void    0   1   0   68  16   
+18  procedure               keyword   void    0   1   0   72  17   
+19  program                 keyword   void    0   1   0   76  18   
+20  record                  keyword   void    0   1   0   80  19   
+21  repeat                  keyword   void    0   1   0   84  20   
+22  then                    keyword   void    0   1   0   88  21   
+23  to                      keyword   void    0   1   0   92  22   
+24  type                    keyword   void    0   1   0   96  23   
+25  until                   keyword   void    0   1   0   100 24   
+26  var                     keyword   void    0   1   0   104 25   
+27  while                   keyword   void    0   1   0   108 26   
+28  integer                 type      integer 0   1   0   112 27   
+29  real                    type      real    0   1   0   116 28   
+30  char                    type      char    0   1   0   120 29   
+31  boolean                 type      boolean 0   1   0   124 30   
+32  string                  type      string  0   1   0   128 31   
+33  writeln                 procedure void    0   1   0   132 32   
+34  println                 procedure void    0   1   0   136 33   
+35  true                    constant  boolean 0   1   0   140 34   
+36  false                   constant  boolean 0   1   0   144 35   
+37  ArionMegaTest           program   void    0   1   0   148 36   
+38  KelolaDataSistem        procedure void    1   1   0   152 37   
+39  ValidasiLogikaSistem    function  boolean 4   1   0   156 38   
+40  CetakLogArray           procedure void    5   1   0   160 39   
+41  MAXSIZE                 constant  integer 0   1   0   164 40   
+42  PIAPPROX                constant  integer 0   1   0   168 41   
+43  arrGlobal               variabel  array   0   1   0   172 42   
+44  globalCounter           variabel  integer 0   1   0   212 43   
+45  statusReady             variabel  boolean 0   1   0   216 44   
+46  systemChar              variabel  char    0   1   0   217 45   
+47  HitungFaktorialRekursif function  integer 2   1   1   0   0    
+48  ProsesArrayLokal        procedure void    3   1   1   4   47   
+49  factor                  parameter integer 0   1   1   8   48   
+50  arrLuar                 variabel  array   1   1   1   12  49   
+51  i                       variabel  integer 0   1   1   32  50   
+52  pesanLuar               variabel  string  0   1   1   36  51   
+53  n                       parameter integer 0   1   2   0   0    
+54  indeks                  parameter integer 0   1   2   0   0    
+55  arrDalam                variabel  array   2   1   2   4   54   
+56  nilaiHitung             variabel  integer 0   1   2   24  55   
+57  mode                    parameter char    0   1   1   0   0    
+58  opsi                    parameter boolean 0   1   1   1   57   
+59  hasil                   variabel  boolean 0   1   1   2   58   
+60  k                       variabel  integer 0   1   1   0   0    
+
+btab :
+idx last lparam psize vsize 
+------------------------------------------------------------
+0   46   0      0     0     
+1   52   49     4     40    
+2   53   53     4     4     
+3   56   54     4     28    
+4   59   58     2     3     
+5   60   0      0     4     
+
+atab :
+idx inxtyp eltyp   ref low high elsz size 
+------------------------------------------------------------
+0   range  integer 0   1   10   4    40   
+1   range  integer 0   1   5    4    20   
+2   range  integer 0   1   5    4    20   
