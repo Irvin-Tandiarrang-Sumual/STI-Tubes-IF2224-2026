@@ -46,10 +46,41 @@ void Interpreter::execute(const std::vector<Instruction>& instructions) {
                 // Contoh: INT 0 5 -> Sediakan 5 ruang kosong (dengan value 0) di stack
                 stack_.resize(stack_.size() + instr.getOperand(), 0);
                 break;
-            case OpCode::OPR:
-                // TODO: Implementasi OPR
+            case OpCode::OPR: {
+                OprCode opr = static_cast<OprCode>(instr.getOperand());
+                
+                // Operasi Unary
+                if (opr == OprCode::NEG) {
+                    int val = stack_.back();
+                    stack_.pop_back();
+                    stack_.push_back(-val);
+                    break;
+                }
+
+                // Operasi Binary
+                // Nilai operand kanan di-Pop terlebih dahulu
+                int valRight = stack_.back(); stack_.pop_back();
+                int valLeft = stack_.back(); stack_.pop_back();
+
+                switch (opr) {
+                    case OprCode::ADD: stack_.push_back(valLeft + valRight); break;
+                    case OprCode::SUB: stack_.push_back(valLeft - valRight); break;
+                    case OprCode::MUL: stack_.push_back(valLeft * valRight); break;
+                    case OprCode::DIV: 
+                        if (valRight == 0) throw std::runtime_error("Runtime Error: Division by zero.");
+                        stack_.push_back(valLeft / valRight); 
+                        break;
+                    case OprCode::MOD: 
+                        if (valRight == 0) throw std::runtime_error("Runtime Error: Modulo by zero.");
+                        stack_.push_back(valLeft % valRight); 
+                        break;
+                    // TODO: Operasi Perbandingan (EQL, NEQ, LSS, GEQ, GTR, LEQ) & Penulisan (WRT, WRTLN)
+                    default:
+                        break;
+                }
                 break;
-            // JMP, JPC, CAL, RET coming soon ya bang
+            }
+            // TODO: JMP, JPC, CAL, RET coming soon ya bang
             default:
                 break;
         }
