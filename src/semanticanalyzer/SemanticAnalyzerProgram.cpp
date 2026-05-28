@@ -22,6 +22,7 @@ void SemanticAnalyzer::initializePredefinedIdentifiers() {
     setIdentifierObject(symbolTable.insertVariable("boolean", DataType::BOOLEAN), "type");
     setIdentifierObject(symbolTable.insertVariable("string",  DataType::STRING), "type");
     // additional
+    setIdentifierObject(symbolTable.insertVariable("write", DataType::VOID), "procedure");
     setIdentifierObject(symbolTable.insertVariable("writeln", DataType::VOID), "procedure");
     setIdentifierObject(symbolTable.insertVariable("println",  DataType::VOID), "procedure");
     // Kunci true & false biar gabisa diassign karena constant
