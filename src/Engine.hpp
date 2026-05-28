@@ -8,14 +8,15 @@
 #include "writer/Writer.hpp"
 #include "ast/ASTBuilder.hpp"
 #include "ast/ASTNodes.hpp"
-class Compiler {
+class Engine {
     public:
-        explicit Compiler(const std::filesystem::path &path, const std::string &outputDir);
-        ~Compiler();
+        explicit Engine(const std::filesystem::path &path, const std::string &outputDir);
+        ~Engine();
 
         void lexer();
         void parser();
         void semantic();
+        void intermediateCodeGenerator();
 
     private:
         std::filesystem::path inputPath;
