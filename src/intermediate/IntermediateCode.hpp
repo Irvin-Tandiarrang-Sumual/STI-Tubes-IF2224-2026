@@ -12,7 +12,7 @@
 class IntermediateCodeGenerator : public ASTVisitor {
     private:
         const SymbolTable& symbolTable_;
-        std::vector<Instruction> intermediateCode_;
+        std::vector<Instruction> code_;
         static constexpr int FRAME_HEADER_SIZE = 3;
 
         int emit(OpCode op, int level, int operand);
