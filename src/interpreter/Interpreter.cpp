@@ -19,16 +19,32 @@ void Interpreter::execute(const std::vector<Instruction>& instructions) {
         // DECODE & EXECUTE: Pahami dan jalankan
         switch (instr.getOp()) {
             case OpCode::LIT:
-                // TODO: Implementasi LIT
+                // Push nilai literal (v) ke Stack
+                // Contoh: LIT 0 2 -> Push value 2 ke stack
+                stack_.push_back(instr.getOperand());
                 break;
             case OpCode::LOD:
-                // TODO: Implementasi LOD
+                // Copy nilai dari alamat (a) dan Push ke Stack
+                // Alamat = basePtr_ + operand
+                // Contoh: LOD 0 2
+                // Before: [0, 1, 2, 3, 4]
+                // After: [0, 1, 2, 3, 4, 2]
+                stack_.push_back(stack_[basePtr_ + instr.getOperand()]);
                 break;
-            case OpCode::STO:
-                // TODO: Implementasi STO
+            case OpCode::STO: {
+                // Pop dan simpan ke alamat (a)
+                // Contoh: STO 0 3
+                // Before: [0, 1, 2, 3, 4, 10]
+                // After: [0, 1, 2, 10, 4]
+                int val = stack_.back();
+                stack_.pop_back();
+                stack_[basePtr_ + instr.getOperand()] = val;
                 break;
+            }
             case OpCode::INT:
-                // TODO: Implementasi INT
+                // Alokasikan memori sebesar operand (m)
+                // Contoh: INT 0 5 -> Sediakan 5 ruang kosong (dengan value 0) di stack
+                stack_.resize(stack_.size() + instr.getOperand(), 0);
                 break;
             case OpCode::OPR:
                 // TODO: Implementasi OPR
