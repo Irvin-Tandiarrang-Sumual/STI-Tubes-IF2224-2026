@@ -1,10 +1,10 @@
-#include "Compiler.hpp"
+#include "Engine.hpp"
 #include "semanticanalyzer/SemanticAnalyzer.hpp"
 
 
-Compiler::Compiler(const std::filesystem::path &path, const std::string &outputDir) 
+Engine::Engine(const std::filesystem::path &path, const std::string &outputDir) 
     : inputPath(path), outputDir(outputDir), cstRoot_(nullptr) {}
-Compiler::~Compiler() {
+Engine::~Engine() {
     if (cstRoot_ != nullptr) {
         delete cstRoot_;
         cstRoot_ = nullptr;
@@ -12,7 +12,7 @@ Compiler::~Compiler() {
 }
 
 // sekaligus ngelakuin write kali yak :/
-void Compiler::lexer() {
+void Engine::lexer() {
     std::cout << "Processing lexer...\n";
     Lexer lexing(inputPath);
     lexing.tokenize();
@@ -39,7 +39,7 @@ void Compiler::lexer() {
     writer.writeTokenToFile();
 }
 
-void Compiler::parser() {
+void Engine::parser() {
     if (tokens_.empty()) {
         throw std::runtime_error("Syntax error: no tokens");
     }
@@ -66,7 +66,7 @@ void Compiler::parser() {
 
 }
 
-void Compiler::semantic() {
+void Engine::semantic() {
     if (!cstErrors_.empty()) {
         std::cout << "Terdapat Error pada Proses-Proses Sebelumnya, Semantic tidak dapat dilanjutkan\n";
         return;

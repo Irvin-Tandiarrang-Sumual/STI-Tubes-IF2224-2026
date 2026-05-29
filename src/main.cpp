@@ -1,4 +1,4 @@
-#include "Compiler.hpp"
+#include "Engine.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -68,17 +68,17 @@ int main(int argc, char* argv[]) {
     try {
         std::cout << "Membuka file: " << inputPath.string() << "\n";
         
-        Compiler compiler(inputPath, outputDir);
+        Engine engine(inputPath, outputDir);
 
         if (mode == "l") {
-            compiler.lexer();
+            engine.lexer();
         } else if (mode == "p") {
-            compiler.lexer();
-            compiler.parser();
+            engine.lexer();
+            engine.parser();
         } else if (mode == "s") {
-            compiler.lexer();
-            compiler.parser();
-            compiler.semantic();
+            engine.lexer();
+            engine.parser();
+            engine.semantic();
         }
         
         std::cout << "\nSelesai.\n";
