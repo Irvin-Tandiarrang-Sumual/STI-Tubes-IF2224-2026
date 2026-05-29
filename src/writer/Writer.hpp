@@ -8,6 +8,7 @@
 #include "../lexer/Token.hpp"
 #include "../cst/CSTNodes.hpp"
 #include "../ast/ASTNodes.hpp"
+#include "../intermediate/Instruction.hpp"
 
 
 class Writer {
@@ -15,6 +16,7 @@ class Writer {
         const std::string filename;
         const std::vector<Token> tokens;
         CSTNodes* root = nullptr;
+        const std::vector<Instruction> instructions;
         const std::vector<std::string> errorMessages_;
 
         // print CST tree
@@ -29,6 +31,9 @@ class Writer {
         
         // buat parser
         Writer(const std::string& filename, CSTNodes* root, const std::vector<std::string>& parserErrorMessages);
+
+        // buat intermediate code
+        Writer(const std::string& filename, const std::vector<Instruction>& instructions);
         ~Writer();
 
         void writeTokenToFile() const;
@@ -46,6 +51,8 @@ class Writer {
         void writeDecoratedASTWithTablesToFile(const ASTNode* rootAst, const std::string& tablesText) const;
         void printDecoratedASTWithTables(const ASTNode* rootAst, const std::string& tablesText) const;
 
-        // semantic
+        // intermediate
+        void writeIntermediateCodeToFile() const;
+        void printIntermediateCode() const;
 
 };
