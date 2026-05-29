@@ -16,8 +16,6 @@ SRC = $(wildcard *.cpp) \
       $(wildcard parser/rules/*.cpp) \
       $(wildcard ast/*.cpp) \
       $(wildcard ast/builder/*.cpp) \
-      $(wildcard typechecker/*.cpp)
-
 
 OBJ = $(SRC:.cpp=.o)
 

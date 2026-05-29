@@ -1,9 +1,14 @@
-program BasicAssignment;
-
+program TestRecord;
+type
+ Point == record
+ x: integer;
+ y: integer
+ end;
 var
-  a, b: integer;
-
+ p: Point;
 begin
-  a := 5;
-  b := a + 10;
+ p.x := 3;
+ p.y := 4;
+ writeln(p.x);
+ writeln(p.y);
 end.
