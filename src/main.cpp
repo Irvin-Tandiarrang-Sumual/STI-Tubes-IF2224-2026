@@ -12,14 +12,15 @@ int main(int argc, char* argv[]) {
         std::cerr << "  l  -> Menjalankan Lexer\n";
         std::cerr << "  p  -> Menjalankan Lexer & Parser\n";
         std::cerr << "  s  -> Menjalankan Lexer, Parser & Semantic\n";
+        std::cerr << "  i  -> Menjalankan Lexer, Parser, Semantic & Intermediate Code Generator\n";
         return 1;
     }
 
     std::string mode = argv[1];
     std::string filename = argv[2];
 
-    if (mode != "l" && mode != "p" && mode != "s") {
-        std::cerr << "ERROR: Mode tidak valid. Gunakan 'l', 'p', atau 's'.\n";
+    if (mode != "l" && mode != "p" && mode != "s" && mode != "i") {
+        std::cerr << "ERROR: Mode tidak valid. Gunakan 'l', 'p', 's', atau 'i'.\n";
         return 1;
     }
 
@@ -30,8 +31,9 @@ int main(int argc, char* argv[]) {
         modeOut = "PARSER";
     } else if (mode == "s") {
         modeOut = "SEMANTIC";
+    } else if (mode == "i") {
+        modeOut = "INTERMEDIATE CODE";
     }
-
     std::cout << "=== ARION " << modeOut << " ===\n\n";
 
     std::string testFolder;
@@ -39,9 +41,12 @@ int main(int argc, char* argv[]) {
         testFolder = "../test/milestone-1";
     } else if (mode == "p") {
         testFolder = "../test/milestone-2";
-    } else {
+    } else if (mode == "s") {
         testFolder = "../test/milestone-3";
+    } else if (mode == "i") {
+        testFolder = "../test/milestone-4";
     }
+
     
     std::string outputDir = testFolder + "/output";
 
@@ -79,6 +84,11 @@ int main(int argc, char* argv[]) {
             engine.lexer();
             engine.parser();
             engine.semantic();
+        } else if (mode == "i") { 
+            engine.lexer();
+            engine.parser();
+            engine.semantic();
+            engine.intermediateCodeGenerator();
         }
         
         std::cout << "\nSelesai.\n";
