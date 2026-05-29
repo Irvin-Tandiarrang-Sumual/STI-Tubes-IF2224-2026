@@ -4,6 +4,10 @@ void SemanticAnalyzer::reportError(const std::string& message) {
     errors_.push_back(message);
 }
 
+SymbolTable& SemanticAnalyzer::getSymbolTable() {
+    return symbolTable;
+}
+
 void SemanticAnalyzer::reportError(const ASTNode* node, const std::string& message) {
     if (node == nullptr) {
         errors_.push_back(message);
