@@ -90,6 +90,7 @@ public:
     const std::vector<std::string>& getWarnings() const;
     bool hasErrors() const;
     std::string dumpTables() const;
+    SymbolTable& getSymbolTable();
 
     std::any visitProgramNode(ASTProgramNode* node) override;
     std::any visitDeclarationsNode(ASTDeclarationsNode* node) override;

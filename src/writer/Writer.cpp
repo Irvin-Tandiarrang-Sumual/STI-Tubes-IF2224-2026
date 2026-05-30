@@ -271,3 +271,37 @@ void Writer::writeCSTToFile() const {
 
     std::cout << "Parse tree berhasil disimpan di: " << filename << "\n";
 }
+
+// BUAT INTERMEDIATE
+Writer::Writer(const std::string &filename, const std::vector<Instruction>& instructions)
+    : filename(filename), tokens(), instructions(instructions), root(nullptr), errorMessages_() {}
+
+void Writer::printIntermediateCode() const {
+    std::cout << "\n=== Intermediate Code ===\n";
+
+    if (instructions.empty()) {
+        std::cout << "Tidak terdapat intermediate code.\n";
+        return;
+    }
+
+    for (std::size_t i = 0; i < instructions.size(); ++i) {
+        std::cout << instructions[i].toString(static_cast<int>(i)) << '\n';
+    }
+}
+
+void Writer::writeIntermediateCodeToFile() const {
+    std::ofstream fOut(filename, std::ios::out | std::ios::binary);
+
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
+        return;
+    }
+
+    for (std::size_t i = 0; i < instructions.size(); ++i) {
+        fOut << instructions[i].toString(static_cast<int>(i)) << '\n';
+    }
+
+    fOut.close();
+
+    std::cout << "Intermediate code berhasil disimpan di: " << filename << "\n";
+}

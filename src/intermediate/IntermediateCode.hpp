@@ -11,8 +11,8 @@
 
 class IntermediateCodeGenerator : public ASTVisitor {
     private:
-        const SymbolTable& symbolTable_;
-        std::vector<Instruction> intermediateCode_;
+        SymbolTable& symbolTable_;
+        std::vector<Instruction> code_;
         static constexpr int FRAME_HEADER_SIZE = 3;
 
         int emit(OpCode op, int level, int operand);
@@ -47,7 +47,7 @@ class IntermediateCodeGenerator : public ASTVisitor {
         int literalToInt(const ASTLiteralExpressionNode* node) const;
 
     public:
-        explicit IntermediateCodeGenerator(const SymbolTable& symbolTable);
+        explicit IntermediateCodeGenerator(SymbolTable& symbolTable);
 
         std::vector<Instruction> generate(ASTProgramNode* root);
 
