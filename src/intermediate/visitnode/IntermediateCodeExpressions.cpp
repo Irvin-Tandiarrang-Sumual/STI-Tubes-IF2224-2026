@@ -17,7 +17,34 @@ std::any IntermediateCodeGenerator::visitVariableExpressionNode(ASTVariableExpre
         return {};
     }
 
-    emitLod(getLevelDifference(node->lexicalLevel_), getRuntimeAddress(node));
+    if (node->components.empty()) {
+        int symbolIndex;
+        if(node->symbolRefIndex_ >= 0){
+            symbolIndex = node->symbolRefIndex_;
+        } else { 
+            symbolIndex = symbolTable_.lookup(node->baseName);
+        }
+        
+        if (symbolIndex != -1) {
+            const IdentifierTableEntry& entry = symbolTable_.getIdentifier(symbolIndex);
+
+            // Predefined boolean dan enum constant tidak punya instruksi deklarasi tersendiri.
+            if (entry.isConstant && entry.obj == "constant" && node->baseName == "true") {
+                emitLit(1);
+                return {};
+            }
+            if (entry.isConstant && entry.obj == "constant" && node->baseName == "false") {
+                emitLit(0);
+                return {};
+            }
+            if (entry.isConstant && entry.obj == "constant" && entry.type == DataType::ENUMERATED) {
+                emitLit(entry.address);
+                return {};
+            }
+        }
+    }
+
+    emitLod(getRuntimeLevel(node), getRuntimeAddress(node));
     return {};
 }
 
@@ -75,5 +102,6 @@ std::any IntermediateCodeGenerator::visitCallExpressionNode(ASTCallExpressionNod
         throw std::runtime_error("Intermediate Error: built-in procedure '" + node->callee + "' tidak dapat digunakan sebagai expression.");
     }
 
-    throw std::runtime_error("Intermediate Error: function call expression belum didukung oleh generator awal.");
+    emitCallToSubprogram(node);
+    return {};
 }
