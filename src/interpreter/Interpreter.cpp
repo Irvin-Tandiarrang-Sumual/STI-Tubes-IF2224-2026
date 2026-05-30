@@ -8,7 +8,7 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
     ip_ = 0;
     memory_.clear(); // Kosongkan memori tiap eksekusi
 
-    while (ip_ < instructions.size()) {
+    while (ip_ < static_cast<int>(instructions.size())) {
         // FETCH: Ambil instruksi saat ini
         Instruction instr = instructions[ip_];
 
