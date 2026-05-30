@@ -34,7 +34,7 @@ std::any IntermediateCodeGenerator::visitAssignmentStatementNode(ASTAssignmentSt
 
     // cari address ruas kiri
     int address = getRuntimeAddress(node->target);
-    int levelDiff = getLevelDifference(node->target->lexicalLevel_);
+    int levelDiff = getRuntimeLevel(node->target);
 
     emitSto(levelDiff, address);
     return std::any();
@@ -197,11 +197,6 @@ std::any IntermediateCodeGenerator::visitForStatementNode(ASTForStatementNode* n
 std::any IntermediateCodeGenerator::visitCaseStatementNode(ASTCaseStatementNode* node) {
     if (node == nullptr) return std::any();
 
-    // evaluasi ekspresi utama di case
-    if (node->condition != nullptr) {
-        node->condition->accept(this);
-    }
-
     std::vector<int> endJumps; // alamat instruksi break exit tiap cabang
 
     // uji ke setiap cabang
@@ -256,36 +251,29 @@ std::any IntermediateCodeGenerator::visitCallStatementNode(ASTCallStatementNode*
 
     // built-in procedure etc
     if (isBuiltinProcedure(procName)) {
-        for (ASTExpressionNode* arg : node->callExpr->arguments) {
+        for (size_t i = 0; i < node->callExpr->arguments.size(); ++i) {
+            ASTExpressionNode* arg = node->callExpr->arguments[i];
+
             if (arg != nullptr) {
-                arg->accept(this); // hasil evaluasi parameter ke stack
-                emitOpr(OprCode::WRT);
+                arg->accept(this);
+
+                if (isWritelnProcedure(procName) && i + 1 == node->callExpr->arguments.size()) {
+                    emitOpr(OprCode::WRTLN);
+                } else {
+                    emitOpr(OprCode::WRT);
+                }
             }
         }
 
-        if (isWritelnProcedure(procName)) {
+        if (isWritelnProcedure(procName) && node->callExpr->arguments.empty()) {
             emitOpr(OprCode::WRTLN);
         }
+
+        return {};
     }
     // defined by user
     else {
-        // masukin paraemeter ke runtime stack
-        for (ASTExpressionNode* arg : node->callExpr->arguments) {
-            if (arg != nullptr) {
-                arg->accept(this);
-            }
-        }
-        
-        int procIndex = symbolTable_.lookup(procName);
-        if (procIndex == -1) {
-            throw std::runtime_error("Intermediate Error: prosedur/fungsi '" + procName + "' tidak ditemukan.");
-        }
-
-        IdentifierTableEntry& entry = symbolTable_.getIdentifier(procIndex);
-        int targetLine = entry.address;
-        int levelDiff = getLevelDifference(entry.level);
-        
-        emitCal(levelDiff, targetLine); // pemanggilan
+        emitCallToSubprogram(node->callExpr);
     }
 
     return std::any();
