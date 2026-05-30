@@ -1,4 +1,4 @@
-#include "IntermediateCode.hpp"
+#include "../IntermediateCode.hpp"
 
 // Types Block
 std::any IntermediateCodeGenerator::visitTypeNode(ASTTypeNode* node) {
