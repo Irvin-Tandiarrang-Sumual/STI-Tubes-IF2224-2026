@@ -18,6 +18,7 @@ class Writer {
         CSTNodes* root = nullptr;
         const std::vector<Instruction> instructions;
         const std::vector<std::string> errorMessages_;
+        const std::string executionOutput;
 
         // print CST tree
         void writeCSTRecursive(std::ostream& out, const CSTNodes* node, const std::string& prefix, bool isLast, std::size_t depth) const;
@@ -26,6 +27,7 @@ class Writer {
         void writeASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
         void writeDecoratedASTRecursive(std::ostream& out, const ASTNode* node, const std::string& prefix, bool isLast, std::size_t depth) const;
         std::string formatDecoratedNode(const ASTNode* node) const;
+        
     public:
         Writer(const std::string& filename, const std::vector<Token>& tokens);
         
@@ -34,6 +36,10 @@ class Writer {
 
         // buat intermediate code
         Writer(const std::string& filename, const std::vector<Instruction>& instructions);
+
+        // buat interpreter
+        Writer(const std::string& filename, const std::string& executionOutput);
+
         ~Writer();
 
         void writeTokenToFile() const;
@@ -55,4 +61,7 @@ class Writer {
         void writeIntermediateCodeToFile() const;
         void printIntermediateCode() const;
 
+        // Interpreter
+        void printExecutionOutput() const;
+        void writeExecutionOutputToFile() const;
 };

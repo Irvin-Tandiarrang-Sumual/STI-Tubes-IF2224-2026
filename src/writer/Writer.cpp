@@ -305,3 +305,29 @@ void Writer::writeIntermediateCodeToFile() const {
 
     std::cout << "Intermediate code berhasil disimpan di: " << filename << "\n";
 }
+
+// BUAT INTERPRETER
+Writer::Writer(const std::string& filename, const std::string& executionOutput)
+    : filename(filename), executionOutput(executionOutput) {}
+
+void Writer::printExecutionOutput() const {
+    std::cout << "\n=== Interpreter ===\n";
+    if (executionOutput.empty()) {
+        std::cout << "(Tidak ada output yang dicetak ke terminal)\n";
+    } else {
+        std::cout << executionOutput;
+    }
+}
+
+void Writer::writeExecutionOutputToFile() const {
+    std::ofstream fOut(filename, std::ios::out | std::ios::binary);
+    if (!fOut.is_open()) {
+        std::cerr << "ERROR: gagal membuka file output: " << filename << "\n";
+        return;
+    }
+    
+    fOut << "=== Interpreter ===\n";
+    fOut << executionOutput;
+    fOut.close();
+    std::cout << "Hasil interpreter berhasil disimpan di: " << filename << "\n";
+}

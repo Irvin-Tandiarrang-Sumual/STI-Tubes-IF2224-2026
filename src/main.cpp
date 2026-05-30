@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
             engine.parser();
             engine.semantic();
             engine.intermediateCodeGenerator();
+            engine.execute();
         }
         
         std::cout << "\nSelesai.\n";

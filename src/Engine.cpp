@@ -1,5 +1,7 @@
 #include "Engine.hpp"
 
+#include <sstream>
+
 Engine::Engine(const std::filesystem::path &path, const std::string &outputDir) 
     : inputPath(path), outputDir(outputDir), cstRoot_(nullptr), astRoot_(nullptr) {}
 Engine::~Engine() {
@@ -141,6 +143,8 @@ void Engine::intermediateCodeGenerator() {
     IntermediateCodeGenerator generator(semanticAnalyzer_.getSymbolTable(), semanticAnalyzer_);
     std::vector<Instruction> instructions = generator.generate(astRoot_);
 
+    instructions_ = generator.generate(astRoot_);
+
     const std::string baseName = inputPath.stem().string();
     const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-intermediate-code.txt");
 
@@ -151,4 +155,52 @@ void Engine::intermediateCodeGenerator() {
     Writer writer(fullPath.string(), instructions);
     writer.printIntermediateCode();
     writer.writeIntermediateCodeToFile();
+}
+
+void Engine::execute() {
+    if (!cstErrors_.empty() || !semanticErrors_.empty()) {
+        std::cout << "Terdapat error pada tahapan kompilasi. Interpreter tidak dapat dijalankan.\n";
+        return;
+    }
+
+    if (instructions_.empty()) {
+        std::cout << "Instruksi TAC kosong. Silakan jalankan intermediateCodeGenerator() terlebih dahulu.\n";
+        return;
+    }
+
+    std::stringstream debugBuffer;  // Untuk log Stack & IP
+    std::stringstream actualOutput; // Untuk output WRT & WRTLN
+
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf(); 
+    std::cout.rdbuf(debugBuffer.rdbuf());             
+
+    try {
+        Interpreter interpreter;
+        interpreter.execute(instructions_, actualOutput); 
+    } catch (const std::exception& e) {
+        std::cout.rdbuf(oldCoutBuffer);
+        std::cerr << "\n[Runtime Error] Eksekusi terhenti: " << e.what() << '\n';
+        return;
+    }
+
+    std::cout.rdbuf(oldCoutBuffer);
+    std::string executionResult = debugBuffer.str();
+    
+    executionResult += "\n=== Output ===\n";
+    if (actualOutput.str().empty()) {
+        executionResult += "(Tidak ada output)\n";
+    } else {
+        executionResult += actualOutput.str();
+    }
+
+    const std::string baseName = inputPath.stem().string();
+    const std::filesystem::path fullPath = std::filesystem::path(outputDir) / (baseName + "-output.txt");
+
+    if (!std::filesystem::exists(outputDir)) {
+        std::filesystem::create_directories(outputDir);
+    }
+
+    Writer writer(fullPath.string(), executionResult);
+    writer.printExecutionOutput();
+    writer.writeExecutionOutputToFile();
 }
