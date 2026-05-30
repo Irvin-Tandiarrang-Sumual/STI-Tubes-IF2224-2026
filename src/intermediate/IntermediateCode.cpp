@@ -1,13 +1,20 @@
 #include "IntermediateCode.hpp"
 
-IntermediateCodeGenerator::IntermediateCodeGenerator(SymbolTable& symbolTable) : symbolTable_(symbolTable) {}
+IntermediateCodeGenerator::IntermediateCodeGenerator(SymbolTable& symbolTable, SemanticAnalyzer& semanticAnalyzer)
+    : symbolTable_(symbolTable), semanticAnalyzer_(semanticAnalyzer) {}
 
 std::vector<Instruction> IntermediateCodeGenerator::generate(ASTProgramNode* root) {
     code_.clear();
+    currentLexicalLevel_ = 0;
+    currentFunctionNames_.clear();
+    currentFunctionReturnSlots_.clear();
+    pendingCallPatches_.clear();
+    subprogramEntryLineBySymbolIndex_.clear();
 
     if (root == nullptr) throw std::runtime_error("Intermediate Error: AST root kosong.");
 
     root->accept(this);
+    patchPendingCalls();
     return code_;
 }
 
@@ -72,6 +79,19 @@ void IntermediateCodeGenerator::patchOperand(int instructionIndex, int newOperan
     code_[instructionIndex].setOperand(newOperand);
 }
 
+void IntermediateCodeGenerator::patchPendingCalls() {
+    for (const PendingCallPatch& patch : pendingCallPatches_) {
+        auto it = subprogramEntryLineBySymbolIndex_.find(patch.symbolIndex);
+        if (it == subprogramEntryLineBySymbolIndex_.end()) {
+            throw std::runtime_error(
+                "Intermediate Error: alamat subprogram '" + patch.calleeName + "' belum diketahui."
+            );
+        }
+        patchOperand(patch.instructionIndex, it->second);
+    }
+    pendingCallPatches_.clear();
+}
+
 int IntermediateCodeGenerator::currentLine() const {
     return static_cast<int>(code_.size());
 }
@@ -80,19 +100,36 @@ int IntermediateCodeGenerator::getRuntimeAddress(ASTVariableExpressionNode* node
     if (node == nullptr) {
         throw std::runtime_error("Intermediate Error: variable expression kosong.");
     }
-    if (!node->components.empty()) {
-        throw std::runtime_error("Intermediate Error: akses array/record belum didukung pada generator awal.");
+    if (isFunctionReturnTarget(node)) {
+        return currentFunctionReturnSlots_.back();
     }
     if (node->symbolRefIndex_ < 0) {
         throw std::runtime_error("Intermediate Error: variable '" + node->baseName + "' belum memiliki symbol reference.");
     }
+
     const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-    return FRAME_HEADER_SIZE + entry.address;
+    int runtimeAddress = FRAME_HEADER_SIZE + entry.address;
+
+    if (!node->components.empty()) {
+        ASTTypeNode* baseTypeNode = semanticAnalyzer_.getIdentifierTypeNode(node->symbolRefIndex_);
+        runtimeAddress += computeStaticComponentOffset(node, baseTypeNode);
+    }
+
+    return runtimeAddress;
+}
+
+int IntermediateCodeGenerator::getRuntimeLevel(ASTVariableExpressionNode* node) const {
+    if (isFunctionReturnTarget(node)) {
+        return 0;
+    }
+    return getLevelDifference(node->lexicalLevel_);
 }
 
 int IntermediateCodeGenerator::getLevelDifference(int declarationLevel) const {
-    (void)declarationLevel;
-    return 0;
+    if (currentLexicalLevel_ < declarationLevel) {
+        return 0;
+    }
+    return currentLexicalLevel_ - declarationLevel;
 }
 
 int IntermediateCodeGenerator::computeProgramMemorySize(ASTProgramNode* node) const {
@@ -128,7 +165,9 @@ int IntermediateCodeGenerator::computeVariableMemorySize(ASTVarDeclarationNode* 
         return 0;
     }
     const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-    return entry.address + 1;
+    ASTTypeNode* typeNode = semanticAnalyzer_.getIdentifierTypeNode(node->symbolRefIndex_);
+    int declaredSize = typeNode != nullptr ? semanticAnalyzer_.getTypeStorageSize(typeNode) : 1;
+    return entry.address + std::max(1, declaredSize);
 }
 
 bool IntermediateCodeGenerator::isBuiltinProcedure(const std::string& name) const {
@@ -142,6 +181,14 @@ bool IntermediateCodeGenerator::isWriteProcedure(const std::string& name) const 
 bool IntermediateCodeGenerator::isWritelnProcedure(const std::string& name) const {
     return name == "writeln" || name == "println";
 }
+
+bool IntermediateCodeGenerator::isFunctionReturnTarget(ASTVariableExpressionNode* node) const {
+    if (node == nullptr || !node->components.empty() || currentFunctionNames_.empty()) {
+        return false;
+    }
+    return node->baseName == currentFunctionNames_.back();
+}
+
 
 OprCode IntermediateCodeGenerator::mapUnaryOperatorToOpr(const std::string& op) const {
     if (op == "-") {
@@ -164,6 +211,112 @@ OprCode IntermediateCodeGenerator::mapBinaryOperatorToOpr(const std::string& op)
     if (op == "<=") return OprCode::LEQ;
 
     throw std::runtime_error("Intermediate Error: operator binary '" + op + "' belum didukung.");
+}
+
+bool IntermediateCodeGenerator::constantExpressionToInt(ASTExpressionNode* expression, int& outValue) const {
+    if (expression == nullptr) {
+        return false;
+    }
+
+    if (auto* literal = dynamic_cast<ASTLiteralExpressionNode*>(expression)) {
+        outValue = literalToInt(literal);
+        return true;
+    }
+
+    if (auto* unary = dynamic_cast<ASTUnaryExpressionNode*>(expression)) {
+        int operandValue = 0;
+        if (!constantExpressionToInt(unary->operand, operandValue)) {
+            return false;
+        }
+        if (unary->op == "-") {
+            outValue = -operandValue;
+            return true;
+        }
+        if (unary->op == "+") {
+            outValue = operandValue;
+            return true;
+        }
+    }
+
+    if (auto* variable = dynamic_cast<ASTVariableExpressionNode*>(expression)) {
+        int symbolIndex = symbolTable_.lookup(variable->baseName);
+        if (symbolIndex != -1) {
+            const IdentifierTableEntry& entry = symbolTable_.getIdentifier(symbolIndex);
+            if (entry.isConstant && entry.obj == "constant" && variable->components.empty()) {
+                outValue = entry.address;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+int IntermediateCodeGenerator::computeStaticComponentOffset(ASTVariableExpressionNode* node, ASTTypeNode* baseTypeNode) const {
+    if (node == nullptr) {
+        return 0;
+    }
+
+    int offset = 0;
+    ASTTypeNode* currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(baseTypeNode);
+
+    for (const auto& component : node->components) {
+        if (component.isArrayIndex) {
+            for (ASTExpressionNode* indexExpression : component.indices) {
+                auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(semanticAnalyzer_.getResolvedTypeNode(currentTypeNode));
+                if (arrayType == nullptr) {
+                    throw std::runtime_error("Intermediate Error: akses indeks pada tipe non-array.");
+                }
+
+                int indexValue = 0;
+                if (!constantExpressionToInt(indexExpression, indexValue)) {
+                    throw std::runtime_error(
+                        "Intermediate Error: indeks array dinamis belum dapat direpresentasikan dengan LOD/STO langsung. "
+                        "Gunakan indeks literal untuk generator awal, atau tambahkan opcode indirect load/store pada interpreter."
+                    );
+                }
+
+                int low = 0;
+                int high = 0;
+                ASTTypeNode* indexType = semanticAnalyzer_.getResolvedTypeNode(arrayType->indexType);
+                semanticAnalyzer_.getRangeBounds(dynamic_cast<ASTRangeType*>(indexType), low, high);
+                if (indexValue < low || indexValue > high) {
+                    throw std::runtime_error("Intermediate Error: indeks array literal berada di luar range deklarasi.");
+                }
+
+                int elementSize = semanticAnalyzer_.getTypeStorageSize(arrayType->elementType);
+                offset += (indexValue - low) * std::max(1, elementSize);
+                currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(arrayType->elementType);
+            }
+        } else {
+            auto* recordType = dynamic_cast<ASTRecordTypeNode*>(semanticAnalyzer_.getResolvedTypeNode(currentTypeNode));
+            ASTTypeNode* fieldType = nullptr;
+            offset += computeRecordFieldOffset(recordType, component.fieldName, fieldType);
+            currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(fieldType);
+        }
+    }
+
+    return offset;
+}
+
+int IntermediateCodeGenerator::computeRecordFieldOffset(ASTRecordTypeNode* recordTypeNode, const std::string& fieldName, ASTTypeNode*& fieldTypeNode) const {
+    if (recordTypeNode == nullptr) {
+        throw std::runtime_error("Intermediate Error: akses field pada tipe non-record.");
+    }
+
+    int offset = 0;
+    for (const auto& field : recordTypeNode->fields) {
+        int fieldSize = semanticAnalyzer_.getTypeStorageSize(field.type);
+        for (const std::string& identifier : field.identifiers) {
+            if (identifier == fieldName) {
+                fieldTypeNode = semanticAnalyzer_.getResolvedTypeNode(field.type);
+                return offset;
+            }
+            offset += std::max(1, fieldSize);
+        }
+    }
+
+    throw std::runtime_error("Intermediate Error: field record '" + fieldName + "' tidak ditemukan.");
 }
 
 int IntermediateCodeGenerator::literalToInt(const ASTLiteralExpressionNode* node) const {
@@ -193,4 +346,34 @@ int IntermediateCodeGenerator::literalToInt(const ASTLiteralExpressionNode* node
         throw std::runtime_error("Intermediate Error: literal string belum didukung oleh instruksi LIT integer.");
     }
     throw std::runtime_error("Intermediate Error: tipe literal tidak dikenali.");
+}
+
+int IntermediateCodeGenerator::emitCallToSubprogram(ASTCallExpressionNode* callExpr) {
+    if (callExpr == nullptr) {
+        throw std::runtime_error("Intermediate Error: call expression kosong.");
+    }
+
+    for (ASTExpressionNode* arg : callExpr->arguments) {
+        if (arg != nullptr) {
+            arg->accept(this);
+        }
+    }
+
+    int symbolIndex = callExpr->symbolRefIndex_ >= 0 ? callExpr->symbolRefIndex_ : symbolTable_.lookup(callExpr->callee);
+    if (symbolIndex == -1) {
+        throw std::runtime_error("Intermediate Error: prosedur/fungsi '" + callExpr->callee + "' tidak ditemukan.");
+    }
+
+    const IdentifierTableEntry& entry = symbolTable_.getIdentifier(symbolIndex);
+    int levelDiff = getLevelDifference(entry.level);
+
+    auto knownAddress = subprogramEntryLineBySymbolIndex_.find(symbolIndex);
+    int targetLine = knownAddress != subprogramEntryLineBySymbolIndex_.end() ? knownAddress->second : 0;
+    int callInstructionIndex = emitCal(levelDiff, targetLine);
+
+    if (knownAddress == subprogramEntryLineBySymbolIndex_.end()) {
+        pendingCallPatches_.push_back(PendingCallPatch{callInstructionIndex, symbolIndex, callExpr->callee});
+    }
+
+    return callInstructionIndex;
 }
