@@ -274,7 +274,7 @@ void Writer::writeCSTToFile() const {
 
 // BUAT INTERMEDIATE
 Writer::Writer(const std::string &filename, const std::vector<Instruction>& instructions)
-    : filename(filename), tokens(), instructions(instructions), root(nullptr), errorMessages_() {}
+    : filename(filename), root(nullptr), instructions(instructions) {}
 
 void Writer::printIntermediateCode() const {
     std::cout << "\n=== Intermediate Code ===\n";
