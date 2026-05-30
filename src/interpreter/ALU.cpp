@@ -41,7 +41,12 @@ void ALU::execute(OprCode opr, RuntimeStack& memory, std::ostream& outStream) {
             if (valRight == 0) throw std::runtime_error("Runtime Error: Modulo by zero.");
             memory.push(valLeft % valRight); 
             break;
-        // TODO: Operasi Perbandingan (EQL, NEQ, LSS, GEQ, GTR, LEQ)
+        case OprCode::EQL: memory.push(valLeft == valRight ? 1 : 0); break;
+        case OprCode::NEQ: memory.push(valLeft != valRight ? 1 : 0); break;
+        case OprCode::LSS: memory.push(valLeft <  valRight ? 1 : 0); break;
+        case OprCode::GEQ: memory.push(valLeft >= valRight ? 1 : 0); break;
+        case OprCode::GTR: memory.push(valLeft >  valRight ? 1 : 0); break;
+        case OprCode::LEQ: memory.push(valLeft <= valRight ? 1 : 0); break;
         default:
             break;
     }

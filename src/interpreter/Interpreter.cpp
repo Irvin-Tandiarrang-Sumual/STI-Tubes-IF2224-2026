@@ -25,7 +25,16 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
             case OpCode::STO: memory_.store(instr.getOperand()); break;
             case OpCode::LOD: memory_.load(instr.getOperand()); break;
             case OpCode::OPR: ALU::execute(static_cast<OprCode>(instr.getOperand()), memory_, outStream); break;
-            // TODO: JMP, JPC, CAL, RET coming soon ya bang
+            case OpCode::JMP: 
+                ip_ = instr.getOperand(); 
+                break;
+            case OpCode::JPC: 
+                // Pop satu nilai, jika 0 (false), maka lompat
+                if (memory_.pop() == 0) {
+                    ip_ = instr.getOperand();
+                }
+                break;
+            // TODO: CAL, RET coming soon ya bang
             default: break;
         }
 
