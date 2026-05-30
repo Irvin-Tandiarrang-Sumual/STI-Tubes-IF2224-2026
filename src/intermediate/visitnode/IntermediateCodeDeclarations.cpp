@@ -1,81 +1,64 @@
 #include "../IntermediateCode.hpp"
 #include "../Instruction.hpp"
-
 #include <algorithm>
 
 std::any IntermediateCodeGenerator::visitDeclarationsNode(ASTDeclarationsNode* node) {
-    if (node == nullptr) {
-        return {};
-    }
-
+    if (node == nullptr) return {};
     for (auto* declaration : node->declarations) {
-        if (declaration != nullptr) {
-            declaration->accept(this);
-        }
+        if (declaration != nullptr) declaration->accept(this);
     }
-
     return {};
 }
 
 std::any IntermediateCodeGenerator::visitDeclarationNode(ASTDeclarationNode* node) {
-    if (node == nullptr) {
-        return {};
-    }
-
+    if (node == nullptr) return {};
     return node->accept(this);
 }
 
 std::any IntermediateCodeGenerator::visitConstDeclarationNode(ASTConstDeclarationNode* node) {
-    if (node == nullptr || node->value == nullptr) {
-        return {};
-    }
+    if (node == nullptr || node->value == nullptr) return {};
+    
+    // Evaluasi nilai konstantanya
     node->value->accept(this);
+    
     if (node->symbolRefIndex_ >= 0) {
         const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-        emitSto(getLevelDifference(entry.level), FRAME_HEADER_SIZE + entry.address);
+        
+        // Cari alamatnya di Map Offset Lokal
+        int targetAddress = FRAME_HEADER_SIZE + entry.address;
+        
+        auto it = relativeOffsetMap_.find(node->symbolRefIndex_);
+        if (it != relativeOffsetMap_.end()) {
+            targetAddress = it->second; // Ganti ke alamat offset yang benar
+        }
+        
+        emitSto(getLevelDifference(entry.level), targetAddress);
     }
     return {};
 }
 
 std::any IntermediateCodeGenerator::visitTypeDeclarationNode(ASTTypeDeclarationNode* node) {
-    (void)node;
-    // type declaration hanya metadata compile-time
-    // tidak menghasilkan runtime code
+    (void)node; 
     return {};
 }
 
 std::any IntermediateCodeGenerator::visitVarDeclarationNode(ASTVarDeclarationNode* node) {
-    (void)node;
-    // alokasi memory variable dilakukan lewat INT
-    // pada scope block/procedure terkait
+    (void)node; 
     return {};
 }
 
 std::any IntermediateCodeGenerator::visitSubprogramDeclarationNode(ASTSubprogramDeclarationNode* node) {
-    if (node == nullptr) {
-        return {};
-    }
-
+    if (node == nullptr) return {};
     return node->accept(this);
 }
 
-std::any IntermediateCodeGenerator::visitProcedureDeclarationNode(
-    ASTProcedureDeclarationNode* node
-) {
-    if (node == nullptr) {
-        return {};
-    }
+std::any IntermediateCodeGenerator::visitProcedureDeclarationNode(ASTProcedureDeclarationNode* node) {
+    if (node == nullptr) return {};
 
     int skipJumpIndex = emitJmp(0);
-
     int procedureAddress = currentLine();
 
-    int procIndex;
-    if(node->symbolRefIndex_ >= 0){
-        procIndex = node->symbolRefIndex_;
-    } else {
-        procIndex = symbolTable_.lookup(node->name);
-    }
+    int procIndex = node->symbolRefIndex_ >= 0 ? node->symbolRefIndex_ : symbolTable_.lookup(node->name);
     if (procIndex != -1) {
         subprogramEntryLineBySymbolIndex_[procIndex] = procedureAddress;
     }
@@ -83,69 +66,76 @@ std::any IntermediateCodeGenerator::visitProcedureDeclarationNode(
     int savedLevel = currentLexicalLevel_;
     currentLexicalLevel_ = node->lexicalLevel_ + 1;
 
-    int parameterCells = 0;
+    // Kalkulasi Parameter (Offset Negatif)
+    int totalParams = 0;
+    for (const auto& group : node->parameters) {
+        totalParams += group.identifiers.size();
+    }
+    
+    int currentParamOffset = -totalParams;
     for (const auto& group : node->parameters) {
         for (const std::string& paramName : group.identifiers) {
-            int paramIndex = symbolTable_.lookup(paramName);
-            if (paramIndex >= 0) {
-                const IdentifierTableEntry& paramEntry = symbolTable_.getIdentifier(paramIndex);
-                int paramSize = group.type != nullptr ? semanticAnalyzer_.getTypeStorageSize(group.type) : 1;
-                parameterCells = std::max(parameterCells, paramEntry.address + std::max(1, paramSize));
-            } else {
-                parameterCells += 1;
+            
+            // Searching tembus batasan scope
+            int paramIndex = -1;
+            for (int i = 0; i < 10000; ++i) { 
+                try {
+                    const IdentifierTableEntry& e = symbolTable_.getIdentifier(i);
+                    if (e.name == paramName && e.level == currentLexicalLevel_) {
+                        paramIndex = i;
+                        break;
+                    }
+                } catch (...) {
+                    break; 
+                }
             }
+
+            if (paramIndex >= 0) {
+                relativeOffsetMap_[paramIndex] = currentParamOffset;
+            }
+            currentParamOffset += 1;
         }
     }
 
+    // Kalkulasi Variabel Lokal (Offset positif)
     int localDataCells = 0;
+    int currentLocalOffset = FRAME_HEADER_SIZE; 
+    
     for (auto* declaration : node->localDeclarations) {
         if (declaration != nullptr) {
             if (auto* varDecl = dynamic_cast<ASTVarDeclarationNode*>(declaration)) {
-                localDataCells = std::max(localDataCells, computeVariableMemorySize(varDecl));
-            } else if (auto* constDecl = dynamic_cast<ASTConstDeclarationNode*>(declaration)) {
-                if (constDecl->symbolRefIndex_ >= 0) {
-                    const IdentifierTableEntry& entry = symbolTable_.getIdentifier(constDecl->symbolRefIndex_);
-                    localDataCells = std::max(localDataCells, entry.address + 1);
+                if (varDecl->symbolRefIndex_ >= 0) {
+                    relativeOffsetMap_[varDecl->symbolRefIndex_] = currentLocalOffset;
+                    ASTTypeNode* typeNode = semanticAnalyzer_.getIdentifierTypeNode(varDecl->symbolRefIndex_);
+                    int varSize = typeNode != nullptr ? semanticAnalyzer_.getTypeStorageSize(typeNode) : 1;
+                    currentLocalOffset += std::max(1, varSize);
+                    localDataCells += std::max(1, varSize);
                 }
             }
         }
     }
 
-    emitInt(FRAME_HEADER_SIZE + std::max(parameterCells, localDataCells));
+    emitInt(FRAME_HEADER_SIZE + localDataCells);
 
     for (auto* declaration : node->localDeclarations) {
-        if (declaration != nullptr) {
-            declaration->accept(this);
-        }
+        if (declaration != nullptr) declaration->accept(this);
     }
-
-    if (node->body != nullptr) {
-        node->body->accept(this);
-    }
+    if (node->body != nullptr) node->body->accept(this);
 
     emitRet();
-
     currentLexicalLevel_ = savedLevel;
     patchOperand(skipJumpIndex, currentLine());
 
     return {};
 }
-std::any IntermediateCodeGenerator::visitFunctionDeclarationNode(
-    ASTFunctionDeclarationNode* node
-) {
-    if (node == nullptr) {
-        return {};
-    }
+
+std::any IntermediateCodeGenerator::visitFunctionDeclarationNode(ASTFunctionDeclarationNode* node) {
+    if (node == nullptr) return {};
 
     int skipJumpIndex = emitJmp(0);
     int functionAddress = currentLine();
 
-    int funcIndex;
-    if(node->symbolRefIndex_ >= 0) {
-        funcIndex = node->symbolRefIndex_;
-    } else {
-        funcIndex = symbolTable_.lookup(node->name);
-    }
+    int funcIndex = node->symbolRefIndex_ >= 0 ? node->symbolRefIndex_ : symbolTable_.lookup(node->name);
     if (funcIndex != -1) {
         subprogramEntryLineBySymbolIndex_[funcIndex] = functionAddress;
     }
@@ -153,54 +143,65 @@ std::any IntermediateCodeGenerator::visitFunctionDeclarationNode(
     int savedLevel = currentLexicalLevel_;
     currentLexicalLevel_ = node->lexicalLevel_ + 1;
 
-    int parameterCells = 0;
+    // Kalkulasi Parameter (Offset Negatif)
+    int totalParams = 0;
+    for (const auto& group : node->parameters) {
+        totalParams += group.identifiers.size();
+    }
+    
+    int currentParamOffset = -totalParams; 
     for (const auto& group : node->parameters) {
         for (const std::string& paramName : group.identifiers) {
-            int paramIndex = symbolTable_.lookup(paramName);
-            if (paramIndex >= 0) {
-                const IdentifierTableEntry& paramEntry = symbolTable_.getIdentifier(paramIndex);
-                int paramSize = group.type != nullptr ? semanticAnalyzer_.getTypeStorageSize(group.type) : 1;
-                parameterCells = std::max(parameterCells, paramEntry.address + std::max(1, paramSize));
-            } else {
-                parameterCells += 1;
+            
+            int paramIndex = -1;
+            for (int i = 0; i < 10000; ++i) {
+                try {
+                    const IdentifierTableEntry& e = symbolTable_.getIdentifier(i);
+                    if (e.name == paramName && e.level == currentLexicalLevel_) {
+                        paramIndex = i;
+                        break;
+                    }
+                } catch (...) {
+                    break;
+                }
             }
+
+            if (paramIndex >= 0) {
+                relativeOffsetMap_[paramIndex] = currentParamOffset;
+            }
+            currentParamOffset += 1; 
         }
     }
 
+    // Kalkulasi Variabel Lokal (Offset positif)
     int localDataCells = 0;
+    int currentLocalOffset = FRAME_HEADER_SIZE; 
+    
     for (auto* declaration : node->localDeclarations) {
         if (declaration != nullptr) {
             if (auto* varDecl = dynamic_cast<ASTVarDeclarationNode*>(declaration)) {
-                localDataCells = std::max(localDataCells, computeVariableMemorySize(varDecl));
-            } else if (auto* constDecl = dynamic_cast<ASTConstDeclarationNode*>(declaration)) {
-                if (constDecl->symbolRefIndex_ >= 0) {
-                    const IdentifierTableEntry& entry = symbolTable_.getIdentifier(constDecl->symbolRefIndex_);
-                    localDataCells = std::max(localDataCells, entry.address + 1);
+                if (varDecl->symbolRefIndex_ >= 0) {
+                    relativeOffsetMap_[varDecl->symbolRefIndex_] = currentLocalOffset;
+                    ASTTypeNode* typeNode = semanticAnalyzer_.getIdentifierTypeNode(varDecl->symbolRefIndex_);
+                    int varSize = typeNode != nullptr ? semanticAnalyzer_.getTypeStorageSize(typeNode) : 1;
+                    currentLocalOffset += std::max(1, varSize);
+                    localDataCells += std::max(1, varSize);
                 }
             }
         }
     }
 
-    int dataCells = std::max(parameterCells, localDataCells);
-    int returnSlotAddress = FRAME_HEADER_SIZE + dataCells;
-
+    int returnSlotAddress = currentLocalOffset; 
     emitInt(returnSlotAddress + 1);
 
     currentFunctionNames_.push_back(node->name);
     currentFunctionReturnSlots_.push_back(returnSlotAddress);
 
     for (auto* declaration : node->localDeclarations) {
-        if (declaration != nullptr) {
-            declaration->accept(this);
-        }
+        if (declaration != nullptr) declaration->accept(this);
     }
+    if (node->body != nullptr) node->body->accept(this);
 
-    if (node->body != nullptr) {
-        node->body->accept(this);
-    }
-
-    // Konvensi generator: sebelum RET, function value dimuat ke stack.
-    // Interpreter nantinya cukup mempertahankan nilai teratas sebagai hasil CAL.
     emitLod(0, returnSlotAddress);
     emitRet();
 

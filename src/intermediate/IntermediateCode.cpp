@@ -107,8 +107,17 @@ int IntermediateCodeGenerator::getRuntimeAddress(ASTVariableExpressionNode* node
         throw std::runtime_error("Intermediate Error: variable '" + node->baseName + "' belum memiliki symbol reference.");
     }
 
-    const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-    int runtimeAddress = FRAME_HEADER_SIZE + entry.address;
+    int runtimeAddress;
+
+    // Cek apakah variabel ini punya offset lokal/parameter yang sudah di-set
+    auto it = relativeOffsetMap_.find(node->symbolRefIndex_);
+    if (it != relativeOffsetMap_.end()) {
+        runtimeAddress = it->second; // Bisa negatif (parameter) atau positif (lokal)
+    } else {
+        // 2. Fallback untuk Global Variable (Jika belum masuk map)
+        const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
+        runtimeAddress = FRAME_HEADER_SIZE + entry.address; 
+    }
 
     if (!node->components.empty()) {
         ASTTypeNode* baseTypeNode = semanticAnalyzer_.getIdentifierTypeNode(node->symbolRefIndex_);

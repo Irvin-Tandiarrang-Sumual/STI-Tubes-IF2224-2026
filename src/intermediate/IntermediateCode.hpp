@@ -2,6 +2,7 @@
 
 #include <any>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@ class IntermediateCodeGenerator : public ASTVisitor {
         SemanticAnalyzer& semanticAnalyzer_;
         std::vector<Instruction> code_;
         static constexpr int FRAME_HEADER_SIZE = 3;
+        std::unordered_map<int, int> relativeOffsetMap_;
 
         struct PendingCallPatch {
             int instructionIndex;
