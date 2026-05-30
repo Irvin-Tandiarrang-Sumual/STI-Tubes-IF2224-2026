@@ -8,6 +8,7 @@
 #include "writer/Writer.hpp"
 #include "ast/ASTBuilder.hpp"
 #include "ast/ASTNodes.hpp"
+#include "semanticanalyzer/SemanticAnalyzer.hpp"
 #include "intermediate/IntermediateCode.hpp"
 
 class Engine {

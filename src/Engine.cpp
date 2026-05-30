@@ -1,6 +1,4 @@
 #include "Engine.hpp"
-#include "semanticanalyzer/SemanticAnalyzer.hpp"
-
 
 Engine::Engine(const std::filesystem::path &path, const std::string &outputDir) 
     : inputPath(path), outputDir(outputDir), cstRoot_(nullptr), astRoot_(nullptr) {}
@@ -140,7 +138,7 @@ void Engine::intermediateCodeGenerator() {
 
     std::cout << "Processing Intermediate Code Generation...\n";
 
-    IntermediateCodeGenerator generator(semanticAnalyzer_.getSymbolTable());
+    IntermediateCodeGenerator generator(semanticAnalyzer_.getSymbolTable(), semanticAnalyzer_);
     std::vector<Instruction> instructions = generator.generate(astRoot_);
 
     const std::string baseName = inputPath.stem().string();
