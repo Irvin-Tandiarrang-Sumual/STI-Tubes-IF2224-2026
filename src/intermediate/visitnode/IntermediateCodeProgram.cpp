@@ -1,6 +1,8 @@
 #include "../IntermediateCode.hpp"
 
 std::any IntermediateCodeGenerator::visitProgramNode(ASTProgramNode* node) {
+    currentLexicalLevel_ = 0;
+    
     emitInt(computeProgramMemorySize(node));
 
     if (node != nullptr && node->declarations != nullptr) {
