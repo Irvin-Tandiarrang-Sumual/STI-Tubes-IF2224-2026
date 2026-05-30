@@ -1,0 +1,10 @@
+program TestFunctionCall;
+
+function Add(a : integer; b : integer): integer;
+begin
+    Add := a + b;
+end;
+
+begin
+    writeln(Add(2, 3));
+end.
