@@ -4,11 +4,9 @@
 
 Interpreter::Interpreter() : ip_(0) {}
 
-void Interpreter::execute(const std::vector<Instruction>& instructions) {
+void Interpreter::execute(const std::vector<Instruction>& instructions, std::ostream& outStream) {
     ip_ = 0;
     memory_.clear(); // Kosongkan memori tiap eksekusi
-
-    std::cout << "INTERPRETER MULAI MENG-INI-ITU-KAN" << std::endl;
 
     while (ip_ < instructions.size()) {
         // FETCH: Ambil instruksi saat ini
@@ -26,12 +24,11 @@ void Interpreter::execute(const std::vector<Instruction>& instructions) {
             case OpCode::LIT: memory_.push(instr.getOperand()); break;
             case OpCode::STO: memory_.store(instr.getOperand()); break;
             case OpCode::LOD: memory_.load(instr.getOperand()); break;
-            case OpCode::OPR: ALU::execute(static_cast<OprCode>(instr.getOperand()), memory_); break;
+            case OpCode::OPR: ALU::execute(static_cast<OprCode>(instr.getOperand()), memory_, outStream); break;
             // TODO: JMP, JPC, CAL, RET coming soon ya bang
             default: break;
         }
 
         memory_.printTrace(); // Print memori setelah 1 instruksi selesai (nanti reminder hapus juga ya bg)
     }
-    std::cout << "INTERPRETER SELESAI MENG-INI-ITU-KAN" << std::endl;
 }

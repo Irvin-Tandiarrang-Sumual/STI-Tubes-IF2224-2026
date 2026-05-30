@@ -1,11 +1,26 @@
-#include "ALU.hpp"
 #include <stdexcept>
+#include <iostream>
 
-void ALU::execute(OprCode opr, RuntimeStack& memory) {
+#include "ALU.hpp"
+
+void ALU::execute(OprCode opr, RuntimeStack& memory, std::ostream& outStream) {
     // Operasi Unary
     if (opr == OprCode::NEG) {
         int val = memory.pop();
         memory.push(-val);
+        return;
+    }
+
+    // Operasi Output
+    if (opr == OprCode::WRT) {
+        int val = memory.pop();
+        outStream << val;
+        return;
+    }
+    
+    if (opr == OprCode::WRTLN) {
+        int val = memory.pop();
+        outStream << val << std::endl;
         return;
     }
 
@@ -26,7 +41,7 @@ void ALU::execute(OprCode opr, RuntimeStack& memory) {
             if (valRight == 0) throw std::runtime_error("Runtime Error: Modulo by zero.");
             memory.push(valLeft % valRight); 
             break;
-        // TODO: Operasi Perbandingan (EQL, NEQ, LSS, GEQ, GTR, LEQ) & Penulisan (WRT, WRTLN)
+        // TODO: Operasi Perbandingan (EQL, NEQ, LSS, GEQ, GTR, LEQ)
         default:
             break;
     }

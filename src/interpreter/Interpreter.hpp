@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include "../intermediate/Instruction.hpp"
 #include "RuntimeStack.hpp" // Include memori
 
@@ -12,5 +13,5 @@ public:
     Interpreter();
 
     // Menjalankan kumpulan instruksi dari CodeGenerator
-    void execute(const std::vector<Instruction>& instructions); 
+    void execute(const std::vector<Instruction>& instructions, std::ostream& outStream = std::cout);
 };
