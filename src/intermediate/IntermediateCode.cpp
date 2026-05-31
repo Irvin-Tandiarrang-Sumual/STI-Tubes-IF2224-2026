@@ -113,10 +113,25 @@ int IntermediateCodeGenerator::getRuntimeAddress(ASTVariableExpressionNode* node
     auto it = relativeOffsetMap_.find(node->symbolRefIndex_);
     if (it != relativeOffsetMap_.end()) {
         runtimeAddress = it->second; // Bisa negatif (parameter) atau positif (lokal)
+    } 
+    
+    if (it != relativeOffsetMap_.end() && it->second < 0) {
+        // Parameter yang berhasil dipetakan secara negatif
+        runtimeAddress = it->second;
+    } else if (it != relativeOffsetMap_.end() && it->second >= FRAME_HEADER_SIZE) {
+         // Variabel lokal
+        runtimeAddress = it->second;
     } else {
-        // 2. Fallback untuk Global Variable (Jika belum masuk map)
+        // Fallback untuk Global Variable (Jika belum masuk map)
         const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-        runtimeAddress = FRAME_HEADER_SIZE + entry.address; 
+
+        if (entry.level > 0 && entry.address < 10) { 
+            //  Parameter paksa menjadi negatif
+            runtimeAddress = -(entry.address + 1);
+        } else {
+            // Variabel global / lokal
+            runtimeAddress = FRAME_HEADER_SIZE + entry.address; 
+        }
     }
 
     if (!node->components.empty()) {

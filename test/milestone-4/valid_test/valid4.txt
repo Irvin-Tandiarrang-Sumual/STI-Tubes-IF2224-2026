@@ -1,0 +1,58 @@
+program testtahapempat;
+var
+    angka, hasilfak, hasilfib: integer;
+
+{ Test 1: Prosedur tanpa nilai balikan }
+procedure teslokal(x: integer);
+var
+    y: integer;
+begin
+    y := x + 100;
+    writeln(y);
+end;
+
+{ Test 2: Fungsi Rekursif Sederhana }
+function hitungfak(n: integer): integer;
+var
+    temp: integer;
+begin
+    if n == 0 then
+        hitungfak := 1;
+        
+    if n > 0 then
+        temp := hitungfak(n - 1);
+        
+    if n > 0 then
+        hitungfak := n * temp;
+end;
+
+{ Test 3: Fungsi Rekursif Bercabang }
+function hitungfib(n: integer): integer;
+var
+    t1, t2: integer;
+begin
+    if n < 2 then
+        hitungfib := n;
+        
+    if n >= 2 then
+        t1 := hitungfib(n - 1);
+        
+    if n >= 2 then
+        t2 := hitungfib(n - 2);
+        
+    if n >= 2 then
+        hitungfib := t1 + t2;
+end;
+
+{ --- PROGRAM UTAMA --- }
+begin
+    angka := 5;
+    
+    teslokal(angka);
+    
+    hasilfak := hitungfak(angka);
+    writeln(hasilfak);
+    
+    hasilfib := hitungfib(angka);
+    writeln(hasilfib);
+end.
