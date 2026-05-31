@@ -5,14 +5,27 @@ RuntimeStack::RuntimeStack() : basePtr_(0) {}
 
 void RuntimeStack::clear() { stack_.clear(); basePtr_ = 0; }
 
-void RuntimeStack::allocate(int size) { stack_.resize(basePtr_ + size, 0); }
+void RuntimeStack::allocate(int size) {
+    if (basePtr_ + size > static_cast<int>(MAX_STACK_SIZE)) {
+        throw StackOverflowException();
+    }
+    stack_.resize(basePtr_ + size, 0);
+}
 
-void RuntimeStack::push(int value) { stack_.push_back(value); }
+void RuntimeStack::push(int value) {
+    if (static_cast<int>(stack_.size()) >= static_cast<int>(MAX_STACK_SIZE)) {
+        throw StackOverflowException();
+    }
+    stack_.push_back(value);
+}
 
 int RuntimeStack::pop() { 
+    if (stack_.empty()) {
+        throw StackUnderflowException();
+    }
     int val = stack_.back(); 
     stack_.pop_back(); 
-    return val; 
+    return val;
 }
 
 // Menelusuri Static Link untuk menemukan Base Pointer dari lexical parent
@@ -29,12 +42,24 @@ int RuntimeStack::resolveBase(int level) const {
 void RuntimeStack::store(int level, int offset) {
     int val = pop();
     int targetBase = resolveBase(level);
-    stack_[targetBase + offset] = val;
+    int targetAddress = targetBase + offset;
+    
+    // Validasi apakah targetAddress sah (tidak negatif dan tidak melampaui ukuran stack saat ini)
+    if (targetAddress < 0 || targetAddress >= static_cast<int>(stack_.size())) {
+        throw MemoryAccessException("Runtime Error: Invalid STORE! Alamat memori " + std::to_string(targetAddress) + " terlarang.");
+    }
+    stack_[targetAddress] = val;
 }
 
 void RuntimeStack::load(int level, int offset) {
     int targetBase = resolveBase(level);
-    push(stack_[targetBase + offset]);
+    int targetAddress = targetBase + offset;
+    
+    // Validasi apakah targetAddress sah
+    if (targetAddress < 0 || targetAddress >= static_cast<int>(stack_.size())) {
+        throw MemoryAccessException("Runtime Error: Invalid LOAD! Alamat memori " + std::to_string(targetAddress) + " terlarang.");
+    }
+    push(stack_[targetAddress]);
 }
 
 // Helper Frame

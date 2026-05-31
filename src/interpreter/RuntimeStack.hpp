@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
+#include "RuntimeExceptions.hpp"
 
 class RuntimeStack {
 private:
     std::vector<int> stack_;
     int basePtr_;
+    const size_t MAX_STACK_SIZE = 10000; // Batas aman maksimum ukuran Stack
 
 public:
     RuntimeStack();

@@ -26,15 +26,18 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
             case OpCode::LOD: memory_.load(instr.getLevel(), instr.getOperand()); break;
             case OpCode::OPR: ALU::execute(static_cast<OprCode>(instr.getOperand()), memory_, outStream); break;
             case OpCode::JMP: 
+                if (instr.getOperand() < 0 || instr.getOperand() >= static_cast<int>(instructions.size())) throw InvalidJumpTargetException();
                 ip_ = instr.getOperand(); 
                 break;
             case OpCode::JPC: 
                 // Pop satu nilai, jika 0 (false), maka lompat
                 if (memory_.pop() == 0) {
+                    if (instr.getOperand() < 0 || instr.getOperand() >= static_cast<int>(instructions.size())) throw InvalidJumpTargetException();
                     ip_ = instr.getOperand();
                 }
                 break;
             case OpCode::CAL: {
+                if (instr.getOperand() < 0 || instr.getOperand() >= static_cast<int>(instructions.size())) throw InvalidJumpTargetException();
                 int sl = memory_.resolveBase(instr.getLevel()); // Static Link 
                 int dl = memory_.getBasePtr();                  // Dynamic Link 
                 int ra = ip_;                                   // Return Address 

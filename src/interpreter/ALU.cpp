@@ -30,9 +30,24 @@ void ALU::execute(OprCode opr, RuntimeStack& memory, std::ostream& outStream) {
     int valLeft = memory.pop();
 
     switch (opr) {
-        case OprCode::ADD: memory.push(valLeft + valRight); break;
-        case OprCode::SUB: memory.push(valLeft - valRight); break;
-        case OprCode::MUL: memory.push(valLeft * valRight); break;
+        case OprCode::ADD: {
+            long long res = static_cast<long long>(valLeft) + valRight;
+            if (res > 2147483647LL || res < -2147483648LL) throw NumericalOverflowException();
+            memory.push(static_cast<int>(res)); 
+            break;
+        }
+        case OprCode::SUB: {
+            long long res = static_cast<long long>(valLeft) - valRight;
+            if (res > 2147483647LL || res < -2147483648LL) throw NumericalOverflowException();
+            memory.push(static_cast<int>(res)); 
+            break;
+        }
+        case OprCode::MUL: {
+            long long res = static_cast<long long>(valLeft) * valRight;
+            if (res > 2147483647LL || res < -2147483648LL) throw NumericalOverflowException();
+            memory.push(static_cast<int>(res)); 
+            break;
+        }
         case OprCode::DIV: 
             if (valRight == 0) throw std::runtime_error("Runtime Error: Division by zero.");
             memory.push(valLeft / valRight); 

@@ -173,17 +173,21 @@ void Engine::execute() {
 
     std::streambuf* oldCoutBuffer = std::cout.rdbuf(); 
     std::cout.rdbuf(debugBuffer.rdbuf());             
+    std::string runtimeErrorMsg = "";
 
     try {
         Interpreter interpreter;
         interpreter.execute(instructions_, actualOutput); 
     } catch (const std::exception& e) {
-        std::cout.rdbuf(oldCoutBuffer);
-        std::cerr << "\n[Runtime Error] Eksekusi terhenti: " << e.what() << '\n';
-        return;
+        runtimeErrorMsg = std::string("\n[Runtime Error] Eksekusi terhenti: ") + e.what() + "\n";
     }
 
     std::cout.rdbuf(oldCoutBuffer);
+    
+    if (!runtimeErrorMsg.empty()) {
+        std::cerr << runtimeErrorMsg;
+    }
+
     std::string executionResult = debugBuffer.str();
     
     executionResult += "\n=== Output ===\n";
@@ -191,6 +195,10 @@ void Engine::execute() {
         executionResult += "(Tidak ada output)\n";
     } else {
         executionResult += actualOutput.str();
+    }
+    
+    if (!runtimeErrorMsg.empty()) {
+        executionResult += runtimeErrorMsg;
     }
 
     const std::string baseName = inputPath.stem().string();
