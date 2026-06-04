@@ -13,9 +13,6 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
         // FETCH: Ambil instruksi saat ini
         Instruction instr = instructions[ip_];
 
-        // Keknya nanti kalau udah siap hapus aja idk
-        std::cout << "IP[" << ip_ << "] Exec: " << instr.toString(ip_) << " \t| ";
-
         // IP maju satu langkah sebelum instruksi dieksekusi
         ip_++; 
 
@@ -81,7 +78,5 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
             }
             default: break;
         }
-
-        memory_.printTrace(); // Print memori setelah 1 instruksi selesai (nanti reminder hapus juga ya bg)
     }
 }

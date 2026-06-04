@@ -10,6 +10,10 @@ std::any IntermediateCodeGenerator::visitExpressionNode(ASTExpressionNode* node)
 std::any IntermediateCodeGenerator::visitLiteralExpressionNode(ASTLiteralExpressionNode* node) {
     if (auto* strVal = std::get_if<std::string>(&node->value)) {
         this->code_.push_back(Instruction(OpCode::LIT, 0, *strVal));
+    } else if (auto* charVal = std::get_if<char>(&node->value)) {
+        this->code_.push_back(Instruction(OpCode::LIT, 0, *charVal));
+    } else if (auto* doubleVal = std::get_if<double>(&node->value)) {
+        this->code_.push_back(Instruction(OpCode::LIT, 0, *doubleVal));
     } else {
         emitLit(literalToInt(node));
     }

@@ -190,7 +190,6 @@ void Engine::execute() {
 
     std::string executionResult = debugBuffer.str();
     
-    executionResult += "\n=== Output ===\n";
     if (actualOutput.str().empty()) {
         executionResult += "(Tidak ada output)\n";
     } else {

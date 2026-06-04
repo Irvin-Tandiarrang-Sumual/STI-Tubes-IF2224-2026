@@ -12,14 +12,14 @@ void RuntimeStack::allocate(int size) {
     stack_.resize(basePtr_ + size, 0); 
 }
 
-void RuntimeStack::push(std::variant<int, std::string> value) {
+void RuntimeStack::push(std::variant<int, double, char, std::string> value) {
     if (static_cast<int>(stack_.size()) >= static_cast<int>(MAX_STACK_SIZE)) {
         throw StackOverflowException();
     }
     stack_.push_back(value);
 }
 
-std::variant<int, std::string> RuntimeStack::pop() { 
+std::variant<int, double, char, std::string> RuntimeStack::pop() {
     if (stack_.empty()) {
         throw StackUnderflowException();
     }
@@ -59,9 +59,13 @@ void RuntimeStack::load(int level, int offset) {
 }
 
 int RuntimeStack::getBasePtr() const { return basePtr_; }
+
 void RuntimeStack::setBasePtr(int bp) { basePtr_ = bp; }
-std::variant<int, std::string> RuntimeStack::get(int index) const { return stack_[index]; }
+
+std::variant<int, double, char, std::string> RuntimeStack::get(int index) const { return stack_[index]; }
+
 void RuntimeStack::setSize(int newSize) { stack_.resize(newSize); }
+
 int RuntimeStack::getSize() const { return static_cast<int>(stack_.size()); }
 
 void RuntimeStack::printTrace() const {
@@ -71,6 +75,8 @@ void RuntimeStack::printTrace() const {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, std::string>) {
                 std::cout << "\"" << arg << "\""; 
+            } else if constexpr (std::is_same_v<T, char>) {
+                std::cout << "'" << arg << "'";
             } else {
                 std::cout << arg;                 
             }

@@ -225,7 +225,8 @@ OprCode IntermediateCodeGenerator::mapBinaryOperatorToOpr(const std::string& op)
     if (op == "+") return OprCode::ADD;
     if (op == "-") return OprCode::SUB;
     if (op == "*") return OprCode::MUL;
-    if (op == "/" || op == "div") return OprCode::DIV;
+    if (op == "/") return OprCode::RDIV;
+    if (op == "div") return OprCode::DIV;
     if (op == "mod") return OprCode::MOD;
     if (op == "==" || op == "=") return OprCode::EQL;
     if (op == "<>" || op == "!=") return OprCode::NEQ;

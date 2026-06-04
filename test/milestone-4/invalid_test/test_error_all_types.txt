@@ -1,0 +1,48 @@
+program UjiErrorArion;
+var
+    angkaInt: integer;
+    angkaReal: real;
+    huruf: char;
+    teks: string;
+    benar: boolean;
+begin
+    angkaInt := 10;
+    angkaReal := 3.14;
+    huruf := 'X';
+    teks := 'Arion';
+    benar := true;
+
+    writeln('=== MENGUJI PERTAHANAN SEMANTIC ANALYZER ===');
+
+    { 1. Error Assignment (Type Mismatch) }
+    { Ekspektasi: Tipe string tidak bisa dimasukkan ke wadah integer }
+    angkaInt := 'Teks Ilegal'; 
+
+    { 2. Error Operator Aritmatika Ilegal }
+    { Ekspektasi: Operator '-' (SUB) dan '*' (MUL) tidak diizinkan untuk String }
+    teks := teks - 'A';
+    teks := teks * 2;
+
+    { Ekspektasi: Operator 'mod' dan 'div' HANYA HANYA HANYA untuk Integer }
+    angkaInt := angkaReal mod 2; 
+    angkaReal := angkaReal div 2.0;
+
+    { Ekspektasi: Operator matematika dilarang keras untuk Boolean }
+    benar := benar + 1;
+
+    { 3. Error Komparasi Lintas Tipe yang Tidak Masuk Akal }
+    { Ekspektasi: Tidak bisa membandingkan String dengan Angka/Boolean }
+    if teks == angkaInt then
+        writeln('Ini tidak boleh lolos!');
+
+    { 4. Error Variabel Gaib & Pemanggilan Fungsi }
+    { Ekspektasi: Variabel belum dideklarasikan }
+    variabelPenyusup := 404;
+
+    { 5. Error Logika Boolean }
+    { Ekspektasi: Operator 'and' / 'or' / 'not' HANYA untuk Boolean }
+    benar := angkaInt and angkaReal;
+    benar := not teks;
+
+    writeln('Jika kamu melihat pesan ini, berarti pertahanan Semantic Arion jebol!');
+end.
