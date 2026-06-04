@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <variant>
 
 enum class OpCode {
     LIT, // Load Literal Memasukkan nilai literal v ke dalam stack
@@ -53,18 +54,18 @@ class Instruction {
     private:
         OpCode op_;
         int level_;
-        int operand_;
+        std::variant<int, std::string> operand_;
 
     public:
-        Instruction(OpCode op, int level, int operand);
+        Instruction(OpCode op, int level, std::variant<int, std::string> operand);
 
         OpCode getOp() const;
         int getLevel() const;
-        int getOperand() const;
+        std::variant<int, std::string> getOperand() const;
 
         void setOp(OpCode op);
         void setLevel(int level);
-        void setOperand(int operand);
+        void setOperand(std::variant<int, std::string> operand);
 
         std::string toString(int lineNumber) const;
 };

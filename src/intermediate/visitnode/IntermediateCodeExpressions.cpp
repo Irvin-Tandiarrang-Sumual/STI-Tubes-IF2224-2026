@@ -8,7 +8,11 @@ std::any IntermediateCodeGenerator::visitExpressionNode(ASTExpressionNode* node)
 }
 
 std::any IntermediateCodeGenerator::visitLiteralExpressionNode(ASTLiteralExpressionNode* node) {
-    emitLit(literalToInt(node));
+    if (auto* strVal = std::get_if<std::string>(&node->value)) {
+        this->code_.push_back(Instruction(OpCode::LIT, 0, *strVal));
+    } else {
+        emitLit(literalToInt(node));
+    }
     return {};
 }
 

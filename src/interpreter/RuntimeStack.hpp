@@ -1,10 +1,13 @@
 #pragma once
 #include <vector>
+#include <string>
+#include <variant>
 #include "RuntimeExceptions.hpp"
 
 class RuntimeStack {
 private:
-    std::vector<int> stack_;
+    // INI YANG PALING PENTING: Wadahnya sekarang adalah variant!
+    std::vector<std::variant<int, std::string>> stack_;
     int basePtr_;
     const size_t MAX_STACK_SIZE = 10000; // Batas aman maksimum ukuran Stack
 
@@ -13,17 +16,17 @@ public:
     void clear();
     
     // OpCode Execution
-    void allocate(int size);           // Untuk OpCode::INT
-    void push(int value);              // Untuk OpCode::LIT
-    int pop();                         // Mengambil nilai teratas
-    void store(int level, int offset); // Untuk OpCode::STO
-    void load(int level, int offset);  // Untuk OpCode::LOD
+    void allocate(int size);           
+    void push(std::variant<int, std::string> value); 
+    std::variant<int, std::string> pop();            
+    void store(int level, int offset); 
+    void load(int level, int offset);  
     
     // Fungsi Helper Stack Frame
     int getBasePtr() const;
     void setBasePtr(int bp);
     int resolveBase(int level) const;
-    int get(int index) const;
+    std::variant<int, std::string> get(int index) const; 
     void setSize(int newSize);
     int getSize() const;
     

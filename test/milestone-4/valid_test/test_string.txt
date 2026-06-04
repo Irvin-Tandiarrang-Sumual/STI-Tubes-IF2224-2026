@@ -1,0 +1,20 @@
+program UjiCobaString;
+var
+    salam, nama, pesan: string;
+    b: integer;  { <--- Jangan lupa daftarkan b di sini! }
+begin
+    salam := 'Halo, ';
+    nama := 'Mor!';
+    
+    pesan := salam + nama;
+    
+    writeln('=== Uji Coba Mesin String ===');
+    writeln(pesan);
+    
+    if nama == 'Mor!' then
+        writeln('Mesin berhasil membandingkan teks dengan sempurna!');
+        
+    { Uji Coba Multiple Arguments }
+    b := 100;
+    writeln('Hasil b adalah: ', b)
+end.

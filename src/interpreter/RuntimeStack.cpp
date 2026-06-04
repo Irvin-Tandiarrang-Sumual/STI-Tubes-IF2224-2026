@@ -9,42 +9,39 @@ void RuntimeStack::allocate(int size) {
     if (basePtr_ + size > static_cast<int>(MAX_STACK_SIZE)) {
         throw StackOverflowException();
     }
-    stack_.resize(basePtr_ + size, 0);
+    stack_.resize(basePtr_ + size, 0); 
 }
 
-void RuntimeStack::push(int value) {
+void RuntimeStack::push(std::variant<int, std::string> value) {
     if (static_cast<int>(stack_.size()) >= static_cast<int>(MAX_STACK_SIZE)) {
         throw StackOverflowException();
     }
     stack_.push_back(value);
 }
 
-int RuntimeStack::pop() { 
+std::variant<int, std::string> RuntimeStack::pop() { 
     if (stack_.empty()) {
         throw StackUnderflowException();
     }
-    int val = stack_.back(); 
+    auto val = stack_.back(); 
     stack_.pop_back(); 
     return val;
 }
 
-// Menelusuri Static Link untuk menemukan Base Pointer dari lexical parent
 int RuntimeStack::resolveBase(int level) const {
     int currentBase = basePtr_;
     while (level > 0) {
-        currentBase = stack_[currentBase]; // Index 0 dari frame header adalah Static Link
+        currentBase = std::get<int>(stack_[currentBase]); 
         level--;
     }
     return currentBase;
 }
 
-// Store & Load menggunakan base pointer sesuai level leksikal
 void RuntimeStack::store(int level, int offset) {
-    int val = pop();
+    auto val = pop();
     int targetBase = resolveBase(level);
     int targetAddress = targetBase + offset;
     
-    // Validasi apakah targetAddress sah (tidak negatif dan tidak melampaui ukuran stack saat ini)
     if (targetAddress < 0 || targetAddress >= static_cast<int>(stack_.size())) {
         throw MemoryAccessException("Runtime Error: Invalid STORE! Alamat memori " + std::to_string(targetAddress) + " terlarang.");
     }
@@ -55,25 +52,31 @@ void RuntimeStack::load(int level, int offset) {
     int targetBase = resolveBase(level);
     int targetAddress = targetBase + offset;
     
-    // Validasi apakah targetAddress sah
     if (targetAddress < 0 || targetAddress >= static_cast<int>(stack_.size())) {
         throw MemoryAccessException("Runtime Error: Invalid LOAD! Alamat memori " + std::to_string(targetAddress) + " terlarang.");
     }
     push(stack_[targetAddress]);
 }
 
-// Helper Frame
 int RuntimeStack::getBasePtr() const { return basePtr_; }
 void RuntimeStack::setBasePtr(int bp) { basePtr_ = bp; }
-int RuntimeStack::get(int index) const { return stack_[index]; }
+std::variant<int, std::string> RuntimeStack::get(int index) const { return stack_[index]; }
 void RuntimeStack::setSize(int newSize) { stack_.resize(newSize); }
-int RuntimeStack::getSize() const { return stack_.size(); }
+int RuntimeStack::getSize() const { return static_cast<int>(stack_.size()); }
 
 void RuntimeStack::printTrace() const {
     std::cout << "Stack: [";
-    for (size_t i = 0; i < stack_.size(); ++i) {
-        std::cout << stack_[i];
-        if (i < stack_.size() - 1) std::cout << ", ";
+    for (int i = 0; i < static_cast<int>(stack_.size()); ++i) {
+        std::visit([](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, std::string>) {
+                std::cout << "\"" << arg << "\""; 
+            } else {
+                std::cout << arg;                 
+            }
+        }, stack_[i]);
+        
+        if (i < static_cast<int>(stack_.size()) - 1) std::cout << ", ";
     }
     std::cout << "]" << std::endl;
 }
