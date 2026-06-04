@@ -105,9 +105,10 @@ std::any SemanticAnalyzer::visitBinaryExpressionNode(ASTBinaryExpressionNode* no
     std::string op = node->op;
 
     // operator Relasional menghasilkan Boolean
-    if (op == "==" || op == "<>" || op == "<" || op == ">" || op == "<=" || op == ">=") {
+    if (op == "==" || op == "<>" || op == "<" || op == ">" || op == "<=" || op == ">=" || op == "=") {
         if (!areTypesCompatible(lhsTypeNode, rhsTypeNode, lhsType, rhsType) &&
             !(isNumericKind(lhsType) && isNumericKind(rhsType)) &&
+            !(lhsType == DataType::STRING && rhsType == DataType::STRING) &&
             lhsType != rhsType) {
             throw std::runtime_error("Semantic Error: Ketidakcocokan tipe data pada operasi perbandingan '" + op + "'.");
         }
@@ -121,8 +122,20 @@ std::any SemanticAnalyzer::visitBinaryExpressionNode(ASTBinaryExpressionNode* no
         }
         resultType = DataType::BOOLEAN;
     }
+    
     // basic math
-    else if (op == "+" || op == "-" || op == "*") {
+    else if (op == "+") {
+        if (lhsType == DataType::INTEGER && rhsType == DataType::INTEGER) {
+            resultType = DataType::INTEGER;
+        } else if ((lhsType == DataType::REAL || lhsType == DataType::INTEGER) && (rhsType == DataType::REAL || rhsType == DataType::INTEGER)) {
+            resultType = DataType::REAL;
+        } else if (lhsType == DataType::STRING && rhsType == DataType::STRING) {
+            resultType = DataType::STRING;
+        } else {
+            throw std::runtime_error("Semantic Error: Operator '+' memerlukan tipe numerik atau string.");
+        }
+    }
+    else if (op == "-" || op == "*") {
         if (lhsType == DataType::INTEGER && rhsType == DataType::INTEGER) resultType = DataType::INTEGER;
         else if ((lhsType == DataType::REAL || lhsType == DataType::INTEGER) && 
                 (rhsType == DataType::REAL || rhsType == DataType::INTEGER)) resultType = DataType::REAL;

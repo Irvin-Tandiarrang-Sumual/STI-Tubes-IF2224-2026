@@ -8,6 +8,10 @@
 #include "writer/Writer.hpp"
 #include "ast/ASTBuilder.hpp"
 #include "ast/ASTNodes.hpp"
+#include "semanticanalyzer/SemanticAnalyzer.hpp"
+#include "intermediate/IntermediateCode.hpp"
+#include "interpreter/Interpreter.hpp"
+
 class Engine {
     public:
         explicit Engine(const std::filesystem::path &path, const std::string &outputDir);
@@ -17,6 +21,7 @@ class Engine {
         void parser();
         void semantic();
         void intermediateCodeGenerator();
+        void execute();
 
     private:
         std::filesystem::path inputPath;
@@ -25,4 +30,11 @@ class Engine {
         //
         CSTNodes* cstRoot_;
         std::vector<std::string> cstErrors_;
+
+        ASTProgramNode* astRoot_;
+
+        SemanticAnalyzer semanticAnalyzer_;
+        std::vector<std::string> semanticErrors_;
+
+        std::vector<Instruction> instructions_;
 };

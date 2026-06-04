@@ -4,6 +4,30 @@ void SemanticAnalyzer::reportError(const std::string& message) {
     errors_.push_back(message);
 }
 
+SymbolTable& SemanticAnalyzer::getSymbolTable() {
+    return symbolTable;
+}
+
+ASTTypeNode* SemanticAnalyzer::getResolvedTypeNode(ASTTypeNode* node) {
+    return resolveTypeNode(node);
+}
+
+ASTTypeNode* SemanticAnalyzer::getIdentifierTypeNode(int symbolIndex) {
+    return getStoredTypeNode(symbolIndex);
+}
+
+int SemanticAnalyzer::getTypeStorageSize(ASTTypeNode* typeNode) {
+    return estimateTypeStorageSize(typeNode);
+}
+
+bool SemanticAnalyzer::getRangeBounds(const ASTRangeType* rangeNode, int& low, int& high) const {
+    return extractRangeBounds(rangeNode, low, high);
+}
+
+DataType SemanticAnalyzer::getResolvedTypeKind(ASTTypeNode* node) {
+    return resolveTypeKind(node);
+}
+
 void SemanticAnalyzer::reportError(const ASTNode* node, const std::string& message) {
     if (node == nullptr) {
         errors_.push_back(message);

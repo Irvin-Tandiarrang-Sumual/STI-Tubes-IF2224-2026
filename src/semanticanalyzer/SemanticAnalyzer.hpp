@@ -90,6 +90,12 @@ public:
     const std::vector<std::string>& getWarnings() const;
     bool hasErrors() const;
     std::string dumpTables() const;
+    SymbolTable& getSymbolTable();
+    ASTTypeNode* getResolvedTypeNode(ASTTypeNode* node);
+    ASTTypeNode* getIdentifierTypeNode(int symbolIndex);
+    int getTypeStorageSize(ASTTypeNode* typeNode);
+    bool getRangeBounds(const ASTRangeType* rangeNode, int& low, int& high) const;
+    DataType getResolvedTypeKind(ASTTypeNode* node);
 
     std::any visitProgramNode(ASTProgramNode* node) override;
     std::any visitDeclarationsNode(ASTDeclarationsNode* node) override;

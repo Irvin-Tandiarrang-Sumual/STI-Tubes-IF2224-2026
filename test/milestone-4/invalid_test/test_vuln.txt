@@ -1,0 +1,22 @@
+program UjiKehancuran;
+var
+    angkaMax: integer;
+
+procedure rekursiMaut(n: integer);
+begin
+    { Ini akan memanggil dirinya sendiri selamanya tanpa base case! }
+    rekursiMaut(n + 1)
+end;
+
+begin
+    { Uji 1: Numerical Overflow }
+    angkaMax := 2147483647; 
+    writeln(angkaMax);
+    
+    { Jika ALU tidak punya pelindung, ini akan wrap-around jadi negatif. 
+      Dengan pelindung, ini akan langsung melempar NumericalOverflowException! }
+    angkaMax := angkaMax + 1; 
+
+    { Uji 2: Uncomment baris di bawah ini untuk mencoba Stack Overflow }
+    { rekursiMaut(1) }
+end.

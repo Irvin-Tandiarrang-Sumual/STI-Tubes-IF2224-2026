@@ -156,8 +156,8 @@ std::any SemanticAnalyzer::visitCallStatementNode(ASTCallStatementNode* node) {
 
     IdentifierTableEntry& entry = symbolTable.getIdentifier(symbolIdx);
 
-    // Bypass buat writeln sama println
-    if (node->callExpr->callee == "writeln" || node->callExpr->callee == "println") {
+    // Bypass buat writeln, println, write, dan print
+    if (node->callExpr->callee == "writeln" || node->callExpr->callee == "println" || node->callExpr->callee == "write" || node->callExpr->callee == "print") {
         for (auto* argument : node->callExpr->arguments) {
             safeVisitNode(argument);
         }

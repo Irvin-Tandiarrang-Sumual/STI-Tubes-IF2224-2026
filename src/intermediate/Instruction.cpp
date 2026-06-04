@@ -2,8 +2,9 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <variant>
 
-Instruction::Instruction(OpCode op, int level, int operand)
+Instruction::Instruction(OpCode op, int level, std::variant<int, double, char, std::string> operand)
     : op_(op), level_(level), operand_(operand) {}
 
 OpCode Instruction::getOp() const {
@@ -14,7 +15,7 @@ int Instruction::getLevel() const {
     return level_;
 }
 
-int Instruction::getOperand() const {
+std::variant<int, double, char, std::string> Instruction::getOperand() const {
     return operand_;
 }
 
@@ -26,13 +27,25 @@ void Instruction::setLevel(int level) {
     level_ = level;
 }
 
-void Instruction::setOperand(int operand) {
+void Instruction::setOperand(std::variant<int, double, char, std::string> operand) {
     operand_ = operand;
 }
 
 std::string Instruction::toString(int lineNumber) const {
     std::ostringstream oss;
-    oss << lineNumber << " " << opCodeToString(op_) << " " << level_ << " " << operand_;
+    oss << lineNumber << " " << opCodeToString(op_) << " " << level_ << " ";
+
+    std::visit([&oss](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::string>) {
+            oss << "\"" << arg << "\""; 
+        } else if constexpr (std::is_same_v<T, char>) {
+            oss << "'" << arg << "'";
+        } else {
+            oss << arg;
+        }
+    }, operand_);
+
     return oss.str();
 }
 
@@ -67,6 +80,7 @@ std::string oprCodeToString(OprCode op) {
         case OprCode::LEQ: return "LEQ";
         case OprCode::WRT: return "WRT";
         case OprCode::WRTLN: return "WRTLN";
+        case OprCode::RDIV: return "RDIV";
     }
     throw std::runtime_error("Intermediate Error: OprCode tidak dikenal.");
 }

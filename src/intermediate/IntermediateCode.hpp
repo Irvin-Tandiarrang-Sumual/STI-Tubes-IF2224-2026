@@ -1,19 +1,36 @@
 #pragma once
 
 #include <any>
+#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
 #include "../ast/ASTVisitor.hpp"
 #include "../ast/ASTNodes.hpp"
+#include "../semanticanalyzer/SemanticAnalyzer.hpp"
 #include "../symboltable/SymbolTable.hpp"
 #include "Instruction.hpp"
 
 class IntermediateCodeGenerator : public ASTVisitor {
     private:
-        const SymbolTable& symbolTable_;
-        std::vector<Instruction> intermediateCode_;
+        SymbolTable& symbolTable_;
+        SemanticAnalyzer& semanticAnalyzer_;
+        std::vector<Instruction> code_;
         static constexpr int FRAME_HEADER_SIZE = 3;
+        std::unordered_map<int, int> relativeOffsetMap_;
+
+        struct PendingCallPatch {
+            int instructionIndex;
+            int symbolIndex;
+            std::string calleeName;
+        };
+
+        int currentLexicalLevel_ = 0;
+        std::vector<std::string> currentFunctionNames_;
+        std::vector<int> currentFunctionReturnSlots_;
+        std::vector<PendingCallPatch> pendingCallPatches_;
+        std::map<int, int> subprogramEntryLineBySymbolIndex_;
 
         int emit(OpCode op, int level, int operand);
         int emitLit(int value);
@@ -27,10 +44,12 @@ class IntermediateCodeGenerator : public ASTVisitor {
         int emitRet();
 
         void patchOperand(int instructionIndex, int newOperand);
+        void patchPendingCalls();
 
         int currentLine() const;
 
         int getRuntimeAddress(ASTVariableExpressionNode* node) const;
+        int getRuntimeLevel(ASTVariableExpressionNode* node) const;
         int getLevelDifference(int declarationLevel) const;
 
         int computeProgramMemorySize(ASTProgramNode* node) const;
@@ -40,14 +59,23 @@ class IntermediateCodeGenerator : public ASTVisitor {
         bool isBuiltinProcedure(const std::string& name) const;
         bool isWriteProcedure(const std::string& name) const;
         bool isWritelnProcedure(const std::string& name) const;
+        bool isFunctionReturnTarget(ASTVariableExpressionNode* node) const;
 
         OprCode mapUnaryOperatorToOpr(const std::string& op) const;
         OprCode mapBinaryOperatorToOpr(const std::string& op) const;
 
         int literalToInt(const ASTLiteralExpressionNode* node) const;
 
+        bool constantExpressionToInt(ASTExpressionNode* expression, int& outValue) const;
+
+        int computeStaticComponentOffset(ASTVariableExpressionNode* node, ASTTypeNode* baseTypeNode) const;
+
+        int computeRecordFieldOffset(ASTRecordTypeNode* recordTypeNode, const std::string& fieldName, ASTTypeNode*& fieldTypeNode) const;
+
+        int emitCallToSubprogram(ASTCallExpressionNode* callExpr);
+
     public:
-        explicit IntermediateCodeGenerator(const SymbolTable& symbolTable);
+        explicit IntermediateCodeGenerator(SymbolTable& symbolTable, SemanticAnalyzer& semanticAnalyzer);
 
         std::vector<Instruction> generate(ASTProgramNode* root);
 

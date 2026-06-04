@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <variant>
 
 enum class OpCode {
     LIT, // Load Literal Memasukkan nilai literal v ke dalam stack
@@ -24,7 +25,7 @@ enum class OprCode {
 
     MUL   = 4, // Mengali value stack teratas dengan value stack teratas satunya lagi
 
-    DIV   = 5, // Membagi value stack teratas dengan value stack teratas satunya lagi
+    DIV   = 5, // Membagi value stack teratas dengan value stack teratas satunya lagi yang menghasilkan integer
 
     MOD   = 6, // Modulus value stack teratas dengan value stack teratas satunya lagi
 
@@ -46,25 +47,27 @@ enum class OprCode {
 
     WRT   = 13, // Menulis output yang sudah dimuat
 
-    WRTLN = 14 // Menulis output yang sudah dimuat lalu diberikan newline
+    WRTLN = 14, // Menulis output yang sudah dimuat lalu diberikan newline
+
+    RDIV = 15 // Membagi value stack teratas dengan value stack teratas satunya lagi yang menghasilkan bilangan real
 };
 
 class Instruction {
     private:
         OpCode op_;
         int level_;
-        int operand_;
+        std::variant<int, double, char, std::string> operand_;
 
     public:
-        Instruction(OpCode op, int level, int operand);
+        Instruction(OpCode op, int level, std::variant<int, double, char, std::string> operand);
 
         OpCode getOp() const;
         int getLevel() const;
-        int getOperand() const;
+        std::variant<int, double, char, std::string> getOperand() const;
 
         void setOp(OpCode op);
         void setLevel(int level);
-        void setOperand(int operand);
+        void setOperand(std::variant<int, double, char, std::string> operand);
 
         std::string toString(int lineNumber) const;
 };

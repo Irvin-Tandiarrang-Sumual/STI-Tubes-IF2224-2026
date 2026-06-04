@@ -1,0 +1,55 @@
+program UjiSemuaTipeArion;
+var
+    angkaInt, angkaInt2, hasilInt: integer;
+    angkaReal, angkaReal2, hasilReal: real;
+    huruf1, huruf2: char;
+    teks1, teks2, hasilTeks: string;
+    benar, salah, hasilBool: boolean;
+begin
+    writeln('=== 1. Uji Coba Integer ===');
+    angkaInt := 15;
+    angkaInt2 := 4;
+    
+    hasilInt := angkaInt div angkaInt2;
+    writeln('15 div 4 = ', hasilInt);
+    
+    hasilInt := angkaInt mod angkaInt2;
+    writeln('15 mod 4 = ', hasilInt);
+
+    writeln('=== 2. Uji Coba Real (Desimal) ===');
+    angkaReal := 3.14;
+    angkaReal2 := 2.0;
+    
+    hasilReal := angkaReal * angkaReal2;
+    writeln('3.14 * 2.0 = ', hasilReal);
+    
+    hasilReal := angkaInt / angkaInt2;
+    writeln('15 / 4 = ', hasilReal);
+
+    writeln('=== 3. Uji Coba Char ===');
+    huruf1 := 'A';
+    huruf2 := 'B';
+    
+    writeln('Karakter 1: ', huruf1);
+    writeln('Karakter 2: ', huruf2);
+    
+    if huruf1 < huruf2 then
+        writeln('Karakter A lebih kecil dari B (Berdasarkan ASCII)');
+
+    writeln('=== 4. Uji Coba String ===');
+    teks1 := 'Arion ';
+    teks2 := 'Compiler';
+    
+    hasilTeks := teks1 + teks2;
+    writeln('Hasil Penggabungan: ', hasilTeks);
+
+    writeln('=== 5. Uji Coba Boolean ===');
+    benar := true;
+    salah := false;
+    
+    hasilBool := benar and (not salah);
+    if hasilBool == true then
+        writeln('Logika Boolean (true and not false) berfungsi sempurna!');
+        
+    writeln('=== SELURUH MESIN BERJALAN NORMAL ===')
+end.
