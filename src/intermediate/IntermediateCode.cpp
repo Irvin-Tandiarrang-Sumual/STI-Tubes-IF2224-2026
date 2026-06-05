@@ -5,6 +5,7 @@ IntermediateCodeGenerator::IntermediateCodeGenerator(SymbolTable& symbolTable, S
 
 std::vector<Instruction> IntermediateCodeGenerator::generate(ASTProgramNode* root) {
     code_.clear();
+    relativeOffsetMap_.clear();
     currentLexicalLevel_ = 0;
     currentFunctionNames_.clear();
     currentFunctionReturnSlots_.clear();
@@ -68,8 +69,8 @@ int IntermediateCodeGenerator::emitOpr(OprCode opr) {
     return emit(OpCode::OPR, 0, static_cast<int>(opr));
 }
 
-int IntermediateCodeGenerator::emitRet() {
-    return emit(OpCode::RET, 0, 0);
+int IntermediateCodeGenerator::emitRet(int parameterCount, bool returnsValue) {
+    return emit(OpCode::RET, returnsValue ? 1 : 0, parameterCount);
 }
 
 void IntermediateCodeGenerator::patchOperand(int instructionIndex, int newOperand) {

@@ -41,7 +41,7 @@ class IntermediateCodeGenerator : public ASTVisitor {
         int emitJmp(int targetLine);
         int emitJpc(int targetLine);
         int emitOpr(OprCode opr);
-        int emitRet();
+        int emitRet(int parameterCount = 0, bool returnsValue = false);
 
         void patchOperand(int instructionIndex, int newOperand);
         void patchPendingCalls();
