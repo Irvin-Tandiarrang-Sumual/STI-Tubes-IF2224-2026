@@ -21,6 +21,10 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
             case OpCode::INT: memory_.allocate(std::get<int>(instr.getOperand())); break;
             case OpCode::LIT: memory_.push(instr.getOperand()); break;
             case OpCode::STO: memory_.store(instr.getLevel(), std::get<int>(instr.getOperand())); break;
+            case OpCode::LDA: memory_.pushAddress(instr.getLevel(), std::get<int>(instr.getOperand())); break;
+            case OpCode::LDI: memory_.indirectLoad(); break;
+            case OpCode::STI: memory_.indirectStore(); break;
+            case OpCode::CHK: memory_.checkBounds(instr.getLevel(), std::get<int>(instr.getOperand())); break;
             case OpCode::LOD: memory_.load(instr.getLevel(), std::get<int>(instr.getOperand())); break;
             case OpCode::OPR: ALU::execute(static_cast<OprCode>(std::get<int>(instr.getOperand())), memory_, outStream); break;
             case OpCode::JMP: 
