@@ -1,0 +1,15 @@
+program TestArrayStaticIndex;
+
+var
+  arr: array[1..3] of integer;
+  total: integer;
+
+begin
+  arr[1] := 10;
+  arr[2] := 20;
+  arr[3] := 30;
+
+  total := arr[1] + arr[2] + arr[3];
+
+  writeln('total = ', total);
+end.
