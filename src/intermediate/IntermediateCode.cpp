@@ -45,6 +45,22 @@ int IntermediateCodeGenerator::emitLod(int level, int address) {
     return emit(OpCode::LOD, level, address);
 }
 
+int IntermediateCodeGenerator::emitLda(int level, int address) {
+    return emit(OpCode::LDA, level, address);
+}
+
+int IntermediateCodeGenerator::emitLdi() {
+    return emit(OpCode::LDI, 0, 0);
+}
+
+int IntermediateCodeGenerator::emitSti() {
+    return emit(OpCode::STI, 0, 0);
+}
+
+int IntermediateCodeGenerator::emitChk(int low, int high) {
+    return emit(OpCode::CHK, low, high);
+}
+
 int IntermediateCodeGenerator::emitSto(int level, int address) {
     return emit(OpCode::STO, level, address);
 }
@@ -97,43 +113,26 @@ int IntermediateCodeGenerator::currentLine() const {
     return static_cast<int>(code_.size());
 }
 
-int IntermediateCodeGenerator::getRuntimeAddress(ASTVariableExpressionNode* node) const {
-    if (node == nullptr) {
-        throw std::runtime_error("Intermediate Error: variable expression kosong.");
-    }
-    if (isFunctionReturnTarget(node)) {
-        return currentFunctionReturnSlots_.back();
-    }
-    if (node->symbolRefIndex_ < 0) {
-        throw std::runtime_error("Intermediate Error: variable '" + node->baseName + "' belum memiliki symbol reference.");
-    }
+int IntermediateCodeGenerator::getBaseRuntimeAddress(ASTVariableExpressionNode* node) const {
+    if (node == nullptr) {throw std::runtime_error("Intermediate Error: variable expression kosong.");}
 
-    int runtimeAddress;
+    if (isFunctionReturnTarget(node)) {return currentFunctionReturnSlots_.back();}
 
-    // Cek apakah variabel ini punya offset lokal/parameter yang sudah di-set
+    if (node->symbolRefIndex_ < 0) { throw std::runtime_error("Intermediate Error: variable '" + node->baseName + "' belum memiliki symbol reference.");}
+
     auto it = relativeOffsetMap_.find(node->symbolRefIndex_);
     if (it != relativeOffsetMap_.end()) {
-        runtimeAddress = it->second; // Bisa negatif (parameter) atau positif (lokal)
-    } 
-    
-    if (it != relativeOffsetMap_.end() && it->second < 0) {
-        // Parameter yang berhasil dipetakan secara negatif
-        runtimeAddress = it->second;
-    } else if (it != relativeOffsetMap_.end() && it->second >= FRAME_HEADER_SIZE) {
-         // Variabel lokal
-        runtimeAddress = it->second;
-    } else {
-        // Fallback untuk Global Variable (Jika belum masuk map)
-        const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
-
-        if (entry.level > 0 && entry.address < 10) { 
-            //  Parameter paksa menjadi negatif
-            runtimeAddress = -(entry.address + 1);
-        } else {
-            // Variabel global / lokal
-            runtimeAddress = FRAME_HEADER_SIZE + entry.address; 
-        }
+        return it->second;
     }
+    const IdentifierTableEntry& entry = symbolTable_.getIdentifier(node->symbolRefIndex_);
+
+    if (entry.level > 0 && entry.address < 10) {return -(entry.address + 1);}
+
+    return FRAME_HEADER_SIZE + entry.address;
+}
+
+int IntermediateCodeGenerator::getRuntimeAddress(ASTVariableExpressionNode* node) const {
+    int runtimeAddress = getBaseRuntimeAddress(node);
 
     if (!node->components.empty()) {
         ASTTypeNode* baseTypeNode = semanticAnalyzer_.getIdentifierTypeNode(node->symbolRefIndex_);
@@ -155,6 +154,81 @@ int IntermediateCodeGenerator::getLevelDifference(int declarationLevel) const {
         return 0;
     }
     return currentLexicalLevel_ - declarationLevel;
+}
+
+void IntermediateCodeGenerator::emitVariableAddress(ASTVariableExpressionNode* node) {
+    if (node == nullptr) { throw std::runtime_error("Intermediate Error: variable expression kosong."); }
+
+    int baseAddress = getBaseRuntimeAddress(node);
+    int levelDiff = getRuntimeLevel(node);
+
+    // push alamat awal variabel: base frame + offset variabel.
+    emitLda(levelDiff, baseAddress);
+
+    ASTTypeNode* currentTypeNode = semanticAnalyzer_.getIdentifierTypeNode(node->symbolRefIndex_);
+    currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(currentTypeNode);
+
+    for (const auto& component : node->components) {
+        if (component.isArrayIndex) {
+            for (ASTExpressionNode* indexExpression : component.indices) {
+                auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(semanticAnalyzer_.getResolvedTypeNode(currentTypeNode));
+
+                if (arrayType == nullptr) { throw std::runtime_error("Intermediate Error: akses indeks pada tipe non-array."); }
+
+                ASTTypeNode* indexType = semanticAnalyzer_.getResolvedTypeNode(arrayType->indexType);
+
+                int low = 0;
+                int high = 0;
+                if (!semanticAnalyzer_.getRangeBounds(dynamic_cast<ASTRangeType*>(indexType), low, high)) {
+                    throw std::runtime_error("Intermediate Error: dynamic index saat ini hanya mendukung array dengan range eksplisit.");
+                }
+
+                int elementSize = semanticAnalyzer_.getTypeStorageSize(arrayType->elementType);
+                elementSize = std::max(1, elementSize);
+
+                int constIndex = 0;
+                if (constantExpressionToInt(indexExpression, constIndex)) {
+                    if (constIndex < low || constIndex > high) {
+                        throw std::runtime_error("Intermediate Error: indeks array literal berada di luar range deklarasi.");
+                    }
+
+                    int staticOffset = (constIndex - low) * elementSize;
+                    if (staticOffset != 0) {
+                        emitLit(staticOffset);
+                        emitOpr(OprCode::ADD);
+                    }
+                } else {
+                    // address = baseAddress + ((index - low) * elementSize)
+                    indexExpression->accept(this);
+                    emitChk(low, high);
+
+                    if (low != 0) {
+                        emitLit(low);
+                        emitOpr(OprCode::SUB);
+                    }
+                    if (elementSize != 1) {
+                        emitLit(elementSize);
+                        emitOpr(OprCode::MUL);
+                    }
+
+                    emitOpr(OprCode::ADD);
+                }
+                currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(arrayType->elementType);
+            }
+        } else {
+            auto* recordType = dynamic_cast<ASTRecordTypeNode*>(
+                semanticAnalyzer_.getResolvedTypeNode(currentTypeNode)
+            );
+            ASTTypeNode* fieldType = nullptr;
+            int fieldOffset = computeRecordFieldOffset(recordType, component.fieldName, fieldType);
+
+            if (fieldOffset != 0) {
+                emitLit(fieldOffset);
+                emitOpr(OprCode::ADD);
+            }
+            currentTypeNode = semanticAnalyzer_.getResolvedTypeNode(fieldType);
+        }
+    }
 }
 
 int IntermediateCodeGenerator::computeProgramMemorySize(ASTProgramNode* node) const {
