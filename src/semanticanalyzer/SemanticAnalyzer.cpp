@@ -350,17 +350,16 @@ bool SemanticAnalyzer::extractRangeBounds(const ASTRangeType* range, int& low, i
 int SemanticAnalyzer::estimateTypeStorageSize(ASTTypeNode* typeNode) {
     ASTTypeNode* resolved = resolveTypeNode(typeNode);
     if (resolved == nullptr) {
-        return 4;
+        return 1;
     }
 
-    if (auto* primitiveType = dynamic_cast<ASTPrimitiveType*>(resolved)) {
-        if (primitiveType->type == "real") {
-            return 8;
-        }
-        if (primitiveType->type == "char" || primitiveType->type == "boolean") {
-            return 1;
-        }
-        return 4;
+    if (dynamic_cast<ASTPrimitiveType*>(resolved) != nullptr) {
+        return 1;
+    }
+
+    if (dynamic_cast<ASTRangeType*>(resolved) != nullptr ||
+        dynamic_cast<ASTEnumeratedTypeNode*>(resolved) != nullptr) {
+        return 1;
     }
 
     if (auto* arrayType = dynamic_cast<ASTArrayTypeNode*>(resolved)) {
@@ -368,7 +367,7 @@ int SemanticAnalyzer::estimateTypeStorageSize(ASTTypeNode* typeNode) {
         if (arrayRef >= 0) {
             return symbolTable.getArrayEntry(arrayRef).size;
         }
-        return 4;
+        return 1;
     }
 
     if (auto* recordType = dynamic_cast<ASTRecordTypeNode*>(resolved)) {
@@ -377,10 +376,10 @@ int SemanticAnalyzer::estimateTypeStorageSize(ASTTypeNode* typeNode) {
             int fieldSize = estimateTypeStorageSize(field.type);
             totalSize += static_cast<int>(field.identifiers.size()) * fieldSize;
         }
-        return totalSize > 0 ? totalSize : 4;
+        return totalSize > 0 ? totalSize : 1;
     }
 
-    return 4;
+    return 1;
 }
 
 int SemanticAnalyzer::ensureArrayTypeEntry(ASTArrayTypeNode* node) {
