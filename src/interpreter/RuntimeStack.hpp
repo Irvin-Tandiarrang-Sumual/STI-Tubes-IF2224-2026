@@ -10,6 +10,7 @@ private:
     int basePtr_;
     const size_t MAX_STACK_SIZE = 10000; // Batas aman maksimum ukuran Stack
 
+    void validateIndex(int index, const std::string& action) const; // validasi index untuk operasi push, pop, load, store
 public:
     RuntimeStack();
     void clear();
@@ -20,6 +21,12 @@ public:
     std::variant<int, double, char, std::string> pop();         
     void store(int level, int offset); 
     void load(int level, int offset);  
+
+    // Opcode untuk dynamic memory access
+    void pushAddress(int level, int offset);
+    void indirectLoad();
+    void indirectStore();
+    void checkBounds(int low, int high);
     
     // Fungsi Helper Stack Frame
     int getBasePtr() const;
