@@ -616,14 +616,6 @@ SemanticAnalyzer::FlowResult SemanticAnalyzer::analyzeBlockFlow(ASTBlockStatemen
     bool alreadyReturned = false;
 
     for (ASTStatementNode* statement : block->statements) {
-        if (alreadyReturned) {
-            reportWarning(
-                statement,
-                "Statement ini tidak akan pernah dijalankan karena statement sebelumnya sudah mengembalikan nilai function."
-            );
-            continue;
-        }
-
         FlowResult statementFlow = analyzeStatementFlow(statement);
 
         if (statementFlow.alwaysReturns) {
