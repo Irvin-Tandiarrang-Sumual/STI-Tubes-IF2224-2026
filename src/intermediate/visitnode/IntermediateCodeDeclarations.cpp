@@ -122,7 +122,7 @@ std::any IntermediateCodeGenerator::visitProcedureDeclarationNode(ASTProcedureDe
     }
     if (node->body != nullptr) node->body->accept(this);
 
-    emitRet();
+    emitRet(totalParams, false);
     currentLexicalLevel_ = savedLevel;
     patchOperand(skipJumpIndex, currentLine());
 
@@ -203,7 +203,7 @@ std::any IntermediateCodeGenerator::visitFunctionDeclarationNode(ASTFunctionDecl
     if (node->body != nullptr) node->body->accept(this);
 
     emitLod(0, returnSlotAddress);
-    emitRet();
+    emitRet(totalParams, true);
 
     currentFunctionReturnSlots_.pop_back();
     currentFunctionNames_.pop_back();

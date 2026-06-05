@@ -141,8 +141,6 @@ void Engine::intermediateCodeGenerator() {
     std::cout << "Processing Intermediate Code Generation...\n";
 
     IntermediateCodeGenerator generator(semanticAnalyzer_.getSymbolTable(), semanticAnalyzer_);
-    std::vector<Instruction> instructions = generator.generate(astRoot_);
-
     instructions_ = generator.generate(astRoot_);
 
     const std::string baseName = inputPath.stem().string();
@@ -152,7 +150,7 @@ void Engine::intermediateCodeGenerator() {
         std::filesystem::create_directories(outputDir);
     }
 
-    Writer writer(fullPath.string(), instructions);
+    Writer writer(fullPath.string(), instructions_);
     writer.printIntermediateCode();
     writer.writeIntermediateCodeToFile();
 }

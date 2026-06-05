@@ -15,6 +15,13 @@ class StackUnderflowException : public std::runtime_error {
     : std::runtime_error(msg) {}
 };
 
+class StackCorruptionException : public std::runtime_error {
+public:
+    StackCorruptionException(
+        const std::string& msg = "Runtime Error: Stack Corruption! (Struktur stack frame tidak valid)"
+    ) : std::runtime_error(msg) {}
+};
+
 // Kerentanan Memori
 class MemoryAccessException : public std::runtime_error {
 public:

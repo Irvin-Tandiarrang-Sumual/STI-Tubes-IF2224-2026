@@ -49,6 +49,6 @@ std::any IntermediateCodeGenerator::visitProgramNode(ASTProgramNode* node) {
         node->mainBlock->accept(this);
     }
 
-    emitRet();
+    emitRet(0, false);
     return {};
 }

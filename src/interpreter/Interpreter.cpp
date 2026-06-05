@@ -55,24 +55,39 @@ void Interpreter::execute(const std::vector<Instruction>& instructions, std::ost
             }
             case OpCode::RET: {
                 int oldBase = memory_.getBasePtr();
+
+                int parameterCount = std::get<int>(instr.getOperand());
+                bool returnsValue = instr.getLevel() != 0;
                 
                 if (oldBase == 0) {
                     // Jika return dari main program, hentikan eksekusi
                     ip_ = static_cast<int>(instructions.size()); 
+                    break;
                 } else {
+                    std::variant<int, double, char, std::string> returnValue = 0;
                     // Selalu meletakkan nilai return di ujung Stack sebelum RET
-                    auto returnValue = memory_.pop(); 
+                    if(returnsValue){
+                        auto returnValue = memory_.pop(); 
+                    }                  
                     
                     int ra = std::get<int>(memory_.get(oldBase + 2)); // Ambil Return Address
                     int dl = std::get<int>(memory_.get(oldBase + 1)); // Ambil Dynamic Link
+
+                    int callerStackSize = oldBase - parameterCount;
+                    if (callerStackSize < 0) {
+                        throw StackCorruptionException("Runtime Error: jumlah parameter lebih besar dari ukuran stack caller.");
+                    }       
                     
                     memory_.setSize(oldBase);          // Hapus Stack Frame
                     memory_.setBasePtr(dl);            // Kembalikan Base Pointer pemanggil
                     
                     // Kembalikan nilai return ke atas stack agar bisa ditangkap oleh caller
-                    memory_.push(returnValue);
+                    if(returnsValue){
+                        memory_.push(returnValue);
+                    }
                     
                     ip_ = ra;                          // Kembali ke baris instruksi pemanggil
+                    break;
                 }
                 break;
             }
