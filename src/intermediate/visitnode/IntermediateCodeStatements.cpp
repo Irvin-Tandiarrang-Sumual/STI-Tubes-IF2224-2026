@@ -27,6 +27,15 @@ std::any IntermediateCodeGenerator::visitBlockStatementNode(ASTBlockStatementNod
 std::any IntermediateCodeGenerator::visitAssignmentStatementNode(ASTAssignmentStatementNode* node) {
     if (node == nullptr) return std::any();
 
+    if (node->target != nullptr && !node->target->components.empty()) {
+        // push address dulu, lalu push value, lalu store indirect.
+        emitVariableAddress(node->target);
+
+        if (node->value != nullptr) { node->value->accept(this); }
+        emitSti();
+        return {};
+    }
+
     // evaluasi sisi kanannya
     if (node->value != nullptr) {
         node->value->accept(this);
@@ -266,6 +275,7 @@ std::any IntermediateCodeGenerator::visitCallStatementNode(ASTCallStatementNode*
         }
 
         if (isWritelnProcedure(procName) && node->callExpr->arguments.empty()) {
+            code_.push_back(Instruction(OpCode::LIT, 0, std::string("")));
             emitOpr(OprCode::WRTLN);
         }
 
