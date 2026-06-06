@@ -1,0 +1,24 @@
+program TestNestedLoop;
+
+var
+  i, j, count: integer;
+
+begin
+  i := 1;
+  count := 0;
+
+  while i <= 3 do
+  begin
+    j := 1;
+
+    while j <= 2 do
+    begin
+      count := count + 1;
+      j := j + 1;
+    end;
+
+    i := i + 1;
+  end;
+
+  writeln('count = ', count);
+end.

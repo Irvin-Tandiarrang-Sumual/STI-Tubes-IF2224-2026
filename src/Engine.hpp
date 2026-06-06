@@ -8,14 +8,20 @@
 #include "writer/Writer.hpp"
 #include "ast/ASTBuilder.hpp"
 #include "ast/ASTNodes.hpp"
-class Compiler {
+#include "semanticanalyzer/SemanticAnalyzer.hpp"
+#include "intermediate/IntermediateCode.hpp"
+#include "interpreter/Interpreter.hpp"
+
+class Engine {
     public:
-        explicit Compiler(const std::filesystem::path &path, const std::string &outputDir);
-        ~Compiler();
+        explicit Engine(const std::filesystem::path &path, const std::string &outputDir);
+        ~Engine();
 
         void lexer();
         void parser();
         void semantic();
+        void intermediateCodeGenerator();
+        void execute();
 
     private:
         std::filesystem::path inputPath;
@@ -24,4 +30,11 @@ class Compiler {
         //
         CSTNodes* cstRoot_;
         std::vector<std::string> cstErrors_;
+
+        ASTProgramNode* astRoot_;
+
+        SemanticAnalyzer semanticAnalyzer_;
+        std::vector<std::string> semanticErrors_;
+
+        std::vector<Instruction> instructions_;
 };
