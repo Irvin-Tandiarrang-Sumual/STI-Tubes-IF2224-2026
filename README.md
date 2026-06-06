@@ -1,4 +1,4 @@
-# Arion Compiler - Part Semantic Analyzer 🦫
+# Arion Interpreter 🦫
 
 ## Strategi Algoritma
 merupakan nama kelompok kami yang jika disingkat menjadi STI
@@ -9,19 +9,17 @@ merupakan nama kelompok kami yang jika disingkat menjadi STI
 | 3  | Bernhard Aprillio Pramana | 13524074 |
 | 4  | Moreno Syawali Ganda Sugita | 13524096 |
 | 5  | Jennifer Khang | 13524110 |
+
 ## Deskripsi Program
 
-Program yang dibuat saat ini merupakan bagian dari compiler yang akan menjadi tujuan akhir dari tugas besar IF2224 (TBFO) bukan Stima, hehe, saat ini. Saat ini program baru sampai pada tahap semantic analysis. Di mana Semantic Analysis bertujuan untuk memastikan bahwa program input memenuhi makna semantic dari bahasa Arion. Pengecekan yang dilakukan terdiri dari:
-1. Type Checking (Pengecekan Tipe)
-Memastikan operator dan operand memiliki tipe yang kompatibel.
-2. Symbol Table Management (Pengecekan Deklarasi)
-Memastikan setiap identifier (variabel/fungsi) telah dideklarasikan sebelum. digunakan dan tidak dideklarasikan ulang dalam cakupan yang sama.
-3. Scope Resolution (Pengecekan Lingkup)
-Menentukan validitas akses variabel berdasarkan hierarki blok kode.
-4. Control Flow Validation (Pengecekan Alur Kontrol)
-Memastikan struktur alur kontrol yang logis.
+Program ini adalah sebuah compiler dan interpreter lengkap untuk bahasa pemrograman **Arion**, yang dikembangkan sebagai tugas besar IF2224 (Teori Bahasa Formal dan Automata). Arsitektur program ini mengadopsi konsep yang mirip dengan **Java Virtual Machine (JVM)**, di mana kode sumber terlebih dahulu dikompilasi menjadi representasi tingkat menengah (Intermediate Code) sebelum akhirnya dieksekusi oleh sebuah *interpreter* (Virtual Machine).
 
-
+Program ini mencakup seluruh tahapan kompilasi hingga eksekusi program:
+1. **Lexical Analysis (Lexer)**: Mengubah source code menjadi urutan token.
+2. **Syntax Analysis (Parser)**: Membangun *Concrete Syntax Tree* (CST) berdasarkan aturan tata bahasa Arion.
+3. **Semantic Analysis**: Membangun *Decorated Abstract Syntax Tree* (AST), melakukan *type checking*, manajemen *symbol table*, dan validasi lingkup (*scope*).
+4. **Intermediate Code Generation (ICG)**: Mentransformasi AST menjadi *Intermediate Representation* berupa **P-Code linear** menggunakan teknik *backpatching* untuk meratakan (*control flow*).
+5. **Virtual Machine (Execution Engine)**: Mengeksekusi instruksi P-Code secara berurutan menggunakan *Runtime Stack*, penanganan *activation record*, dan fungsi operasi logika.
 
 ## Requirements
 
@@ -54,9 +52,10 @@ Setelah kompilasi berhasil, jalankan program dari direktori `src` dengan sintaks
 
 Mode yang tersedia:
 
-- `l`  : jalankan *lexer* saja — gunakan test case dari (`../test/milestone-1/valid_test/`)
-- `p`  : jalankan *lexer* + *parser* — gunakan test case dari (`../test/milestone-2/valid_test/`)
-- `s`  : jalankan *lexer* + *parser* + *semantic analyzer* — gunakan test case dari (`../test/milestone-3/valid_test/`).
+- `l`  : jalankan *lexer* saja — test case di (`../test/milestone-1/valid_test/`)
+- `p`  : jalankan *lexer* + *parser* — test case di (`../test/milestone-2/valid_test/`)
+- `s`  : jalankan *lexer* + *parser* + *semantic analyzer* — test case di (`../test/milestone-3/valid_test/`)
+- `i`  : jalankan *seluruh tahapan* (hingga *Intermediate Code* & *Interpreter*) — test case di (`../test/milestone-4/valid_test/`)
 
 Contoh:
 - Menjalankan Lexer
@@ -64,27 +63,26 @@ Contoh:
 ./main l valid1.txt
 ```
 
-- Menjalankan Parser
+- Menjalankan Full Compiler & Interpreter
 ```bash
-./main p ifelse.txt
-```
-
-- Menjalankan Semantic Analyzer
-```bash
-./main s Jumbo.txt
+./main i valid8_recursive_factorial.txt
 ```
 
 
 ### 3. Output
-- Setelah Menjalankan Lexer
-Hasil tokenisasi dalam bentuk file `.txt` akan diberikan di `../test/milestone-1/output` dan error yang muncul akan diberikan di terminal.
 
-- Setelah Menjalankan Parser
-Hasil parsing (parse tree) dalam bentuk file `.txt` akan diberikan di `../test/milestone-2/output`, di mana nama file output merupakan `nama file input` + `-parse-tree.txt`dan parse tree yang sama akan di-print ke terminal beserta error message yang ada.
+- **Mode Lexer (`l`)**:
+  Hasil tokenisasi disimpan di `../test/milestone-1/output` dengan nama file `<nama_file>-result.txt`.
 
-- Setelah Menjalankan Semantic Analyzer
-Hasil Decorated AST dan Symbol Table dalam bentuk file `.txt` akan diberikan di `../test/milestone-3/output` dan error yang muncul akan diberikan di terminal beserta warning jika ada.
+- **Mode Parser (`p`)**:
+  Hasil *parse tree* disimpan di `../test/milestone-2/output` dengan nama file `<nama_file>-parse-tree.txt`. Parse tree juga ditampilkan di terminal.
 
+- **Mode Semantic Analyzer (`s`)**:
+  Hasil *Decorated AST* dan *Symbol Table* disimpan di `../test/milestone-3/output` dengan nama file `<nama_file>-ast.txt`. Error dan warning akan muncul di terminal.
+
+- **Mode Interpreter (`i`)**:
+  - **Intermediate Code**: Daftar instruksi P-Code linear hasil kompilasi disimpan di `../test/milestone-4/output` dengan nama file `<nama_file>-intermediate-code.txt`.
+  - **Execution Output**: Hasil eksekusi dan log stack disimpan di `../test/milestone-4/output` dengan nama file `<nama_file>-output.txt`.
 
 ### 4. Membersihkan Compiled Files
 
