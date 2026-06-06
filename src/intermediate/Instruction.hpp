@@ -7,6 +7,10 @@ enum class OpCode {
     LIT, // Load Literal Memasukkan nilai literal v ke dalam stack
     LOD, // Load Value Memuat nilai dari address a
     STO, // Store Value Menyimpan nilai ke address a
+    LDA, // Load address Memuat alamat a ke dalam stack 
+    LDI, // Load Indirect Memuat nilai dari alamat yang ada di stack teratas
+    STI, // Store Indirect Menyimpan nilai ke alamat yang ada di stack teratas
+    CHK, // Change Level Mengubah level eksekusi
     CAL, // Call Memanggil fungsi di garis l
     INT, // Initiate Memory Membuat memory dengan ukuran m
     JMP, // Unconditional Jump Lompat ke garis l tanpa kondisi apapun

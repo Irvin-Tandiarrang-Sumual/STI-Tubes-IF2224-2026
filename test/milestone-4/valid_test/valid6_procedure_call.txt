@@ -1,0 +1,14 @@
+program TestProcedure;
+
+var
+  x: integer;
+
+procedure SetX(a: integer);
+begin
+  x := a;
+end;
+
+begin
+  SetX(7);
+  writeln('x = ', x);
+end.

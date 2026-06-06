@@ -1,0 +1,14 @@
+program TestFunctionExpression;
+
+var
+  x: integer;
+
+function Add(a: integer; b: integer): integer;
+begin
+  Add := a + b;
+end;
+
+begin
+  x := Add(1, 2) + Add(4, 5);
+  writeln('x = ', x);
+end.

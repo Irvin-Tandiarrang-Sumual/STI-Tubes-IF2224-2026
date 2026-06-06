@@ -24,6 +24,12 @@ std::any IntermediateCodeGenerator::visitVariableExpressionNode(ASTVariableExpre
     if (node == nullptr) {
         return {};
     }
+    
+    if (!node->components.empty()) {
+        emitVariableAddress(node);
+        emitLdi();
+        return {};
+    }
 
     if (node->components.empty()) {
         int symbolIndex;

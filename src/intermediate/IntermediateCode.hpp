@@ -36,12 +36,16 @@ class IntermediateCodeGenerator : public ASTVisitor {
         int emitLit(int value);
         int emitLod(int level, int address);
         int emitSto(int level, int address);
+        int emitLda(int level, int address);
+        int emitLdi();
+        int emitSti();
+        int emitChk(int low, int high);
         int emitCal(int level, int targetLine);
         int emitInt(int memorySize);
         int emitJmp(int targetLine);
         int emitJpc(int targetLine);
         int emitOpr(OprCode opr);
-        int emitRet();
+        int emitRet(int parameterCount = 0, bool returnsValue = false);
 
         void patchOperand(int instructionIndex, int newOperand);
         void patchPendingCalls();
@@ -51,6 +55,8 @@ class IntermediateCodeGenerator : public ASTVisitor {
         int getRuntimeAddress(ASTVariableExpressionNode* node) const;
         int getRuntimeLevel(ASTVariableExpressionNode* node) const;
         int getLevelDifference(int declarationLevel) const;
+        int getBaseRuntimeAddress(ASTVariableExpressionNode* node) const;
+        void emitVariableAddress(ASTVariableExpressionNode* node);
 
         int computeProgramMemorySize(ASTProgramNode* node) const;
         int computeDeclarationsMemorySize(ASTDeclarationsNode* node) const;

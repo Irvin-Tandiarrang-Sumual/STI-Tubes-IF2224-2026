@@ -26,6 +26,11 @@ begin
         hitungfak := n * temp;
 end;
 
+function baru(n: integer):integer;
+begin 
+    baru:=n+100;
+end;
+
 { Test 3: Fungsi Rekursif Bercabang }
 function hitungfib(n: integer): integer;
 var
