@@ -54,26 +54,31 @@ Setelah kompilasi berhasil, jalankan program dari direktori `src` dengan sintaks
 
 Mode yang tersedia:
 
-- `l`  : jalankan *lexer* saja — gunakan test case dari (`../test/milestone-1/valid_test/`)
-- `p`  : jalankan *lexer* + *parser* — gunakan test case dari (`../test/milestone-2/valid_test/`)
-- `s`  : jalankan *lexer* + *parser* + *semantic analyzer* — gunakan test case dari (`../test/milestone-3/valid_test/`).
+- `l`  : jalankan *lexer* saja — gunakan test case dari (`../test/milestone-1/`)
+- `p`  : jalankan *lexer* + *parser* — gunakan test case dari (`../test/milestone-2/`)
+- `s`  : jalankan *lexer* + *parser* + *semantic analyzer* — gunakan test case dari (`../test/milestone-3/`)
+- `i`  : jalankan *lexer* + *parser* + *semantic analyzer* + *generate intermediate code* + *interpreter* — gunakan test case dari (`../test/milestone-4/`).
 
 Contoh:
 - Menjalankan Lexer
 ```bash
-./main l valid1.txt
+./main l valid_test/valid1.txt
 ```
 
 - Menjalankan Parser
 ```bash
-./main p ifelse.txt
+./main p valid_test/ifelse.txt
 ```
 
 - Menjalankan Semantic Analyzer
 ```bash
-./main s Jumbo.txt
+./main s valid_test/Jumbo.txt
 ```
 
+- Menjalankan Generate Intermediate Code + Interpreter
+```bash
+./main 1 valid_test/valid4.txt
+```
 
 ### 3. Output
 - Setelah Menjalankan Lexer
@@ -85,6 +90,8 @@ Hasil parsing (parse tree) dalam bentuk file `.txt` akan diberikan di `../test/m
 - Setelah Menjalankan Semantic Analyzer
 Hasil Decorated AST dan Symbol Table dalam bentuk file `.txt` akan diberikan di `../test/milestone-3/output` dan error yang muncul akan diberikan di terminal beserta warning jika ada.
 
+- Setelah Menjalankan Generate Intermediate Code + Interpreter
+Hasil Intermediate Code dan Output dalam bentuk file `.txt` akan diberikan di `../test/milestone-4/output` dan error yang muncul akan diberikan di terminal beserta warning jika ada.
 
 ### 4. Membersihkan Compiled Files
 
