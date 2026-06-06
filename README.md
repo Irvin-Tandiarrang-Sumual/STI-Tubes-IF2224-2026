@@ -82,7 +82,7 @@ Contoh:
 
 - **Mode Interpreter (`i`)**:
   - **Intermediate Code**: Daftar instruksi P-Code linear hasil kompilasi disimpan di `../test/milestone-4/output` dengan nama file `<nama_file>-intermediate-code.txt`.
-  - **Execution Output**: Hasil eksekusi dan log stack disimpan di `../test/milestone-4/output` dengan nama file `<nama_file>-output.txt`.
+  - **Execution Output**: Hasil eksekusi disimpan di `../test/milestone-4/output` dengan nama file `<nama_file>-output.txt`.
 
 ### 4. Membersihkan Compiled Files
 
